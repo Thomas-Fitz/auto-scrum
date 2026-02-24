@@ -31,11 +31,17 @@ Then customize `.auto-scrum/config.yml` for your project.
 
 ---
 
-Getting Started
+## Getting Started
 
-1. Copy the command files and .auto-scrum/ directory into your app directory.
-2. `/as-new [feature_name]` to start a new work item.
-3. ...
+```
+/as-new <feature-name>      → scaffold artifact directory
+/as-prd                     → write Product Requirements Document (human-in-the-loop)
+/as-ux-design               → optional: UX design doc for UI-heavy features
+/as-architect               → write Architecture Design Document
+/as-test-plan               → write Test Plan
+/as-sprint-plan             → produce Epic Breakdown + Sprint Status
+/as-pipeline <feature-name> → 🚀 autonomous execution begins
+```
 
 ---
 
@@ -64,36 +70,6 @@ agents:
 git:
   commit_frequency: story   # task | story | epic | never
 ```
-
-**Config fields:**
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `project.name` | string | `my-project` | Project display name used in reports |
-| `project.user` | string | `developer` | Developer or team name |
-| `artifacts.base_dir` | string | `.auto-scrum` | Root directory for all artifacts |
-| `agents.orchestrator.model` | string | — | Model ID for Marcus (orchestrator) |
-| `agents.architect.model` | string | — | Model ID for Winston (architect) |
-| `agents.developer.model` | string | — | Model ID for Amelia (developer) |
-| `agents.reviewer.model` | string | — | Model ID for adversarial reviewer |
-| `git.commit_frequency` | enum | `story` | When dev agent commits: `task` \| `story` \| `epic` \| `never` |
-
-If `config.yml` is missing, all commands use hardcoded defaults and display a visible warning, but do not halt.
-
----
-
-## Getting Started
-
-```
-/as-new <feature-name>      → scaffold artifact directory
-/as-prd                     → write Product Requirements Document (human-in-the-loop)
-/as-ux-design               → optional: UX design doc for UI-heavy features
-/as-architect               → write Architecture Design Document
-/as-test-plan               → write Test Plan
-/as-sprint-plan             → produce Epic Breakdown + Sprint Status
-/as-pipeline <feature-name> → 🚀 autonomous execution begins
-```
-
 ---
 
 ## Commands
@@ -117,7 +93,7 @@ If `config.yml` is missing, all commands use hardcoded defaults and display a vi
 ## Pipeline Behavior
 
 The `/as-pipeline` command:
-1. **Readiness Check:** Validates all 5 required artifacts exist before starting.
+1. **Readiness Check:** Validates required artifacts exist before starting.
 2. **Resume:** Detects `in-progress` or `review` stories and resumes from them.
 3. **Per-epic:** Writes a checkpoint file, compacts context, then processes each story.
 4. **Per-story:** Orchestrator writes the story → dev agent implements (TDD) → adversarial reviewer finds + fixes issues → learning log updated.
