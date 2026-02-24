@@ -1,0 +1,27 @@
+# auto-scrum configuration
+# Copy this file to your project root at .auto-scrum/config.yml and customize.
+
+project:
+  name: my-project          # Display name for reports and artifacts
+  user: developer           # Developer or team name
+
+artifacts:
+  base_dir: .auto-scrum     # Root directory for all auto-scrum artifacts (default: .auto-scrum)
+
+agents:
+  orchestrator:
+    model: claude-sonnet-4-6  # Model ID for the pipeline orchestrator (Marcus)
+  architect:
+    model: claude-sonnet-4-6  # Model ID for the architect agent (Winston)
+  developer:
+    model: claude-sonnet-4-6  # Model ID for the developer agent (Amelia)
+  reviewer:
+    model: claude-sonnet-4-6  # Model ID for the adversarial code reviewer
+
+git:
+  # When the dev agent commits during /as-pipeline execution:
+  # task   = after every task/subtask
+  # story  = after each story is approved (recommended default)
+  # epic   = after the last story in each epic is approved
+  # never  = skip all auto-commits
+  commit_frequency: story

@@ -1,0 +1,228 @@
+# auto-scrum
+
+> AI-powered software development lifecycle automation for GitHub Copilot. Human-in-the-loop planning. Autonomous execution.
+
+auto-scrum is a collection of GitHub Copilot slash command files that automate the full software development lifecycle — from requirements through delivery. Humans drive all planning decisions. AI agents handle autonomous execution.
+
+---
+
+## Prerequisites
+
+- **GitHub Copilot** (with slash command / coding agent support)
+- **Git** (the project must be a git repository)
+- No other dependencies, packages, or tooling required
+
+---
+
+## Installation
+
+Copy the command files into your project:
+
+```bash
+cp -r .github/copilot/commands/ your-project/.github/copilot/commands/
+cp .auto-scrum/config.yml your-project/.auto-scrum/config.yml
+```
+
+Then customize `.auto-scrum/config.yml` for your project.
+
+---
+
+## Configuration
+
+Edit `.auto-scrum/config.yml`:
+
+```yaml
+project:
+  name: my-project          # Display name for reports and artifacts
+  user: developer           # Developer or team name
+
+artifacts:
+  base_dir: .auto-scrum     # Root directory for all auto-scrum artifacts
+
+agents:
+  orchestrator:
+    model: claude-sonnet-4-5  # Model for pipeline orchestrator (Marcus)
+  architect:
+    model: claude-sonnet-4-5  # Model for architect agent (Winston)
+  developer:
+    model: claude-sonnet-4-5  # Model for developer agent (Amelia)
+  reviewer:
+    model: claude-sonnet-4-5  # Model for adversarial code reviewer
+
+git:
+  commit_frequency: story   # task | story | epic | never
+```
+
+**Config fields:**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `project.name` | string | `my-project` | Project display name used in reports |
+| `project.user` | string | `developer` | Developer or team name |
+| `artifacts.base_dir` | string | `.auto-scrum` | Root directory for all artifacts |
+| `agents.orchestrator.model` | string | — | Model ID for Marcus (orchestrator) |
+| `agents.architect.model` | string | — | Model ID for Winston (architect) |
+| `agents.developer.model` | string | — | Model ID for Amelia (developer) |
+| `agents.reviewer.model` | string | — | Model ID for adversarial reviewer |
+| `git.commit_frequency` | enum | `story` | When dev agent commits: `task` \| `story` \| `epic` \| `never` |
+
+If `config.yml` is missing, all commands use hardcoded defaults and display a visible warning, but do not halt.
+
+---
+
+## Getting Started
+
+```
+/as-new <feature-name>      → scaffold artifact directory
+/as-prd                     → write Product Requirements Document (human-in-the-loop)
+/as-ux-design               → optional: UX design doc for UI-heavy features
+/as-architect               → write Architecture Design Document
+/as-test-plan               → write Test Plan
+/as-sprint-plan             → produce Epic Breakdown + Sprint Status
+/as-pipeline <feature-name> → 🚀 autonomous execution begins
+```
+
+---
+
+## Commands
+
+| Command | Agent | Human Involvement | Output |
+|---------|-------|------------------|--------|
+| `/as-new <feature-name>` | — | None | Feature directory scaffold |
+| `/as-generate-project-context` | — | Low (review output) | `project-context.md` |
+| `/as-document-project` | — | Low (review output) | Architecture + source tree docs |
+| `/as-prd` | John (PM) | High (Q&A + approval) | `prd.md` |
+| `/as-ux-design` | Sally (UX Designer) | High (Q&A + approval) | `ux-design.md` |
+| `/as-architect` | Winston (Architect) | Medium (clarifications + approval) | `design.md` |
+| `/as-test-plan` | Quinn (QA) | Medium (review + approval) | `test-plan.md` |
+| `/as-sprint-plan` | Bob (Scrum Master) | Medium (review + approval) | `epic-breakdown.md`, `sprint-status.yaml` |
+| `/as-pipeline <feature-name>` | Marcus (Orchestrator) | None (unless hard blocker) | All implementation artifacts |
+| `/as-correct-course` | Marcus (Orchestrator) | None (auto-triggered) or Low (manual) | Sprint Change Proposal in `pipeline-report.md` |
+| `/as-tech-writer` | Paige (Tech Writer) | Medium (describe ask) | Docs, diagrams |
+
+---
+
+## Artifact Directory Structure
+
+```
+.auto-scrum/
+  config.yml
+  features/
+    {feature-name}/
+      planning/
+        prd.md
+        ux-design.md          (optional)
+        design.md
+        test-plan.md
+        epic-breakdown.md
+      implementation/
+        sprint-status.yaml
+        pipeline-report.md
+        learning-log.md
+        stories/
+          {story-key}.md
+        checkpoints/
+          checkpoint-epic-{N}.md
+        retros/
+          epic-{N}-retro-{YYYY-MM-DD}.md
+  cross-feature/
+    project-context.md
+    architecture.md
+    source-tree.md
+```
+
+---
+
+## Sprint Status Schema
+
+```yaml
+generated: YYYY-MM-DD HH:MM
+project: string
+feature: string
+artifacts_dir: string
+
+development_status:
+  epic-1: backlog           # backlog | in-progress | done
+  1-1-story-title: backlog  # backlog | ready-for-dev | in-progress | review | done
+  1-2-story-title: backlog
+  epic-1-retrospective: optional  # optional | done
+  epic-2: backlog
+  2-1-story-title: backlog
+  epic-2-retrospective: optional
+```
+
+---
+
+## Story File Template
+
+```markdown
+# Story {epic_num}.{story_num}: {story_title}
+
+Status: ready-for-dev
+
+## Story
+As a {role},
+I want {action},
+so that {benefit}.
+
+## Acceptance Criteria
+1. [Specific, testable criterion]
+
+## Tasks / Subtasks
+- [ ] Task 1 (AC: #1)
+  - [ ] Subtask 1.1: Write failing test for [specific behavior]
+  - [ ] Subtask 1.2: Implement [specific thing] to make test pass
+  - [ ] Subtask 1.3: Refactor
+
+## Dev Notes
+**Architecture:** [patterns from design.md]
+**Files to modify:** [exact paths]
+**Files to create:** [exact paths]
+**Testing approach:** [framework, locations, assertions]
+**Edge cases:** [specific cases to handle]
+**Integration points:** [what this touches]
+
+### Previous Learnings
+[Insights from previous story or epic retro]
+
+### References
+- [Source: design.md#Section]
+- [Source: prd.md#FR-N]
+- [Source: test-plan.md#AC-N]
+
+## Dev Agent Record
+### Agent Model Used
+### Completion Notes
+### File List
+### Plan Deviations
+```
+
+---
+
+## Pipeline Behavior
+
+The `/as-pipeline` command:
+1. **Readiness Check:** Validates all 5 required artifacts exist before starting.
+2. **Resume:** Detects `in-progress` or `review` stories and resumes from them.
+3. **Per-epic:** Writes a checkpoint file, compacts context, then processes each story.
+4. **Per-story:** Orchestrator writes the story → dev agent implements (TDD) → adversarial reviewer finds + fixes issues → learning log updated.
+5. **Correct Course:** After each story, evaluates for plan deviations and handles them autonomously.
+6. **Epic Retro:** After each epic, synthesizes learnings for the next epic.
+7. **Max review cycles:** After 3 failed review cycles, orchestrator makes a judgment call and continues.
+8. **Escalates to human only for:** missing required artifact OR unresolvable git conflict.
+
+---
+
+## Agent Personas
+
+| Agent | Name | Role |
+|-------|------|------|
+| Orchestrator | Marcus | PM + Scrum Master (execution phase) |
+| PM | John | Product Manager (PRD creation) |
+| Scrum Master | Bob | Sprint Planning |
+| Architect | Winston | System Architecture |
+| Developer | Amelia | Senior Software Engineer (TDD implementation) |
+| QA | Quinn | QA Engineer (test planning) |
+| UX Designer | Sally | UX Design |
+| Tech Writer | Paige | Technical Documentation |
+| Reviewer | — | Adversarial Code Reviewer |
