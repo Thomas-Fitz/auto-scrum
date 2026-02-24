@@ -2,7 +2,11 @@
 
 > AI-powered software development lifecycle automation for GitHub Copilot. Human-in-the-loop planning. Autonomous execution.
 
-auto-scrum is a collection of GitHub Copilot slash command files that automate the full software development lifecycle — from requirements through delivery. Humans drive all planning decisions. AI agents handle autonomous execution.
+Auto-Scrum is a collection of GitHub Copilot slash command files that automate the full software development lifecycle — from requirements through delivery. Humans drive all planning decisions. AI agents handle autonomous execution.
+
+Heavily inspired by [BMAD](https://github.com/bmad-code-org/BMAD-METHOD).
+
+If BMAD is lawful and [GasTown](https://github.com/steveyegge/gastown) is chaotic, Auto-Scrum aims to be neutral.
 
 ---
 
@@ -24,6 +28,14 @@ cp .auto-scrum/config.yml your-project/.auto-scrum/config.yml
 ```
 
 Then customize `.auto-scrum/config.yml` for your project.
+
+---
+
+Getting Started
+
+1. Copy the command files and .auto-scrum/ directory into your app directory.
+2. `/as-new [feature_name]` to start a new work item.
+3. ...
 
 ---
 
@@ -91,14 +103,28 @@ If `config.yml` is missing, all commands use hardcoded defaults and display a vi
 | `/as-new <feature-name>` | — | None | Feature directory scaffold |
 | `/as-generate-project-context` | — | Low (review output) | `project-context.md` |
 | `/as-document-project` | — | Low (review output) | Architecture + source tree docs |
-| `/as-prd` | John (PM) | High (Q&A + approval) | `prd.md` |
-| `/as-ux-design` | Sally (UX Designer) | High (Q&A + approval) | `ux-design.md` |
-| `/as-architect` | Winston (Architect) | Medium (clarifications + approval) | `design.md` |
-| `/as-test-plan` | Quinn (QA) | Medium (review + approval) | `test-plan.md` |
-| `/as-sprint-plan` | Bob (Scrum Master) | Medium (review + approval) | `epic-breakdown.md`, `sprint-status.yaml` |
-| `/as-pipeline <feature-name>` | Marcus (Orchestrator) | None (unless hard blocker) | All implementation artifacts |
-| `/as-correct-course` | Marcus (Orchestrator) | None (auto-triggered) or Low (manual) | Sprint Change Proposal in `pipeline-report.md` |
-| `/as-tech-writer` | Paige (Tech Writer) | Medium (describe ask) | Docs, diagrams |
+| `/as-prd` | Product Manager | High (Q&A + approval) | `prd.md` |
+| `/as-ux-design` | UX Designer | High (Q&A + approval) | `ux-design.md` |
+| `/as-architect` | Architect | Medium (clarifications + approval) | `design.md` |
+| `/as-test-plan` | QA | Medium (review + approval) | `test-plan.md` |
+| `/as-sprint-plan` | Scrum Master | Medium (review + approval) | `epic-breakdown.md`, `sprint-status.yaml` |
+| `/as-pipeline <feature-name>` | Orchestrator | None (unless hard blocker) | All implementation artifacts |
+| `/as-correct-course` | Orchestrator | None (auto-triggered) or Low (manual) | Sprint Change Proposal in `pipeline-report.md` |
+| `/as-tech-writer` | Tech Writer | Medium (describe ask) | Docs, diagrams |
+
+---
+
+## Pipeline Behavior
+
+The `/as-pipeline` command:
+1. **Readiness Check:** Validates all 5 required artifacts exist before starting.
+2. **Resume:** Detects `in-progress` or `review` stories and resumes from them.
+3. **Per-epic:** Writes a checkpoint file, compacts context, then processes each story.
+4. **Per-story:** Orchestrator writes the story → dev agent implements (TDD) → adversarial reviewer finds + fixes issues → learning log updated.
+5. **Correct Course:** After each story, evaluates for plan deviations and handles them autonomously.
+6. **Epic Retro:** After each epic, synthesizes learnings for the next epic.
+7. **Max review cycles:** After 3 failed review cycles, orchestrator makes a judgment call and continues.
+8. **Escalates to human only for:** missing required artifact OR unresolvable git conflict.
 
 ---
 
@@ -196,33 +222,3 @@ so that {benefit}.
 ### File List
 ### Plan Deviations
 ```
-
----
-
-## Pipeline Behavior
-
-The `/as-pipeline` command:
-1. **Readiness Check:** Validates all 5 required artifacts exist before starting.
-2. **Resume:** Detects `in-progress` or `review` stories and resumes from them.
-3. **Per-epic:** Writes a checkpoint file, compacts context, then processes each story.
-4. **Per-story:** Orchestrator writes the story → dev agent implements (TDD) → adversarial reviewer finds + fixes issues → learning log updated.
-5. **Correct Course:** After each story, evaluates for plan deviations and handles them autonomously.
-6. **Epic Retro:** After each epic, synthesizes learnings for the next epic.
-7. **Max review cycles:** After 3 failed review cycles, orchestrator makes a judgment call and continues.
-8. **Escalates to human only for:** missing required artifact OR unresolvable git conflict.
-
----
-
-## Agent Personas
-
-| Agent | Name | Role |
-|-------|------|------|
-| Orchestrator | Marcus | PM + Scrum Master (execution phase) |
-| PM | John | Product Manager (PRD creation) |
-| Scrum Master | Bob | Sprint Planning |
-| Architect | Winston | System Architecture |
-| Developer | Amelia | Senior Software Engineer (TDD implementation) |
-| QA | Quinn | QA Engineer (test planning) |
-| UX Designer | Sally | UX Design |
-| Tech Writer | Paige | Technical Documentation |
-| Reviewer | — | Adversarial Code Reviewer |
