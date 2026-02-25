@@ -1,14 +1,19 @@
 # auto-scrum
 
-> AI-powered software development lifecycle automation for GitHub Copilot. Human-in-the-loop planning. Autonomous execution.
-
-Auto-Scrum is a collection of GitHub Copilot slash command files that automate the full software development lifecycle — from requirements through delivery. Humans drive all planning decisions. AI agents handle autonomous execution.
+Auto-Scrum is a collection of GitHub Copilot commands that automate the full software development lifecycle - from requirements through delivery. Humans drive all planning decisions. AI agents handle autonomous execution.
 
 Heavily inspired by [BMAD](https://github.com/bmad-code-org/BMAD-METHOD).
 
 If BMAD is lawful and [GasTown](https://github.com/steveyegge/gastown) is chaotic, Auto-Scrum aims to be neutral.
 
----
+## Pillars
+
+* **Human in the Loop**: Humans are good at ideas, agents are bad at assumptions. Keep humans in the loop for all planning and decision-making.
+* **Test Driven**: Never take an action without a way to measure its result.
+* **Adaptable**: Plans change. The auto-scrum team should adjust based on changes to the plan as it sequentially works.
+* **Plug-and-Play**: Auto-Scrum should slot into other parts of your existing software development workflow with minimal friction.
+
+
 
 ## Prerequisites
 
@@ -16,7 +21,6 @@ If BMAD is lawful and [GasTown](https://github.com/steveyegge/gastown) is chaoti
 - **Git** (the project must be a git repository)
 - No other dependencies, packages, or tooling required
 
----
 
 ## Installation
 
@@ -29,7 +33,6 @@ cp .auto-scrum/config.yml your-project/.auto-scrum/config.yml
 
 Then customize `.auto-scrum/config.yml` for your project.
 
----
 
 ## Getting Started
 
@@ -42,8 +45,6 @@ Then customize `.auto-scrum/config.yml` for your project.
 /as-sprint-plan             → produce Epic Breakdown + Sprint Status
 /as-pipeline <feature-name> → 🚀 autonomous execution begins
 ```
-
----
 
 ## Configuration
 
@@ -59,18 +60,17 @@ artifacts:
 
 agents:
   orchestrator:
-    model: claude-sonnet-4-5  # Model for pipeline orchestrator (Marcus)
+    model: claude-sonnet-4-5  # Model for pipeline orchestrator
   architect:
-    model: claude-sonnet-4-5  # Model for architect agent (Winston)
+    model: claude-sonnet-4-5  # Model for architect agent
   developer:
-    model: claude-sonnet-4-5  # Model for developer agent (Amelia)
+    model: claude-sonnet-4-5  # Model for developer agent
   reviewer:
     model: claude-sonnet-4-5  # Model for adversarial code reviewer
 
 git:
   commit_frequency: story   # task | story | epic | never
 ```
----
 
 ## Commands
 
@@ -88,11 +88,11 @@ git:
 | `/as-correct-course` | Orchestrator | None (auto-triggered) or Low (manual) | Sprint Change Proposal in `pipeline-report.md` |
 | `/as-tech-writer` | Tech Writer | Medium (describe ask) | Docs, diagrams |
 
----
 
 ## Pipeline Behavior
 
 The `/as-pipeline` command:
+
 1. **Readiness Check:** Validates required artifacts exist before starting.
 2. **Resume:** Detects `in-progress` or `review` stories and resumes from them.
 3. **Per-epic:** Writes a checkpoint file, compacts context, then processes each story.
@@ -102,7 +102,6 @@ The `/as-pipeline` command:
 7. **Max review cycles:** After 3 failed review cycles, orchestrator makes a judgment call and continues.
 8. **Escalates to human only for:** missing required artifact OR unresolvable git conflict.
 
----
 
 ## Artifact Directory Structure
 
@@ -133,8 +132,6 @@ The `/as-pipeline` command:
     source-tree.md
 ```
 
----
-
 ## Sprint Status Schema
 
 ```yaml
@@ -152,8 +149,6 @@ development_status:
   2-1-story-title: backlog
   epic-2-retrospective: optional
 ```
-
----
 
 ## Story File Template
 
