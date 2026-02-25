@@ -1,10 +1,12 @@
 ---
-description: Scaffold a new feature's artifact directory structure under .auto-scrum/features/{feature-name}/
-allowed-tools: [ReadFile, WriteFile, CreateDirectory, ListDirectory, FindFiles, RunTerminalCommand]
+name: as-new
+description: Scaffold a new auto-scrum feature artifact directory under .auto-scrum/features/{feature-name}/
 ---
-# /as-new — New Feature Scaffold
+# as-new — New Feature Scaffold
 
-You are initializing a new auto-scrum feature. The feature name is provided as the argument to this command (e.g., `/as-new user-authentication`).
+**Announce at start:** "I'm using the as-new skill to scaffold the feature directory."
+
+You are initializing a new auto-scrum feature. Ask the user for the feature name if not already provided (e.g., `user-authentication`).
 
 ## Step 1: Read Configuration
 Attempt to read `.auto-scrum/config.yml`.
@@ -21,7 +23,7 @@ Check if `{BASE}/features/{FEAT}/` already exists.
 - If it does not: continue.
 
 ## Step 3: Create Directory Structure
-Create the following directories (use CreateDirectory for each):
+Create the following directories:
 - `{BASE}/features/{FEAT}/planning/`
 - `{BASE}/features/{FEAT}/implementation/`
 - `{BASE}/features/{FEAT}/implementation/stories/`
@@ -48,7 +50,7 @@ Print the created directory tree:
     ├── checkpoints/
     └── retros/
 ```
-Print: `Next step: run /as-prd to create the Product Requirements Document.`
+Print: `Next step: run the as-prd skill to create the Product Requirements Document.`
 
 ## Config Template (Appendix)
 If config.yml needs to be created, use this content:
@@ -64,11 +66,11 @@ artifacts:
 
 agents:
   orchestrator:
-    model: claude-sonnet-4-5  # Model ID for the pipeline orchestrator (Marcus)
+    model: claude-sonnet-4-5  # Model ID for the pipeline orchestrator
   architect:
-    model: claude-sonnet-4-5  # Model ID for the architect agent (Winston)
+    model: claude-sonnet-4-5  # Model ID for the architect agent
   developer:
-    model: claude-sonnet-4-5  # Model ID for the developer agent (Amelia)
+    model: claude-sonnet-4-5  # Model ID for the developer agent
   reviewer:
     model: claude-sonnet-4-5  # Model ID for the adversarial code reviewer
 

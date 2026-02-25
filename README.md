@@ -1,6 +1,6 @@
 # auto-scrum
 
-Auto-Scrum is a collection of GitHub Copilot commands that automate the full software development lifecycle - from requirements through delivery. Humans drive all planning decisions. AI agents handle autonomous execution.
+Auto-Scrum is a collection of GitHub Copilot skills that automate the full software development lifecycle - from requirements through delivery. Humans drive all planning decisions. AI agents handle autonomous execution.
 
 Heavily inspired by [BMAD](https://github.com/bmad-code-org/BMAD-METHOD).
 
@@ -17,33 +17,44 @@ If BMAD is lawful and [GasTown](https://github.com/steveyegge/gastown) is chaoti
 
 ## Prerequisites
 
-- **GitHub Copilot** (with slash command / coding agent support)
+- **GitHub Copilot** (with coding agent support)
 - **Git** (the project must be a git repository)
 - No other dependencies, packages, or tooling required
 
 
 ## Installation
 
-Copy the command files into your project:
+### Global Install
+
+Copy the skill files into your `~/.copilot/skills/` directory:
 
 ```bash
-cp -r .github/copilot/commands/ your-project/.github/copilot/commands/
+cp -r .github/copilot/skills/as-*/ ~/.copilot/skills/
+```
+
+Invoke them by asking Copilot CLI to use a skill by name (e.g. *"use the as-prd skill"*) or via `/skills`. You may need to restart your terminal or Copilot CLI for them to show up.
+
+### Project Specific Install
+
+Copy the skill files into your project:
+
+```bash
+cp -r .github/copilot/skills/ your-project/.github/copilot/skills/
 cp .auto-scrum/config.yml your-project/.auto-scrum/config.yml
 ```
 
 Then customize `.auto-scrum/config.yml` for your project.
 
-
 ## Getting Started
 
 ```
-/as-new <feature-name>      → scaffold artifact directory
-/as-prd                     → write Product Requirements Document (human-in-the-loop)
-/as-ux-design               → optional: UX design doc for UI-heavy features
-/as-architect               → write Architecture Design Document
-/as-test-plan               → write Test Plan
-/as-sprint-plan             → produce Epic Breakdown + Sprint Status
-/as-pipeline <feature-name> → 🚀 autonomous execution begins
+as-new <feature-name>      → scaffold artifact directory
+as-prd                     → write Product Requirements Document (human-in-the-loop)
+as-ux-design               → optional: UX design doc for UI-heavy features
+as-architect               → write Architecture Design Document
+as-test-plan               → write Test Plan
+as-sprint-plan             → produce Epic Breakdown + Sprint Status
+as-pipeline <feature-name> → 🚀 autonomous execution begins
 ```
 
 ## Configuration
@@ -72,9 +83,9 @@ git:
   commit_frequency: story   # task | story | epic | never
 ```
 
-## Commands
+## Skills
 
-| Command | Agent | Human Involvement | Output |
+| Skill | Agent | Human Involvement | Output |
 |---------|-------|------------------|--------|
 | `/as-new <feature-name>` | — | None | Feature directory scaffold |
 | `/as-generate-project-context` | — | Low (review output) | `project-context.md` |
@@ -91,7 +102,7 @@ git:
 
 ## Pipeline Behavior
 
-The `/as-pipeline` command:
+The `/as-pipeline` skill:
 
 1. **Readiness Check:** Validates required artifacts exist before starting.
 2. **Resume:** Detects `in-progress` or `review` stories and resumes from them.
