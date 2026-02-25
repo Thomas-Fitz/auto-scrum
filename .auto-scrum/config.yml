@@ -6,15 +6,15 @@ project:
   user: developer           # Developer or team name
 
 artifacts:
-  base_dir: .auto-scrum     # Root directory for all auto-scrum artifacts (default: .auto-scrum)
+  base_dir: ../.auto-scrum     # Root directory for all auto-scrum artifacts (default: .auto-scrum)
 
 agents:
   orchestrator:
-    model: claude-sonnet-4-6  # Model ID for the pipeline orchestrator (Marcus)
+    model: claude-sonnet-4-6  # Model ID for the pipeline orchestrator
   architect:
-    model: claude-sonnet-4-6  # Model ID for the architect agent (Winston)
+    model: claude-sonnet-4-6  # Model ID for the architect agent
   developer:
-    model: claude-sonnet-4-6  # Model ID for the developer agent (Amelia)
+    model: claude-sonnet-4-6  # Model ID for the developer agent
   reviewer:
     model: claude-sonnet-4-6  # Model ID for the adversarial code reviewer
 
@@ -24,4 +24,4 @@ git:
   # story  = after each story is approved (recommended default)
   # epic   = after the last story in each epic is approved
   # never  = skip all auto-commits
-  commit_frequency: story
+  commit_frequency: never

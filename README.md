@@ -2,18 +2,14 @@
 
 Auto-Scrum is a collection of GitHub Copilot skills that automate the full software development lifecycle - from requirements through delivery. Humans drive all planning decisions. AI agents handle autonomous execution.
 
-Heavily inspired by [BMAD](https://github.com/bmad-code-org/BMAD-METHOD).
-
-If BMAD is lawful and [GasTown](https://github.com/steveyegge/gastown) is chaotic, Auto-Scrum aims to be neutral.
+If [BMAD](https://github.com/bmad-code-org/BMAD-METHOD) is lawful and [GasTown](https://github.com/steveyegge/gastown) is chaotic, Auto-Scrum aims to be neutral.
 
 ## Pillars
 
 * **Human in the Loop**: Humans are good at ideas, agents are bad at assumptions. Keep humans in the loop for all planning and decision-making.
 * **Test Driven**: Never take an action without a way to measure its result.
-* **Adaptable**: Plans change. The auto-scrum team should adjust based on changes to the plan as it sequentially works.
+* **Adaptable**: Plans change. The auto-scrum team should adjust after each task based on new information.
 * **Plug-and-Play**: Auto-Scrum should slot into other parts of your existing software development workflow with minimal friction.
-
-
 
 ## Prerequisites
 
@@ -204,3 +200,7 @@ so that {benefit}.
 ### File List
 ### Plan Deviations
 ```
+
+## Credits
+
+* This project is heavily inspired by the work done for [BMAD method](https://github.com/bmad-code-org/BMAD-METHOD)
