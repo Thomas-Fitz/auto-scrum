@@ -135,6 +135,5 @@ If changes requested: make them and repeat Steps 5–6.
 When approved:
 
 - Update the Status line to `**Status:** Approved`
-- Run `git add {PLAN}/prd.md`
 - Print: `✅ prd.md approved and saved to {PLAN}/prd.md`
 - Print: `Next step: run the as-architect skill (or as-ux-design first if this is a UI-heavy feature).`

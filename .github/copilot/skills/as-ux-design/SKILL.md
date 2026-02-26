@@ -57,5 +57,4 @@ Ask: "Does this UX design capture your vision? Reply 'approved' or describe chan
 If changes requested: make them and re-ask.
 When approved:
 - Update Status line to `**Status:** Approved`
-- Run `git add {PLAN}/ux-design.md`
 - Print: `✅ ux-design.md saved to {PLAN}/ux-design.md. Next step: run the as-architect skill.`

@@ -84,9 +84,7 @@ Note: Story statuses: `backlog` | `ready-for-dev` | `in-progress` | `review` | `
 Epic statuses: `backlog` | `in-progress` | `done`
 Retro statuses: `optional` | `done`
 
-## Step 6: Git tracking and summary
-Run: `git add {IMPL}/epic-breakdown.md {IMPL}/sprint-status.yaml`
-
+## Step 6: Summary
 Print summary: number of epics, total stories, list of all story keys.
 
 Ask: "Does this sprint plan look right? Reply 'approved' to proceed or describe changes."

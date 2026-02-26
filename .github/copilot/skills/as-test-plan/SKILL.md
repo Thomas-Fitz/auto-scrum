@@ -78,6 +78,5 @@ _Every AC from prd.md must have ≥1 row in this table. Mark "Yes" if already co
 Count the rows in the Coverage Matrix. Verify: rows ≥ TOTAL_ACS.
 If any AC has no coverage (existing or planned): add a row for it before saving.
 
-## Step 6: Git tracking and summary
-Run `git add {PLAN}/test-plan.md`.
+## Step 6: Summary
 Print: `✅ test-plan.md saved. AC coverage: {TOTAL_ACS} ACs → {matrix_rows} test cases ({existing_covered} existing, {new_planned} new). Next step: run the as-sprint-plan skill.`

@@ -192,7 +192,6 @@ For any failures: present the specific issue and ask the human whether to correc
 3. If changes requested: make them, re-run Step 6 validation, then re-ask.
 4. When approved:
    - Update Status in design.md to `**Status:** Approved`
-   - Run `git add {PLAN}/design.md`
    - Print: `✅ design.md saved to {PLAN}/design.md. Next step: run the as-test-plan skill.`
 
 > **YOLO mode:** Step 7 is the only mandatory pause. Present the validation report and the completed design.md, then wait for approval.

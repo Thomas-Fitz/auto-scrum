@@ -58,8 +58,6 @@ Append to `{IMPL}/pipeline-report.md` (create with a header if missing):
 **Rationale:** {why this change keeps the plan accurate}
 ```
 
-## Step 7: Git tracking
-Run: `git add {IMPL}/pipeline-report.md` and any updated planning files.
-
+## Step 7: Complete
 If **manual mode**: print `✅ Course correction applied. Affected stories reset to backlog. See pipeline-report.md for details.`
 If **autonomous mode**: return a one-line summary to the calling orchestrator (no user-facing output).

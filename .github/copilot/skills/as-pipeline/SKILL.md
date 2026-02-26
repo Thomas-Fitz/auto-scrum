@@ -41,6 +41,8 @@ Set:
 - `PLAN = {BASE}/features/{FEAT}/planning/`
 - `IMPL = {BASE}/features/{FEAT}/implementation/`
 
+Ensure `.auto-scrum/` is listed in the project's `.gitignore`: if `.gitignore` does not exist or does not contain `.auto-scrum/`, append the line `.auto-scrum/` to it. This prevents auto-scrum artifacts from being accidentally committed.
+
 ## Step 2: Implementation Readiness Check
 Verify all of the following exist:
 - `{IMPL}/sprint-status.yaml`
@@ -105,9 +107,8 @@ Before the first story of each epic:
 {List all story keys for this epic from epic-breakdown.md}
 ```
 
-2. Run `git add {IMPL}/checkpoints/checkpoint-epic-{N}.md`
-3. Print `[COMPACTING CONTEXT — re-reading checkpoint for Epic {N}]`
-4. Re-read: the checkpoint file, `sprint-status.yaml`, the current epic section from `epic-breakdown.md`, and relevant sections of `design.md`.
+2. Print `[COMPACTING CONTEXT — re-reading checkpoint for Epic {N}]`
+3. Re-read: the checkpoint file, `sprint-status.yaml`, the current epic section from `epic-breakdown.md`, and relevant sections of `design.md`.
 
 ### 5b: Previous Epic Learnings (Epic N > 1)
 Find `{IMPL}/retros/epic-{N-1}-retro-*.md`. If found, extract the SMART action items from its "SMART Action Items for Next Epic" section. Note them — they will be included in the first story of this epic.
@@ -186,7 +187,6 @@ All other stories: paste relevant entries from learning-log.md, or "No relevant 
    - [ ] A developer could implement without asking questions
 
 5. Update sprint-status.yaml: `{story-key}: ready-for-dev`
-6. Run `git add {IMPL}/stories/{story-key}.md {IMPL}/sprint-status.yaml`
 
 #### Step 5c-ii: Dev Agent Dispatch
 > ⛔ **ORCHESTRATOR RULE:** Do NOT implement this story yourself. You MUST dispatch a dev sub-agent via the Task tool. Do not proceed to the next story until this sub-agent returns and the story status is `review`.
@@ -223,7 +223,12 @@ After the Task completes: read the story file. Verify story status is `review` i
 
 #### Step 5c-iii: Git Commit
 Based on `git.commit_frequency`:
-- `task` or `story`: Run `git commit -m "[auto-scrum] {story-key}: {story-title}"`
+- `task` or `story`:
+  1. Run `git add -A -- ':!.auto-scrum'` to stage implementation changes, excluding all `.auto-scrum` artifacts.
+  2. Run `git diff --cached --quiet` to check if anything is staged. If nothing is staged, skip the commit.
+  3. Read the "Completion Notes" from the Dev Agent Record section of `{IMPL}/stories/{story-key}.md`.
+  4. Compose a concise commit message (≤72 chars) summarizing what was implemented. Use plain language based on the Completion Notes. No prefixes, no story keys, no boilerplate.
+  5. Run `git commit -m "{message}"`.
 - `epic`: Skip (will commit after all stories in the epic are done — see Step 5d)
 - `never`: Skip entirely
 
@@ -292,7 +297,6 @@ After story is `done`: append to `{IMPL}/learning-log.md` (create if missing):
 **Architectural Insights:** {key decisions made during implementation}
 **Deviations from Plan:** {what changed vs. original design.md}
 ```
-Run `git add {IMPL}/learning-log.md`
 
 #### Step 5c-vi: Correct Course Evaluation
 Read the Dev Agent Record: Plan Deviations section from the completed story file.
@@ -309,7 +313,10 @@ End of per-story loop.
 
 ### 5d: Epic Git Commit
 If `git.commit_frequency` == `epic`:
-Run: `git commit -m "[auto-scrum] epic-{N} complete: {epic-title}"`
+1. Run `git add -A -- ':!.auto-scrum'` to stage all implementation changes from this epic.
+2. Run `git diff --cached --quiet` to check if anything is staged. If nothing is staged, skip the commit.
+3. Compose a concise commit message summarizing what the epic delivered — based on the epic goal from `epic-breakdown.md` and the completed stories. No prefixes, no epic keys, no boilerplate.
+4. Run `git commit -m "{message}"`.
 
 ### 5e: Epic Retrospective
 Update sprint-status.yaml: `epic-{N}: in-progress`
@@ -340,18 +347,14 @@ Task tool:
 
     ## SMART Action Items for Next Epic
     [Specific, Measurable, Achievable, Relevant, Time-bound actions for Epic {N+1} stories]
-
-    Run: git add {IMPL}/retros/epic-{N}-retro-{YYYY-MM-DD}.md
 ```
 
 After retro Task completes:
 Update sprint-status.yaml: `epic-{N}: done`, `epic-{N}-retrospective: done`
-Run `git add {IMPL}/sprint-status.yaml`
 
 End of per-epic loop.
 
 ## Step 6: Pipeline Complete
-Run `git add {IMPL}/pipeline-report.md`
 Print final summary:
 ```
 🎉 Pipeline complete for feature: {FEAT}

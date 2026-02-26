@@ -85,5 +85,3 @@ Read or create `{STANDARDS}`.
 Ask: "What documentation standard or preference would you like to add or change?"
 
 Add the new rule to a "## User-Specified Rules" section at the top of the standards file. Remove any contradicting existing rules. Report what was changed.
-
-Run `git add {STANDARDS}`.
