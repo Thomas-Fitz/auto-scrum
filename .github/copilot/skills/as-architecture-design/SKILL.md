@@ -1,8 +1,8 @@
 ---
-name: as-architect
+name: as-architecture-design
 description: Activate Architect to produce the architecture design document referencing the PRD and optional UX design
 ---
-# as-architect — Architecture Design Document
+# as-architecture-design — Architecture Design Document
 
 **Announce at start:** "I'm using the as-architect skill. I'll be acting as your System Architect."
 
@@ -98,7 +98,7 @@ For each decision category below, present the **relevant existing codebase patte
 
 ## Step 5 — Write design.md
 
-Write `{PLAN}/design.md` using the 9-section template below. In YOLO mode, narrate what you're writing as you go.
+**Output file must be named `design.md`** (not architecture.md). Write `{PLAN}/design.md` using the 9-section template below. In YOLO mode, narrate what you're writing as you go.
 
 > Always include all 9 sections. Mark N/A for sections with no content — do not omit sections.
 

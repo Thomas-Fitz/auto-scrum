@@ -44,13 +44,13 @@ Then customize `.auto-scrum/config.yml` for your project.
 ## Getting Started
 
 ```
-as-new <feature-name>      → scaffold artifact directory
-as-prd                     → write Product Requirements Document (human-in-the-loop)
-as-ux-design               → optional: UX design doc for UI-heavy features
-as-architect               → write Architecture Design Document
-as-test-plan               → write Test Plan
-as-sprint-plan             → produce Epic Breakdown + Sprint Status
-as-pipeline <feature-name> → 🚀 autonomous execution begins
+as-new <feature-name>                    → scaffold artifact directory
+as-prd <feature-name>                     → write Product Requirements Document
+as-ux-design <feature-name>           → optional: UX design doc for UI-heavy features
+as-architect <feature-name>             → write Architecture Design Document
+as-test-plan <feature-name>            → write Test Plan
+as-sprint-plan <feature-name>         → produce Epic Breakdown + Sprint Status
+as-pipeline <feature-name>              → 🚀 autonomous execution begins
 ```
 
 ## Configuration
@@ -82,19 +82,18 @@ git:
 ## Skills
 
 | Skill | Agent | Human Involvement | Output |
-|---------|-------|------------------|--------|
+| --------- | ------- | ------------------ | -------- |
 | `/as-new <feature-name>` | — | None | Feature directory scaffold |
 | `/as-generate-project-context` | — | Low (review output) | `project-context.md` |
 | `/as-document-project` | — | Low (review output) | Architecture + source tree docs |
 | `/as-prd` | Product Manager | High (Q&A + approval) | `prd.md` |
 | `/as-ux-design` | UX Designer | High (Q&A + approval) | `ux-design.md` |
-| `/as-architect` | Architect | Medium (clarifications + approval) | `design.md` |
+| `/as-architecture-design` | Architect | High (Q&A + approval) | `design.md` |
 | `/as-test-plan` | QA | Medium (review + approval) | `test-plan.md` |
 | `/as-sprint-plan` | Scrum Master | Medium (review + approval) | `epic-breakdown.md`, `sprint-status.yaml` |
 | `/as-pipeline <feature-name>` | Orchestrator | None (unless hard blocker) | All implementation artifacts |
 | `/as-correct-course` | Orchestrator | None (auto-triggered) or Low (manual) | Sprint Change Proposal in `pipeline-report.md` |
 | `/as-tech-writer` | Tech Writer | Medium (describe ask) | Docs, diagrams |
-
 
 ## Pipeline Behavior
 

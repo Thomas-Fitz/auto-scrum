@@ -21,7 +21,7 @@ agents:
 git:
   # When the dev agent commits during /as-pipeline execution:
   # task   = after every task/subtask
-  # story  = after each story is approved (recommended default)
+  # story  = after each story is approved
   # epic   = after the last story in each epic is approved
   # never  = skip all auto-commits
   commit_frequency: never

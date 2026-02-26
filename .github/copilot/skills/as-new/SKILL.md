@@ -30,16 +30,7 @@ Create the following directories:
 - `{BASE}/features/{FEAT}/implementation/checkpoints/`
 - `{BASE}/features/{FEAT}/implementation/retros/`
 
-## Step 4: Create placeholder files
-Create these files with a one-line placeholder comment:
-- `{BASE}/features/{FEAT}/planning/.gitkeep` — content: `# planning artifacts go here`
-- `{BASE}/features/{FEAT}/implementation/.gitkeep` — content: `# implementation artifacts go here`
-
-## Step 5: Git tracking
-Run: `git add {BASE}/features/{FEAT}/`
-If git is not available or not a repo, print a warning but do not halt.
-
-## Step 6: Print summary
+## Step 4: Print summary
 Print the created directory tree:
 ```
 ✅ Feature '{FEAT}' initialized:
@@ -75,6 +66,6 @@ agents:
     model: claude-sonnet-4-5  # Model ID for the adversarial code reviewer
 
 git:
-  # task | story | epic | never (default: story)
-  commit_frequency: story
+  # task | story | epic | never (default: never)
+  commit_frequency: never
 ```
