@@ -227,7 +227,7 @@ Based on `git.commit_frequency`:
   1. Run `git add -A -- ':!.auto-scrum'` to stage implementation changes, excluding all `.auto-scrum` artifacts.
   2. Run `git diff --cached --quiet` to check if anything is staged. If nothing is staged, skip the commit.
   3. Read the "Completion Notes" from the Dev Agent Record section of `{IMPL}/stories/{story-key}.md`.
-  4. Compose a concise commit message (≤72 chars) summarizing what was implemented. Use plain language based on the Completion Notes. No prefixes, no story keys, no boilerplate.
+  4. Compose a concise commit message (≤72 chars) summarizing what was implemented. Use plain language based on the Completion Notes. No prefixes, no story keys, no boilerplate. Do NOT add any `Co-authored-by` or other trailer lines — the commit author must be exclusively the human git user.
   5. Run `git commit -m "{message}"`.
 - `epic`: Skip (will commit after all stories in the epic are done — see Step 5d)
 - `never`: Skip entirely
@@ -252,10 +252,11 @@ Initialize `review_cycles = 0`.
       Sprint status: {IMPL}/sprint-status.yaml
 
       REQUIRED STEPS — execute all of them:
-      1. Read EVERY file listed in the story's File List section.
+      1. Read the story file first. If no "## Review Cycle N Findings" sections exist yet (this is cycle 1): read EVERY file listed in the File List section. If prior cycle findings exist (cycle 2+): read ONLY files from the File List that were modified during the previous fix round (use git diff or file timestamps); do NOT re-report issues already marked fixed in previous cycle findings.
       2. For each Acceptance Criterion in the story, determine: IMPLEMENTED / PARTIAL / MISSING.
-      3. Find a MINIMUM of 3 issues across these dimensions: AC coverage, task completion, code quality, security vulnerabilities, architecture compliance (compare to design.md), test quality (are tests meaningful or just smoke?).
+      3. Find ALL real issues across these dimensions: AC coverage, task completion, code quality, security vulnerabilities, architecture compliance (compare to design.md), test quality (are tests meaningful or just smoke?). Do not manufacture issues — only report genuine problems.
       4. Classify each issue: HIGH (blocks correctness or security) / MEDIUM (significant gap) / LOW (polish/improvement).
+      4b. Fast-path: if ALL ACs are IMPLEMENTED and ALL classified issues are LOW severity — skip steps 5 and 6. Go directly to step 7, document all LOW findings with "no fix needed", then apply rule 8a (✅ APPROVED). LOW issues alone are never grounds for rejection.
       5. Run tests ONLY for files/functionality that changed to verify fixes and validate Acceptance Criteria.
       6. FIX ALL HIGH and MEDIUM issues directly in the source files.
       7. Append your findings to the story file under: ## Review Cycle {review_cycles} Findings
@@ -315,7 +316,7 @@ End of per-story loop.
 If `git.commit_frequency` == `epic`:
 1. Run `git add -A -- ':!.auto-scrum'` to stage all implementation changes from this epic.
 2. Run `git diff --cached --quiet` to check if anything is staged. If nothing is staged, skip the commit.
-3. Compose a concise commit message summarizing what the epic delivered — based on the epic goal from `epic-breakdown.md` and the completed stories. No prefixes, no epic keys, no boilerplate.
+3. Compose a concise commit message summarizing what the epic delivered — based on the epic goal from `epic-breakdown.md` and the completed stories. No prefixes, no epic keys, no boilerplate. Do NOT add any `Co-authored-by` or other trailer lines — the commit author must be exclusively the human git user.
 4. Run `git commit -m "{message}"`.
 
 ### 5e: Epic Retrospective

@@ -44,13 +44,13 @@ Then customize `.auto-scrum/config.yml` for your project.
 ## Getting Started
 
 ```
-as-new <feature-name>                    → scaffold artifact directory
-as-prd <feature-name>                     → write Product Requirements Document
-as-ux-design <feature-name>           → optional: UX design doc for UI-heavy features
-as-architect <feature-name>             → write Architecture Design Document
-as-test-plan <feature-name>            → write Test Plan
-as-sprint-plan <feature-name>         → produce Epic Breakdown + Sprint Status
-as-pipeline <feature-name>              → 🚀 autonomous execution begins
+as-new <feature-name>                   → scaffold artifact directory
+as-prd <feature-name>                   → write Product Requirements Document
+as-ux-design <feature-name>                   → optional: UX design doc for UI-heavy features
+as-architect <feature-name>                   → write Architecture Design Document
+as-test-plan <feature-name>                   → write Test Plan
+as-sprint-plan <feature-name>                   → produce Epic Breakdown + Sprint Status
+as-pipeline <feature-name>                   → 🚀 autonomous execution begins
 ```
 
 ## Configuration
