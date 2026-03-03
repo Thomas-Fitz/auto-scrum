@@ -57,61 +57,9 @@ Before writing anything, examine the codebase:
 
 ## Step 4: Write prd.md
 
-Write `{PLAN}/prd.md` (create the directory if it doesn't exist):
+Read the template at `.github/copilot/skills/as-prd/templates/prd.md`. Write `{PLAN}/prd.md` (create the directory if it doesn't exist) using that template, substituting `{feature-name}` and `{PLAN}` with their current values.
 
-```markdown
-# PRD: {feature-name}
-
-**Status:** Draft — Pending Approval
-**Feature Directory:** {PLAN}
-
----
-
-The PRD file must be saved in the specified location for the next steps to work. It must be named prd.md. This is a firm requirement.
-
-## 1. Overview
-[2–3 sentence summary of what this feature is and why it matters]
-
-## 2. Problem Statement
-[What problem, who has it, why it matters now]
-
-## 3. Goals & Success Metrics
-| Goal | Metric | Target |
-|------|--------|--------|
-
-## 4. Target Users
-[Primary and secondary users, technical level, context]
-
-## 5. User Stories
-- As a [role], I want [action], so that [benefit].
-[minimum 5 stories covering the primary use cases]
-
-Include edge cases and error scenarios the implementation must handle.
-
-## 6. Functional Requirements
-### FR-1: [Name]
-[Description]
-- **Acceptance Criteria:**
-  - AC-1: [Specific, testable criterion — can be answered yes/no]
-[repeat for all FRs]
-
-## 7. Non-Functional Requirements
-- **Performance:** [specific target]
-- **Security:** [specific requirement]
-- **Reliability:** [specific requirement]
-- **Accessibility:** [if applicable]
-
-## 8. Scope
-### In Scope (v1)
-### Out of Scope (v1)
-
-## 9. Open Questions
-| Question | Owner | Due |
-|----------|-------|-----|
-
-## 10. Codebase Findings
-[Patterns found, constraints discovered, missed requirements surfaced from codebase examination]
-```
+> ⚠️ This file must be named `prd.md` at exactly `{PLAN}/prd.md` — the pipeline depends on this path.
 
 ## Step 5: Automated Validation
 

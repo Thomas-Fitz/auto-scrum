@@ -46,17 +46,7 @@ For each story invalidated by the deviation: set its status back to `backlog`.
 Add a YAML comment above it: `# ⚠️ Invalidated by Correct Course {date}: {summary}`
 
 ## Step 6: Write Sprint Change Proposal to pipeline-report.md
-Append to `{IMPL}/pipeline-report.md` (create with a header if missing):
-
-```markdown
-## Sprint Change Proposal — {date}
-**Trigger:** {deviation description}
-**Impact:** {which FRs/stories/design sections affected}
-**Changes Made:**
-- {list each artifact changed and what was changed}
-**Stories Reset to Backlog:** {list, or "none"}
-**Rationale:** {why this change keeps the plan accurate}
-```
+Read the template at `.github/copilot/skills/as-correct-course/templates/pipeline-report-entry.md`. Append to `{IMPL}/pipeline-report.md` (create with a header if missing), substituting all `{placeholder}` values with current runtime values.
 
 ## Step 7: Complete
 If **manual mode**: print `✅ Course correction applied. Affected stories reset to backlog. See pipeline-report.md for details.`

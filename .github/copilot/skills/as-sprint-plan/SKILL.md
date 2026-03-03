@@ -35,26 +35,7 @@ Analyze the PRD functional requirements and design to identify epics and stories
 
 ## Step 3: Write epic-breakdown.md
 Create `{IMPL}/` directory if it doesn't exist.
-Write `{IMPL}/epic-breakdown.md`:
-
-```markdown
-# Epic Breakdown: {feature-name}
-
-**References:** [prd.md](../planning/prd.md), [design.md](../planning/design.md), [test-plan.md](../planning/test-plan.md)
-
----
-
-## Epic 1: {Epic Name}
-**Goal:** [What this epic delivers as a working increment]
-**PRD FRs covered:** FR-X, FR-Y
-
-### Stories
-| Story Key | Title | PRD FRs | AC IDs | Design Refs | Test Cases | Complexity |
-|-----------|-------|---------|--------|-------------|------------|------------|
-| 1-1-{kebab-title} | ... | FR-X | FR-X-AC1, FR-X-AC2 | §{Section} or Group {X} | TC-N, TC-M | S/M/L |
-
-[repeat for each epic]
-```
+Read the template at `.github/copilot/skills/as-sprint-plan/templates/epic-breakdown.md`. Write `{IMPL}/epic-breakdown.md` using that structure, substituting `{feature-name}` and filling in all epics and stories from Step 2.
 
 ## Step 4: Idempotency Check for sprint-status.yaml
 Check if `{IMPL}/sprint-status.yaml` already exists.
@@ -62,27 +43,9 @@ Check if `{IMPL}/sprint-status.yaml` already exists.
 - If it **does not** exist: create fresh.
 
 ## Step 5: Write sprint-status.yaml
-Write `{IMPL}/sprint-status.yaml`:
+Read the template at `.github/copilot/skills/as-sprint-plan/templates/sprint-status.yaml` for the schema. Write `{IMPL}/sprint-status.yaml` using that structure, substituting all `{placeholder}` values with actual epic and story keys from Step 2.
 
-```yaml
-generated: {YYYY-MM-DD HH:MM}
-project: {project.name from config or 'my-project'}
-feature: {FEAT}
-artifacts_dir: {relative path to implementation/ from project root}
-
-development_status:
-  epic-1: backlog
-  1-1-{story-title}: backlog
-  1-2-{story-title}: backlog
-  epic-1-retrospective: optional
-  epic-2: backlog
-  2-1-{story-title}: backlog
-  epic-2-retrospective: optional
-```
-
-Note: Story statuses: `backlog` | `ready-for-dev` | `in-progress` | `review` | `done`
-Epic statuses: `backlog` | `in-progress` | `done`
-Retro statuses: `optional` | `done`
+Status values — Story: `backlog` | `ready-for-dev` | `in-progress` | `review` | `done` / Epic: `backlog` | `in-progress` | `done` / Retro: `optional` | `done`
 
 ## Step 6: Summary
 Print summary: number of epics, total stories, list of all story keys.

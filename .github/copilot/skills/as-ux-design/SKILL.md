@@ -28,28 +28,7 @@ Ask these questions **one at a time** (wait for each answer):
 5. "What does the error/empty/loading state look like for each key view?"
 
 ## Step 3: Write ux-design.md
-Write `{PLAN}/ux-design.md` (create directory if needed):
-
-```markdown
-# UX Design: {feature-name}
-
-**References:** [prd.md](./prd.md)
-**Status:** Draft — Pending Approval
-
----
-
-## 1. User Journeys
-[Step-by-step user flows for primary and secondary scenarios. Include happy path and key error paths. Use numbered steps for clarity.]
-
-## 2. Interaction Patterns
-[How users interact with each screen/component. Include input behaviors, validation feedback, loading states, empty states, error recovery.]
-
-## 3. Component Strategy
-[What UI components are needed. Reuse vs. new. Layout approach. Reference any existing design system components.]
-
-## 4. Visual & Accessibility Guidelines
-[Color, typography, spacing constraints. WCAG level target. Keyboard navigation requirements. Screen reader considerations.]
-```
+Read the template at `.github/copilot/skills/as-ux-design/templates/ux-design.md`. Write `{PLAN}/ux-design.md` (create directory if needed) using that template, substituting `{feature-name}` and filling in all sections from the Q&A above.
 
 ## Step 4: Approval
 Ask: "Does this UX design capture your vision? Reply 'approved' or describe changes."

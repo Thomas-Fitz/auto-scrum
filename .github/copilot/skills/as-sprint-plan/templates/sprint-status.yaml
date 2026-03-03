@@ -1,0 +1,17 @@
+generated: {YYYY-MM-DD HH:MM}
+project: {project.name from config or 'my-project'}
+feature: {FEAT}
+artifacts_dir: {relative path to implementation/ from project root}
+
+development_status:
+  epic-1: backlog
+  1-1-{story-title}: backlog
+  1-2-{story-title}: backlog
+  epic-1-retrospective: optional
+  epic-2: backlog
+  2-1-{story-title}: backlog
+  epic-2-retrospective: optional
+
+# Story statuses: backlog | ready-for-dev | in-progress | review | done
+# Epic statuses:  backlog | in-progress | done
+# Retro statuses: optional | done
