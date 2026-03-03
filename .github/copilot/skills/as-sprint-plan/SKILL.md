@@ -13,6 +13,9 @@ Ask: "What feature are we sprint-planning?"
 Set `FEAT={feature-name}`, `BASE={artifacts.base_dir from config or .auto-scrum}`, `PLAN={BASE}/features/{FEAT}/planning/`, `IMPL={BASE}/features/{FEAT}/implementation/`.
 
 Read `.auto-scrum/config.yml` (warn if missing, use `.auto-scrum` default).
+Set `SKILLS_DIR`:
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 Read `{PLAN}/prd.md` — halt if missing: "❌ prd.md not found. Run the as-prd skill first."
 Read `{PLAN}/design.md` — halt if missing: "❌ design.md not found. Run the as-architect skill first."
 Read `{PLAN}/test-plan.md` — halt if missing: "❌ test-plan.md not found. Run the as-test-plan skill first."
@@ -35,7 +38,7 @@ Analyze the PRD functional requirements and design to identify epics and stories
 
 ## Step 3: Write epic-breakdown.md
 Create `{IMPL}/` directory if it doesn't exist.
-Read the template at `.github/copilot/skills/as-sprint-plan/templates/epic-breakdown.md`. Write `{IMPL}/epic-breakdown.md` using that structure, substituting `{feature-name}` and filling in all epics and stories from Step 2.
+Read the template at `{SKILLS_DIR}/as-sprint-plan/templates/epic-breakdown.md`. Write `{IMPL}/epic-breakdown.md` using that structure, substituting `{feature-name}` and filling in all epics and stories from Step 2.
 
 ## Step 4: Idempotency Check for sprint-status.yaml
 Check if `{IMPL}/sprint-status.yaml` already exists.
@@ -43,7 +46,7 @@ Check if `{IMPL}/sprint-status.yaml` already exists.
 - If it **does not** exist: create fresh.
 
 ## Step 5: Write sprint-status.yaml
-Read the template at `.github/copilot/skills/as-sprint-plan/templates/sprint-status.yaml` for the schema. Write `{IMPL}/sprint-status.yaml` using that structure, substituting all `{placeholder}` values with actual epic and story keys from Step 2.
+Read the template at `{SKILLS_DIR}/as-sprint-plan/templates/sprint-status.yaml` for the schema. Write `{IMPL}/sprint-status.yaml` using that structure, substituting all `{placeholder}` values with actual epic and story keys from Step 2.
 
 Status values — Story: `backlog` | `ready-for-dev` | `in-progress` | `review` | `done` / Epic: `backlog` | `in-progress` | `done` / Retro: `optional` | `done`
 

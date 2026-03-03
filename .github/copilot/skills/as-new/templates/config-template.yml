@@ -24,3 +24,11 @@ pipeline:
   # Maximum dev/review loop iterations per story before the orchestrator
   # makes a judgment call and moves on.
   max_review_cycles: 3
+
+auto_scrum:
+  install_mode: project         # 'project' | 'global'
+                                # project = skills are at .github/copilot/skills/
+                                # global  = skills are at {global_skills_dir}
+  global_skills_dir: ~/.copilot/skills  # only used when install_mode: global
+                                         # change this if you installed skills to a custom path
+                                         # tilde (~) is expanded to the user's home directory

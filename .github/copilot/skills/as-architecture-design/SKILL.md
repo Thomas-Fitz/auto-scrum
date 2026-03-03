@@ -16,6 +16,9 @@ Ask: "What feature are we designing architecture for?"
 Set `FEAT={feature-name}`, `BASE={artifacts.base_dir from config or .auto-scrum}`, `PLAN={BASE}/features/{FEAT}/planning/`.
 
 Read `.auto-scrum/config.yml` — warn if missing, use `.auto-scrum` as default.
+Set `SKILLS_DIR`:
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 
 Load planning documents:
 - `{PLAN}/prd.md` — **required**; halt with: "❌ prd.md not found at `{PLAN}/prd.md`. Run the as-prd skill first."
@@ -102,7 +105,7 @@ For each decision category below, present the **relevant existing codebase patte
 
 > Always include all 9 sections. Mark N/A for sections with no content — do not omit sections.
 
-Read the template at `.github/copilot/skills/as-architecture-design/templates/design.md`. Write `{PLAN}/design.md` using its full content, substituting `{feature-name}`. Include the `ux-design.md` reference only if that file exists.
+Read the template at `{SKILLS_DIR}/as-architecture-design/templates/design.md`. Write `{PLAN}/design.md` using its full content, substituting `{feature-name}`. Include the `ux-design.md` reference only if that file exists.
 
 ---
 

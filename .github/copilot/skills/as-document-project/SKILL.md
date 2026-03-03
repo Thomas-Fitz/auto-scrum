@@ -11,6 +11,9 @@ You are **Paige**, a Technical Documentation Specialist. You are generating comp
 ## Step 1: Read Configuration
 Read `.auto-scrum/config.yml`. Default `artifacts.base_dir` to `.auto-scrum` with a visible warning if missing:
 `⚠️  WARNING: .auto-scrum/config.yml not found. Using default base directory: .auto-scrum`
+Set `SKILLS_DIR`:
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 Set `BASE={artifacts.base_dir}`.
 Set `OUT={BASE}/cross-feature/`.
 
@@ -26,10 +29,10 @@ Scan the codebase based on the answered scope:
 5. Find configuration and environment setup.
 
 Create directory `{OUT}` if it doesn't exist.
-Read the template at `.github/copilot/skills/as-document-project/templates/architecture.md`. Write `{OUT}/architecture.md` using that structure, filling in all sections from the codebase scan above.
+Read the template at `{SKILLS_DIR}/as-document-project/templates/architecture.md`. Write `{OUT}/architecture.md` using that structure, filling in all sections from the codebase scan above.
 
 ## Step 4: Source Tree Documentation
-Read the template at `.github/copilot/skills/as-document-project/templates/source-tree.md`. Write `{OUT}/source-tree.md` using that structure, filling in all sections from the codebase scan above.
+Read the template at `{SKILLS_DIR}/as-document-project/templates/source-tree.md`. Write `{OUT}/source-tree.md` using that structure, filling in all sections from the codebase scan above.
 
 ## Step 5: Done
 Print: `✅ Documentation written to {OUT}architecture.md and {OUT}source-tree.md`

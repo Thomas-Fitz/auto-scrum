@@ -13,6 +13,9 @@ Ask: "What feature are we designing UX for?"
 Set `FEAT={feature-name}`, `BASE={artifacts.base_dir from config or .auto-scrum}`, `PLAN={BASE}/features/{FEAT}/planning/`.
 
 Read `.auto-scrum/config.yml` (warn if missing, use `.auto-scrum` default).
+Set `SKILLS_DIR`:
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 Read `{PLAN}/prd.md` — if it doesn't exist, halt with: "❌ PRD not found at {PLAN}/prd.md. Run the as-prd skill first."
 
 Check PRD Status line:
@@ -28,7 +31,7 @@ Ask these questions **one at a time** (wait for each answer):
 5. "What does the error/empty/loading state look like for each key view?"
 
 ## Step 3: Write ux-design.md
-Read the template at `.github/copilot/skills/as-ux-design/templates/ux-design.md`. Write `{PLAN}/ux-design.md` (create directory if needed) using that template, substituting `{feature-name}` and filling in all sections from the Q&A above.
+Read the template at `{SKILLS_DIR}/as-ux-design/templates/ux-design.md`. Write `{PLAN}/ux-design.md` (create directory if needed) using that template, substituting `{feature-name}` and filling in all sections from the Q&A above.
 
 ## Step 4: Approval
 Ask: "Does this UX design capture your vision? Reply 'approved' or describe changes."

@@ -74,13 +74,16 @@ Print: `📍 Resuming from story: {story-key}` OR `🚀 Starting pipeline from f
 ## Step 4: Read Config for Git Behavior
 Read `git.commit_frequency` from config. Default to `story` if not set.
 Read `pipeline.max_review_cycles` from config. Default to `3` if not set. Store as `MAX_REVIEW_CYCLES`.
+Set `SKILLS_DIR`:
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 
 ## Step 5: Per-Epic Loop
 For each epic in `sprint-status.yaml` order where epic status != `done`:
 
 ### 5a: Context Compaction
 Before the first story of each epic:
-1. Read the checkpoint template at `.github/copilot/skills/as-pipeline/templates/checkpoint.md`. Write `{IMPL}/checkpoints/checkpoint-epic-{N}.md` using that template, substituting all `{placeholder}` values with current runtime values.
+1. Read the checkpoint template at `{SKILLS_DIR}/as-pipeline/templates/checkpoint.md`. Write `{IMPL}/checkpoints/checkpoint-epic-{N}.md` using that template, substituting all `{placeholder}` values with current runtime values.
 
 2. Print `[COMPACTING CONTEXT — re-reading checkpoint for Epic {N}]`
 3. Re-read: the checkpoint file, `sprint-status.yaml`, the current epic section from `epic-breakdown.md`, and relevant sections of `design.md`.
@@ -103,7 +106,7 @@ For each story in this epic (in sprint-status.yaml order, status in [`backlog`, 
    - From `{PLAN}/test-plan.md`: copy the full row/description for each TC-* ID
    - From `{PLAN}/prd.md`: copy the exact acceptance criterion text for each AC ID
    This extracted content is what you will embed directly in the story file — do not leave vague pointers like "see design.md §3"; paste the substance inline.
-4. Read the story template at `.github/copilot/skills/as-pipeline/templates/story-template.md`. Write `{IMPL}/stories/{story-key}.md` using that template, populating all fields with the content extracted in steps 1–3 above.
+4. Read the story template at `{SKILLS_DIR}/as-pipeline/templates/story-template.md`. Write `{IMPL}/stories/{story-key}.md` using that template, populating all fields with the content extracted in steps 1–3 above.
 
 5. Run story quality checklist — if ANY fail, rewrite the story before continuing:
    - [ ] Every AC has ≥1 task
@@ -124,7 +127,7 @@ Dispatch a dev sub-agent using the **Task tool**:
 Task tool:
   agent_type: general-purpose
   prompt: |
-    [Read `.github/copilot/skills/as-pipeline/prompts/dev-agent.md` and use its full contents as this prompt,
+    [Read `{SKILLS_DIR}/as-pipeline/prompts/dev-agent.md` and use its full contents as this prompt,
     substituting {IMPL}, {BASE}, {PLAN}, and {story-key} with their current values.]
 ```
 
@@ -155,7 +158,7 @@ Initialize `review_cycles = 0`.
   Task tool:
     agent_type: general-purpose
     prompt: |
-      [Read `.github/copilot/skills/as-pipeline/prompts/reviewer-agent.md` and use its full contents as this prompt,
+      [Read `{SKILLS_DIR}/as-pipeline/prompts/reviewer-agent.md` and use its full contents as this prompt,
       substituting {IMPL}, {story-key}, {review_cycles}, and {PLAN} with their current values.]
   ```
 
@@ -168,10 +171,10 @@ Initialize `review_cycles = 0`.
   - If remaining issues are ALL LOW severity: set story status to `done`. Decision: "accepted with known issues."
   - Otherwise: set story status to `done` with note "skipped — unresolvable issues."
   
-  Append to `{IMPL}/pipeline-report.md` using the "Max Review Cycles Reached" entry format from `.github/copilot/skills/as-pipeline/templates/pipeline-report-entries.md`.
+  Append to `{IMPL}/pipeline-report.md` using the "Max Review Cycles Reached" entry format from `{SKILLS_DIR}/as-pipeline/templates/pipeline-report-entries.md`.
 
 #### Step 5c-v: Learning Log Update
-After story is `done`: append to `{IMPL}/learning-log.md` (create if missing) using the "Learning Log Entry" format from `.github/copilot/skills/as-pipeline/templates/pipeline-report-entries.md`.
+After story is `done`: append to `{IMPL}/learning-log.md` (create if missing) using the "Learning Log Entry" format from `{SKILLS_DIR}/as-pipeline/templates/pipeline-report-entries.md`.
 
 #### Step 5c-vi: Correct Course Evaluation
 Read the Dev Agent Record: Plan Deviations section from the completed story file.
@@ -201,7 +204,7 @@ Dispatch retrospective sub-agent using the **Task tool**:
 Task tool:
   agent_type: general-purpose
   prompt: |
-    [Read `.github/copilot/skills/as-pipeline/prompts/retro-agent.md` and use its full contents as this prompt,
+    [Read `{SKILLS_DIR}/as-pipeline/prompts/retro-agent.md` and use its full contents as this prompt,
     substituting {N}, {IMPL}, {PLAN}, and the story list with their current values.]
 ```
 

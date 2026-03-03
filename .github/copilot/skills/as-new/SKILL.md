@@ -13,7 +13,10 @@ Attempt to read `.auto-scrum/config.yml`.
 - If found: use `artifacts.base_dir` as the base directory.
 - If NOT found: use `.auto-scrum` as the default AND print a visible warning:
   `⚠️  WARNING: .auto-scrum/config.yml not found. Using default base directory: .auto-scrum`
-  Then read `.github/copilot/skills/as-new/templates/config-template.yml` and create `.auto-scrum/config.yml` using that content.
+  Then read `{SKILLS_DIR}/as-new/templates/config-template.yml` and create `.auto-scrum/config.yml` using that content.
+Set `SKILLS_DIR`:
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 
 Set `BASE={artifacts.base_dir}` and `FEAT={feature-name}`.
 

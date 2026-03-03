@@ -13,6 +13,9 @@ Ask: "What feature are we writing the test plan for?"
 Set `FEAT={feature-name}`, `BASE={artifacts.base_dir from config or .auto-scrum}`, `PLAN={BASE}/features/{FEAT}/planning/`.
 
 Read `.auto-scrum/config.yml` (warn if missing, use `.auto-scrum` default).
+Set `SKILLS_DIR`:
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 Read `{PLAN}/prd.md` — halt if missing: "❌ prd.md not found. Run the as-prd skill first."
 Read `{PLAN}/design.md` — halt if missing: "❌ design.md not found. Run the as-architect skill first."
 Read `{BASE}/cross-feature/project-context.md` if present (for test framework and conventions).
@@ -29,7 +32,7 @@ List every Acceptance Criterion from `prd.md`. Number them sequentially: AC-1, A
 Count: `TOTAL_ACS = {N}`
 
 ## Step 4: Write test-plan.md
-Read the template at `.github/copilot/skills/as-test-plan/templates/test-plan.md`. Write `{PLAN}/test-plan.md` using that template, substituting `{feature-name}` and filling in all sections with content from the PRD, design, and codebase analysis above.
+Read the template at `{SKILLS_DIR}/as-test-plan/templates/test-plan.md`. Write `{PLAN}/test-plan.md` using that template, substituting `{feature-name}` and filling in all sections with content from the PRD, design, and codebase analysis above.
 
 ## Step 5: Coverage Verification
 Count the rows in the Coverage Matrix. Verify: rows ≥ TOTAL_ACS.

@@ -11,6 +11,9 @@ You are generating a `project-context.md` file that all auto-scrum agents will u
 ## Step 1: Read Configuration
 Read `.auto-scrum/config.yml` for `artifacts.base_dir`. Default to `.auto-scrum` with a visible warning if missing:
 `⚠️  WARNING: .auto-scrum/config.yml not found. Using default base directory: .auto-scrum`
+Set `SKILLS_DIR`:
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 Set `BASE={artifacts.base_dir}`.
 Set `OUT={BASE}/cross-feature/project-context.md`.
 
@@ -26,7 +29,7 @@ Examine the repository systematically:
 
 ## Step 3: Synthesize and Write
 Create the directory `{BASE}/cross-feature/` if it doesn't exist.
-Read the template at `.github/copilot/skills/as-generate-project-context/templates/project-context.md`. Write `{OUT}` using that template, filling in all sections with findings from the codebase scan above.
+Read the template at `{SKILLS_DIR}/as-generate-project-context/templates/project-context.md`. Write `{OUT}` using that template, filling in all sections with findings from the codebase scan above.
 
 ## Step 4: Done
 Print: `✅ project-context.md written to {OUT}`

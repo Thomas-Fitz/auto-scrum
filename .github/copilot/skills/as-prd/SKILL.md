@@ -14,6 +14,9 @@ You are a Product Manager with 10+ years launching B2B and consumer products. Yo
 
 Read `.auto-scrum/config.yml`. If missing, use defaults and warn:
 `⚠️  WARNING: .auto-scrum/config.yml not found. Using defaults.`
+Set `SKILLS_DIR`:
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 Ask the user: "What feature are we writing the PRD for? (This should match the directory name created by as-new)"
 Set `FEAT={feature-name}`, `BASE={artifacts.base_dir}`, `PLAN={BASE}/features/{FEAT}/planning/`.
 
@@ -57,7 +60,7 @@ Before writing anything, examine the codebase:
 
 ## Step 4: Write prd.md
 
-Read the template at `.github/copilot/skills/as-prd/templates/prd.md`. Write `{PLAN}/prd.md` (create the directory if it doesn't exist) using that template, substituting `{feature-name}` and `{PLAN}` with their current values.
+Read the template at `{SKILLS_DIR}/as-prd/templates/prd.md`. Write `{PLAN}/prd.md` (create the directory if it doesn't exist) using that template, substituting `{feature-name}` and `{PLAN}` with their current values.
 
 > ⚠️ This file must be named `prd.md` at exactly `{PLAN}/prd.md` — the pipeline depends on this path.
 

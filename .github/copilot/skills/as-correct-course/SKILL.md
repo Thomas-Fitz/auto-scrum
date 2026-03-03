@@ -16,6 +16,9 @@ Determine mode: if a deviation description was provided as input, use autonomous
 
 ## Step 1: Setup
 Read `.auto-scrum/config.yml` (warn if missing, use `.auto-scrum` default).
+Set `SKILLS_DIR`:
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 
 If **manual mode**: ask "What feature is affected? Describe the deviation you've discovered."
 If **autonomous mode**: use the deviation description and feature name provided in the prompt.
@@ -46,7 +49,7 @@ For each story invalidated by the deviation: set its status back to `backlog`.
 Add a YAML comment above it: `# ⚠️ Invalidated by Correct Course {date}: {summary}`
 
 ## Step 6: Write Sprint Change Proposal to pipeline-report.md
-Read the template at `.github/copilot/skills/as-correct-course/templates/pipeline-report-entry.md`. Append to `{IMPL}/pipeline-report.md` (create with a header if missing), substituting all `{placeholder}` values with current runtime values.
+Read the template at `{SKILLS_DIR}/as-correct-course/templates/pipeline-report-entry.md`. Append to `{IMPL}/pipeline-report.md` (create with a header if missing), substituting all `{placeholder}` values with current runtime values.
 
 ## Step 7: Complete
 If **manual mode**: print `✅ Course correction applied. Affected stories reset to backlog. See pipeline-report.md for details.`
