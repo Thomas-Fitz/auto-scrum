@@ -47,7 +47,7 @@ Ensure `.auto-scrum/` is listed in the project's `.gitignore`: if `.gitignore` d
 Verify all of the following exist:
 - `{IMPL}/sprint-status.yaml`
 - `{PLAN}/prd.md`
-- `{PLAN}/design.md`
+- `{PLAN}/architecture-design.md`
 - `{PLAN}/test-plan.md`
 - `{IMPL}/epic-breakdown.md`
 
@@ -86,7 +86,7 @@ Before the first story of each epic:
 1. Read the checkpoint template at `{SKILLS_DIR}/as-pipeline/templates/checkpoint.md`. Write `{IMPL}/checkpoints/checkpoint-epic-{N}.md` using that template, substituting all `{placeholder}` values with current runtime values.
 
 2. Print `[COMPACTING CONTEXT — re-reading checkpoint for Epic {N}]`
-3. Re-read: the checkpoint file, `sprint-status.yaml`, the current epic section from `epic-breakdown.md`, and relevant sections of `design.md`.
+3. Re-read: the checkpoint file, `sprint-status.yaml`, the current epic section from `epic-breakdown.md`, and relevant sections of `architecture-design.md`.
 
 ### 5b: Previous Epic Learnings (Epic N > 1)
 Find `{IMPL}/retros/epic-{N-1}-retro-*.md`. If found, extract the SMART action items from its "SMART Action Items for Next Epic" section. Note them — they will be included in the first story of this epic.
@@ -102,10 +102,10 @@ For each story in this epic (in sprint-status.yaml order, status in [`backlog`, 
    - **Test Cases** — the TC-* IDs listed for this story
    - **AC IDs** — the specific AC IDs listed for this story
    Then open each planning doc and extract the exact content those refs point to:
-   - From `{PLAN}/design.md`: copy the full text of each referenced section/group
+   - From `{PLAN}/architecture-design.md`: copy the full text of each referenced section/group
    - From `{PLAN}/test-plan.md`: copy the full row/description for each TC-* ID
    - From `{PLAN}/prd.md`: copy the exact acceptance criterion text for each AC ID
-   This extracted content is what you will embed directly in the story file — do not leave vague pointers like "see design.md §3"; paste the substance inline.
+   This extracted content is what you will embed directly in the story file — do not leave vague pointers like "see architecture-design.md §3"; paste the substance inline.
 4. Read the story template at `{SKILLS_DIR}/as-pipeline/templates/story-template.md`. Write `{IMPL}/stories/{story-key}.md` using that template, populating all fields with the content extracted in steps 1–3 above.
 
 5. Run story quality checklist — if ANY fail, rewrite the story before continuing:
@@ -178,7 +178,7 @@ After story is `done`: append to `{IMPL}/learning-log.md` (create if missing) us
 
 #### Step 5c-vi: Correct Course Evaluation
 Read the Dev Agent Record: Plan Deviations section from the completed story file.
-Evaluate: is there a plan deviation? A deviation is: a wrong assumption in design.md, a required architectural change, or a scope shift affecting future stories.
+Evaluate: is there a plan deviation? A deviation is: a wrong assumption in architecture-design.md, a required architectural change, or a scope shift affecting future stories.
 
 - If NO deviation: continue to next story.
 - If YES deviation: invoke the correct-course logic inline (do NOT prompt the user):

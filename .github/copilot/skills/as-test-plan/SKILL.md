@@ -17,7 +17,7 @@ Set `SKILLS_DIR`:
 - If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
 - Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 Read `{PLAN}/prd.md` — halt if missing: "❌ prd.md not found. Run the as-prd skill first."
-Read `{PLAN}/design.md` — halt if missing: "❌ design.md not found. Run the as-architect skill first."
+Read `{PLAN}/architecture-design.md` — halt if missing: "❌ architecture-design.md not found. Run the as-architect skill first."
 Read `{BASE}/cross-feature/project-context.md` if present (for test framework and conventions).
 
 ## Step 2: Check Existing Test Coverage

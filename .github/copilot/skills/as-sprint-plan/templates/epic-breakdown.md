@@ -1,6 +1,6 @@
 # Epic Breakdown: {feature-name}
 
-**References:** [prd.md](../planning/prd.md), [design.md](../planning/design.md), [test-plan.md](../planning/test-plan.md)
+**References:** [prd.md](../planning/prd.md), [architecture-design.md](../planning/architecture-design.md), [test-plan.md](../planning/test-plan.md)
 
 ---
 

@@ -24,5 +24,5 @@ Substitute all `{placeholder}` values with current runtime values before writing
 **Story:** {story-title}
 **Discoveries:** {from Dev Agent Record: Plan Deviations section}
 **Architectural Insights:** {key decisions made during implementation}
-**Deviations from Plan:** {what changed vs. original design.md}
+**Deviations from Plan:** {what changed vs. original architecture-design.md}
 ```

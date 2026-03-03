@@ -4,7 +4,7 @@
 
 ## Artifact Paths
 - PRD: {PLAN}/prd.md
-- Design: {PLAN}/design.md
+- Design: {PLAN}/architecture-design.md
 - Test Plan: {PLAN}/test-plan.md
 - Epic Breakdown: {IMPL}/epic-breakdown.md
 - Sprint Status: {IMPL}/sprint-status.yaml

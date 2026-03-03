@@ -16,4 +16,4 @@ CRITICAL RULES — follow these exactly:
 Supporting context:
 - Sprint status: {IMPL}/sprint-status.yaml
 - Project context: {BASE}/cross-feature/project-context.md (read if exists)
-- Relevant design excerpts: [read and include the relevant sections of {PLAN}/design.md for this story]
+- Relevant design excerpts: [read and include the relevant sections of {PLAN}/architecture-design.md for this story]

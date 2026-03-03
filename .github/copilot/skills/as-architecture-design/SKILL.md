@@ -92,20 +92,20 @@ For each decision category below, present the **relevant existing codebase patte
 - Flag explicitly: `⚠️ DEVIATION: This introduces [new pattern]. The existing codebase uses [existing pattern] for similar cases.`
 - **Step-by-step:** Ask: "What is the reason for this deviation?"
 - **YOLO mode:** Auto-generate a justification based on analysis; note it as auto-justified.
-- Record all deviations for the Deviations & Justifications section of design.md.
+- Record all deviations for the Deviations & Justifications section of architecture-design.md.
 
 **Checkpoint (step-by-step):** Present all decisions. Ask: "Do these decisions align with your vision? Any changes before I write the document?" Wait for confirmation.
 **YOLO mode:** Narrate decisions and proceed.
 
 ---
 
-## Step 5 — Write design.md
+## Step 5 — Write architecture-design.md
 
-**Output file must be named `design.md`** (not architecture.md). Write `{PLAN}/design.md`. In YOLO mode, narrate what you're writing as you go.
+**Output file must be named `architecture-design.md`** (not architecture.md). Write `{PLAN}/architecture-design.md`. In YOLO mode, narrate what you're writing as you go.
 
 > Always include all 9 sections. Mark N/A for sections with no content — do not omit sections.
 
-Read the template at `{SKILLS_DIR}/as-architecture-design/templates/design.md`. Write `{PLAN}/design.md` using its full content, substituting `{feature-name}`. Include the `ux-design.md` reference only if that file exists.
+Read the template at `{SKILLS_DIR}/as-architecture-design/templates/architecture-design.md`. Write `{PLAN}/architecture-design.md` using its full content, substituting `{feature-name}`. Include the `ux-design.md` reference only if that file exists.
 
 ---
 
@@ -140,7 +140,7 @@ For any failures: present the specific issue and ask the human whether to correc
 2. Ask: "Does this architecture match your vision? Reply 'approved' or describe changes."
 3. If changes requested: make them, re-run Step 6 validation, then re-ask.
 4. When approved:
-   - Update Status in design.md to `**Status:** Approved`
-   - Print: `✅ design.md saved to {PLAN}/design.md. Next step: run the as-test-plan skill.`
+   - Update Status in architecture-design.md to `**Status:** Approved`
+   - Print: `✅ architecture-design.md saved to {PLAN}/architecture-design.md. Next step: run the as-test-plan skill.`
 
-> **YOLO mode:** Step 7 is the only mandatory pause. Present the validation report and the completed design.md, then wait for approval.
+> **YOLO mode:** Step 7 is the only mandatory pause. Present the validation report and the completed architecture-design.md, then wait for approval.

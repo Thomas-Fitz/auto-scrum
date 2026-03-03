@@ -21,7 +21,7 @@ so that {benefit}.
   - [ ] Subtask 2.1: ...
 
 ## Dev Notes
-**Architecture:** [Paste the exact design.md section content from the Design Refs — not a link, the actual text/code snippets/before-after examples]
+**Architecture:** [Paste the exact architecture-design.md section content from the Design Refs — not a link, the actual text/code snippets/before-after examples]
 **Files to modify:** [Exact file paths, no vague references]
 **Files to create:** [Exact file paths]
 **Test cases to satisfy:** [For each TC-* ID from traceability columns: paste the full test case description/scenario from test-plan.md]
@@ -34,7 +34,7 @@ so that {benefit}.
 All other stories: paste relevant entries from learning-log.md, or "No relevant prior learnings."}
 
 ### References
-- [Source: design.md#{Section}]
+- [Source: architecture-design.md#{Section}]
 - [Source: prd.md#FR-{N}]
 - [Source: test-plan.md#AC-{N}]
 - [Source: epic-breakdown.md#Epic {N}]

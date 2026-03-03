@@ -1,6 +1,6 @@
 # Test Plan: {feature-name}
 
-**References:** [prd.md](./prd.md), [design.md](./design.md)
+**References:** [prd.md](./prd.md), [architecture-design.md](./architecture-design.md)
 **Test Framework:** [from project-context or inferred from codebase scan]
 **Existing Coverage:** [Summary of existing test files for this feature, if any]
 

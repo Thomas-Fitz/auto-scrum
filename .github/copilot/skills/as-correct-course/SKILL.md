@@ -28,7 +28,7 @@ Set `FEAT`, `BASE`, `PLAN={BASE}/features/{FEAT}/planning/`, `IMPL={BASE}/featur
 ## Step 2: Load Context
 Read all of the following:
 - `{PLAN}/prd.md`
-- `{PLAN}/design.md`
+- `{PLAN}/architecture-design.md`
 - `{IMPL}/epic-breakdown.md`
 - `{IMPL}/sprint-status.yaml`
 - `{IMPL}/learning-log.md` (if it exists)

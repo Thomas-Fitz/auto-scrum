@@ -17,7 +17,7 @@ Set `SKILLS_DIR`:
 - If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
 - Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 Read `{PLAN}/prd.md` — halt if missing: "❌ prd.md not found. Run the as-prd skill first."
-Read `{PLAN}/design.md` — halt if missing: "❌ design.md not found. Run the as-architect skill first."
+Read `{PLAN}/architecture-design.md` — halt if missing: "❌ architecture-design.md not found. Run the as-architect skill first."
 Read `{PLAN}/test-plan.md` — halt if missing: "❌ test-plan.md not found. Run the as-test-plan skill first."
 Read `{BASE}/cross-feature/project-context.md` if present.
 
@@ -32,7 +32,7 @@ Analyze the PRD functional requirements and design to identify epics and stories
 - Story key format: `{epic-num}-{story-num}-{kebab-case-title}` (e.g., `1-1-create-user-model`)
 
 **Traceability requirements — for each story, identify:**
-- `Design Refs`: the specific sections, headings, or named groups in `design.md` that apply to this story (e.g., `§3.2 Cache Layer`, `Group A: A-2`). Be precise — copy the exact heading or group label.
+- `Design Refs`: the specific sections, headings, or named groups in `architecture-design.md` that apply to this story (e.g., `§3.2 Cache Layer`, `Group A: A-2`). Be precise — copy the exact heading or group label.
 - `Test Cases`: the specific test case IDs from `test-plan.md` that must pass for this story to be complete (e.g., `TC-U3, TC-U4`). If test-plan.md uses a coverage matrix, read it row by row and assign each TC to exactly one story.
 - `AC IDs`: the specific acceptance-criterion IDs from `prd.md` that define "done" for this story (e.g., `FR4-AC1, FR4-AC2`). Do not just list the FR number — identify the individual ACs.
 
