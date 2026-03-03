@@ -75,7 +75,7 @@ Print: `📍 Resuming from story: {story-key}` OR `🚀 Starting pipeline from f
 Read `git.commit_frequency` from config. Default to `story` if not set.
 Read `pipeline.max_review_cycles` from config. Default to `3` if not set. Store as `MAX_REVIEW_CYCLES`.
 Set `SKILLS_DIR`:
-- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
 - Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 
 ## Step 5: Per-Epic Loop

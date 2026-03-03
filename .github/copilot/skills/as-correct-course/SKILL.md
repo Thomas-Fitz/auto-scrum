@@ -17,7 +17,7 @@ Determine mode: if a deviation description was provided as input, use autonomous
 ## Step 1: Setup
 Read `.auto-scrum/config.yml` (warn if missing, use `.auto-scrum` default).
 Set `SKILLS_DIR`:
-- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
 - Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 
 If **manual mode**: ask "What feature is affected? Describe the deviation you've discovered."

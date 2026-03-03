@@ -10,10 +10,20 @@ You are initializing a new auto-scrum feature. Ask the user for the feature name
 
 ## Step 1: Read Configuration
 
-**Resolve SKILLS_DIR first** (needed before config creation):
-- Check if `.auto-scrum/config.yml` exists and has `auto_scrum.install_mode: global`.
-  - If global: `SKILLS_DIR = auto_scrum.global_skills_dir` (default: `~/.copilot/skills`)
+Set `FEAT={feature-name}`.
+
+**Resolve SKILLS_DIR**:
+- If `.auto-scrum/config.yml` exists:
+  - Read it and check `auto_scrum.install_mode`.
+  - If `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
   - Otherwise: `SKILLS_DIR = .github/copilot/skills`
+- If `.auto-scrum/config.yml` does not exist:
+  1. Probe candidate skill directories in this order:
+     - `~/.copilot/skills` (expand `~` to the user's home directory)
+     - `.github/copilot/skills`
+  2. Set `SKILLS_DIR` to the first directory that contains `as-new/templates/config-template.yml`.
+  3. If neither candidate contains that template, halt with:
+     `❌ Could not find as-new config template. Checked ~/.copilot/skills/as-new/templates/config-template.yml and .github/copilot/skills/as-new/templates/config-template.yml.`
 
 **Read or create project config:**
 - If `.auto-scrum/config.yml` **exists**: read it, use `artifacts.base_dir` as the base directory.
@@ -25,7 +35,7 @@ You are initializing a new auto-scrum feature. Ask the user for the feature name
      - `artifacts.base_dir` → `.auto-scrum` (always project-relative)
   4. Use `.auto-scrum` as the base directory.
 
-Set `BASE={artifacts.base_dir}` and `FEAT={feature-name}`.
+Set `BASE={artifacts.base_dir}`.
 
 ## Step 2: Idempotency Check
 Check if `{BASE}/features/{FEAT}/` already exists.
@@ -52,5 +62,4 @@ Print the created directory tree:
     └── retros/
 ```
 Print: `Next step: run the as-prd skill to create the Product Requirements Document.`
-
 

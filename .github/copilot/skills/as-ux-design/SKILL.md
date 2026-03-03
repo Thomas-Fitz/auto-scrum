@@ -14,7 +14,7 @@ Set `FEAT={feature-name}`, `BASE={artifacts.base_dir from config or .auto-scrum}
 
 Read `.auto-scrum/config.yml` (warn if missing, use `.auto-scrum` default).
 Set `SKILLS_DIR`:
-- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
 - Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 Read `{PLAN}/prd.md` — if it doesn't exist, halt with: "❌ PRD not found at {PLAN}/prd.md. Run the as-prd skill first."
 

@@ -12,7 +12,7 @@ You are generating a `project-context.md` file that all auto-scrum agents will u
 Read `.auto-scrum/config.yml` for `artifacts.base_dir`. Default to `.auto-scrum` with a visible warning if missing:
 `⚠️  WARNING: .auto-scrum/config.yml not found. Using default base directory: .auto-scrum`
 Set `SKILLS_DIR`:
-- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
+- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
 - Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 Set `BASE={artifacts.base_dir}`.
 Set `OUT={BASE}/cross-feature/project-context.md`.
