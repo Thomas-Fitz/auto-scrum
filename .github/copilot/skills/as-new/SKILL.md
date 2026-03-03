@@ -9,14 +9,21 @@ description: Scaffold a new auto-scrum feature artifact directory under .auto-sc
 You are initializing a new auto-scrum feature. Ask the user for the feature name if not already provided (e.g., `user-authentication`).
 
 ## Step 1: Read Configuration
-Attempt to read `.auto-scrum/config.yml`.
-- If found: use `artifacts.base_dir` as the base directory.
-- If NOT found: use `.auto-scrum` as the default AND print a visible warning:
-  `⚠️  WARNING: .auto-scrum/config.yml not found. Using default base directory: .auto-scrum`
-  Then read `{SKILLS_DIR}/as-new/templates/config-template.yml` and create `.auto-scrum/config.yml` using that content.
-Set `SKILLS_DIR`:
-- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`)
-- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
+
+**Resolve SKILLS_DIR first** (needed before config creation):
+- Check if `.auto-scrum/config.yml` exists and has `auto_scrum.install_mode: global`.
+  - If global: `SKILLS_DIR = auto_scrum.global_skills_dir` (default: `~/.copilot/skills`)
+  - Otherwise: `SKILLS_DIR = .github/copilot/skills`
+
+**Read or create project config:**
+- If `.auto-scrum/config.yml` **exists**: read it, use `artifacts.base_dir` as the base directory.
+- If `.auto-scrum/config.yml` **does not exist**:
+  1. Print: `⚠️  WARNING: .auto-scrum/config.yml not found. Creating from your base config.`
+  2. Read `{SKILLS_DIR}/as-new/templates/config-template.yml` as the base.
+  3. Write `.auto-scrum/config.yml` with all settings from the base config, then override:
+     - `project.name` → `{FEAT}` (set to the feature/project name)
+     - `artifacts.base_dir` → `.auto-scrum` (always project-relative)
+  4. Use `.auto-scrum` as the base directory.
 
 Set `BASE={artifacts.base_dir}` and `FEAT={feature-name}`.
 
