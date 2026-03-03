@@ -25,3 +25,8 @@ git:
   # epic   = after the last story in each epic is approved
   # never  = skip all auto-commits
   commit_frequency: never
+
+pipeline:
+  # Maximum dev/review loop iterations per story before the orchestrator
+  # makes a judgment call and moves on.
+  max_review_cycles: 3
