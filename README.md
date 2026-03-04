@@ -25,7 +25,7 @@ If [BMAD](https://github.com/bmad-code-org/BMAD-METHOD) is lawful and [GasTown](
 Copy the skill files into your `~/.copilot/skills/` directory:
 
 ```bash
-cp -r .github/copilot/skills/as-*/ ~/.copilot/skills/
+cp -r skills/as-*/ ~/.copilot/skills/
 ```
 
 Invoke them by asking Copilot CLI to use a skill by name (e.g. *"use the as-prd skill"*) or via `/skills`. You may need to restart your terminal or Copilot CLI for them to show up.
