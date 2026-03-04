@@ -35,15 +35,17 @@ Invoke them by asking Copilot CLI to use a skill by name (e.g. *"use the as-prd 
 Copy the skill files into your project:
 
 ```bash
-cp -r .github/copilot/skills/ your-project/.github/copilot/skills/
-cp .auto-scrum/config.yml your-project/.auto-scrum/config.yml
+cp -r skills/ your-project/.github/copilot/skills/
 ```
 
-Then customize `.auto-scrum/config.yml` for your project.
+Then customize `.auto-scrum/config.yml` for your project (created after your first /as-new command):
+
+```yaml
 
 ## Getting Started
 
 ```
+
 as-new <feature-name>                   → scaffold artifact directory
 as-prd <feature-name>                   → write Product Requirements Document
 as-ux-design <feature-name>                   → optional: UX design doc for UI-heavy features
@@ -51,6 +53,7 @@ as-architect <feature-name>                   → write Architecture Design Docu
 as-test-plan <feature-name>                   → write Test Plan
 as-sprint-plan <feature-name>                   → produce Epic Breakdown + Sprint Status
 as-pipeline <feature-name>                   → 🚀 autonomous execution begins
+
 ```
 
 ## Configuration
