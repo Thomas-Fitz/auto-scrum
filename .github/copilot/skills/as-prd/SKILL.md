@@ -24,6 +24,8 @@ Set `FEAT={feature-name}`, `BASE={artifacts.base_dir}`, `PLAN={BASE}/features/{F
 
 Begin by understanding what the user wants to build. Ask one focused question at a time with the `ask_user` tool, then adapt follow-up questions based on previous answers.
 
+You may be given an existing set of requirements or a vague feature description. If so, use that as a starting point but probe for more detail and clarity. The goal is to collaboratively flesh out a comprehensive set of requirements that are specific, measurable, and testable.
+
 Start with the most fundamental question: what is the product or feature, and what problem does it solve?
 
 Then organically explore these areas as the conversation warrants (not necessarily in this order — let the user's answers guide you):
@@ -56,15 +58,20 @@ Before writing anything, examine the codebase:
 2. Search for existing implementations related to the feature domain.
 3. Read the 3–5 most relevant source files found.
 4. Identify: Gaps that the feature needs to fill, other impacted functional areas, and any constraints or patterns that should inform the requirements.
-5. Note any requirements the codebase suggests but the user didn't mention.
+5. Look for edge cases that have not been identified in the original requirements or user Q&A. Ask the user about those edge cases.
+6. Note any requirements the codebase suggests but the user didn't mention.
 
-## Step 4: Write prd.md
+## Step 4: Assumption Validation
+
+Identify any assumptions made during initial requirements and Q&A that are counter to existing implementation functionality. For each, ask the user to confirm or revise the assumption based on the codebase insights.
+
+## Step 5: Write prd.md
 
 Read the template at `{SKILLS_DIR}/as-prd/templates/prd.md`. Write `{PLAN}/prd.md` (create the directory if it doesn't exist) using that template, substituting `{feature-name}` and `{PLAN}` with their current values.
 
 > ⚠️ This file must be named `prd.md` at exactly `{PLAN}/prd.md` — the pipeline depends on this path.
 
-## Step 5: Automated Validation
+## Step 6: Automated Validation
 
 Review the written PRD against these criteria:
 
@@ -76,7 +83,7 @@ Review the written PRD against these criteria:
 
 List all issues found (or "No issues found" if none).
 
-## Step 6: User Approval
+## Step 7: User Approval
 
 Present the validation findings. Ask:
 "The PRD is complete. Validation issues: [list or 'none']. Do you approve this PRD, or would you like changes? Reply 'approved' or describe changes."
