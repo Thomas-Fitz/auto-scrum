@@ -1,12 +1,10 @@
 # auto-scrum configuration
-# Copy this file to your project root at .auto-scrum/config.yml and customize.
-
 project:
   name: my-project          # Display name for reports and artifacts
   user: developer           # Developer or team name
 
 artifacts:
-  base_dir: ../.auto-scrum     # Root directory for all auto-scrum artifacts (default: .auto-scrum)
+  base_dir: .auto-scrum     # Root directory for all auto-scrum artifacts
 
 agents:
   orchestrator:
@@ -19,11 +17,7 @@ agents:
     model: claude-sonnet-4-6  # Model ID for the adversarial code reviewer
 
 git:
-  # When the dev agent commits during /as-pipeline execution:
-  # task   = after every task/subtask
-  # story  = after each story is approved
-  # epic   = after the last story in each epic is approved
-  # never  = skip all auto-commits
+  # task | story | epic | never (default: never)
   commit_frequency: never
 
 pipeline:
@@ -36,4 +30,5 @@ auto_scrum:
                                 # project = skills are at .github/copilot/skills/
                                 # global  = skills are at {global_skills_dir}
   global_skills_dir: ~/.copilot/skills  # only used when install_mode: global
+                                         # change this if you installed skills to a custom path
                                          # tilde (~) is expanded to the user's home directory

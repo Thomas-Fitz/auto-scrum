@@ -25,7 +25,7 @@ If [BMAD](https://github.com/bmad-code-org/BMAD-METHOD) is lawful and [GasTown](
 Copy the skill files into your `~/.copilot/skills/` directory:
 
 ```bash
-cp -r .github/copilot/skills/as-*/ ~/.copilot/skills/
+cp -r skills/as-*/ ~/.copilot/skills/
 ```
 
 Invoke them by asking Copilot CLI to use a skill by name (e.g. *"use the as-prd skill"*) or via `/skills`. You may need to restart your terminal or Copilot CLI for them to show up.
@@ -35,15 +35,17 @@ Invoke them by asking Copilot CLI to use a skill by name (e.g. *"use the as-prd 
 Copy the skill files into your project:
 
 ```bash
-cp -r .github/copilot/skills/ your-project/.github/copilot/skills/
-cp .auto-scrum/config.yml your-project/.auto-scrum/config.yml
+cp -r skills/ your-project/.github/copilot/skills/
 ```
 
-Then customize `.auto-scrum/config.yml` for your project.
+Then customize `.auto-scrum/config.yml` for your project (created after your first /as-new command):
+
+```yaml
 
 ## Getting Started
 
 ```
+
 as-new <feature-name>                   → scaffold artifact directory
 as-prd <feature-name>                   → write Product Requirements Document
 as-ux-design <feature-name>                   → optional: UX design doc for UI-heavy features
@@ -51,6 +53,7 @@ as-architect <feature-name>                   → write Architecture Design Docu
 as-test-plan <feature-name>                   → write Test Plan
 as-sprint-plan <feature-name>                   → produce Epic Breakdown + Sprint Status
 as-pipeline <feature-name>                   → 🚀 autonomous execution begins
+
 ```
 
 ## Configuration
@@ -88,7 +91,7 @@ git:
 | `/as-document-project` | — | Low (review output) | Architecture + source tree docs |
 | `/as-prd` | Product Manager | High (Q&A + approval) | `prd.md` |
 | `/as-ux-design` | UX Designer | High (Q&A + approval) | `ux-design.md` |
-| `/as-architecture-design` | Architect | High (Q&A + approval) | `design.md` |
+| `/as-architecture-design` | Architect | High (Q&A + approval) | `architecture-design.md` |
 | `/as-test-plan` | QA | Medium (review + approval) | `test-plan.md` |
 | `/as-sprint-plan` | Scrum Master | Medium (review + approval) | `epic-breakdown.md`, `sprint-status.yaml` |
 | `/as-pipeline <feature-name>` | Orchestrator | None (unless hard blocker) | All implementation artifacts |
@@ -119,7 +122,7 @@ The `/as-pipeline` skill:
       planning/
         prd.md
         ux-design.md          (optional)
-        design.md
+        architecture-design.md
         test-plan.md
         epic-breakdown.md
       implementation/
@@ -178,7 +181,7 @@ so that {benefit}.
   - [ ] Subtask 1.3: Refactor
 
 ## Dev Notes
-**Architecture:** [patterns from design.md]
+**Architecture:** [patterns from architecture-design.md]
 **Files to modify:** [exact paths]
 **Files to create:** [exact paths]
 **Testing approach:** [framework, locations, assertions]
@@ -189,7 +192,7 @@ so that {benefit}.
 [Insights from previous story or epic retro]
 
 ### References
-- [Source: design.md#Section]
+- [Source: architecture-design.md#Section]
 - [Source: prd.md#FR-N]
 - [Source: test-plan.md#AC-N]
 
