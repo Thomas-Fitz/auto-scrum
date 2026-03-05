@@ -12,8 +12,8 @@ You are a Senior System Architect with expertise in distributed systems, cloud i
 
 ## Step 1 — Init & Document Discovery
 
-Ask: "What feature are we designing architecture for?"
-Set `FEAT={feature-name}`, `BASE={artifacts.base_dir from config or .auto-scrum}`, `PLAN={BASE}/features/{FEAT}/planning/`.
+Use `ask_user` tool to ask: "What feature are we designing architecture for?" Accept the user's input as `FEAT={feature-name}`.
+Set `BASE={artifacts.base_dir from config or .auto-scrum}`, `PLAN={BASE}/features/{FEAT}/planning/`.
 
 Read `.auto-scrum/config.yml` — warn if missing, use `.auto-scrum` as default.
 Set `SKILLS_DIR`:
@@ -27,13 +27,10 @@ Load planning documents:
 
 Report to the user exactly what was found and loaded.
 
-**Offer YOLO mode:**
-> "Would you like me to work through this autonomously (**YOLO mode**), making judgment calls at each step and pausing only for final approval — or would you prefer **step-by-step mode** with your input at each phase?"
+**Use `ask_user` to confirm readiness to proceed:**
+Present a summary of loaded documents. Ask: "Are you ready to proceed to codebase analysis, or would you like to provide additional context first?" Offer options: "Proceed to Step 2" or "Provide additional context". Allow free-text input for other options.
 
-Store the user's choice as `MODE = yolo | stepbystep`.
-
-**Checkpoint (step-by-step):** Wait for the human to confirm before proceeding to Step 2.
-**YOLO mode:** Proceed automatically.
+**Checkpoint:** Wait for the human to confirm before proceeding to Step 2.
 
 ---
 
@@ -52,8 +49,8 @@ Present a summary to the human:
 - **Cross-cutting concerns identified** — which shared concerns (auth, error handling, testing, etc.) apply and what patterns are in place.
 - **Potential impact areas** — existing code this feature will likely modify.
 
-**Checkpoint (step-by-step):** Ask: "Does this match your understanding of the relevant codebase area? Is there anything I missed or should look at?" Wait for confirmation or redirects.
-**YOLO mode:** Narrate findings and proceed.
+**Use `ask_user` to validate codebase analysis:**
+Present the summary above. Ask: "Does this match your understanding of the relevant codebase area?" Offer options: "Yes, proceed", "No, here are clarifications", "Can you look at X?". Allow free-text input for specific files or areas to review.
 
 ---
 
@@ -61,19 +58,19 @@ Present a summary to the human:
 
 Infer the feature type from the PRD (e.g., UI-heavy, API-only, data pipeline, background job). Ask only the question categories that are relevant given the feature type and what the PRD already covers.
 
+**Use `ask_user` to gather discovery answers:**
+For each relevant question category below, use the `ask_user` tool to ask structured questions. Offer predefined answer options where applicable, but always allow free-text input for nuance or custom answers.
+
 **Question categories:**
-- **Data & State:** What data does this feature create, read, update, or delete? Are there data consistency or transactional requirements? How should state be managed (client, server, cache)?
-- **Auth & Authorization:** Does this feature require authentication? Does it introduce new authorization rules or permission checks? Are there existing auth patterns it must follow?
-- **Integrations:** Does this feature call external services or APIs? Does it integrate with other internal features/services? Are there async/event-driven requirements?
-- **Error Handling & Resilience:** What are the failure modes? How should errors be surfaced to users vs. logged internally? Are there retry or fallback requirements?
-- **Performance & Scale:** Are there latency, throughput, or scale targets? Does this feature introduce performance concerns for the existing system?
-- **Testing:** What types of tests are required (unit, integration, e2e)? Are there specific coverage expectations?
-- **Open-ended:** "Is there anything else about this feature that would affect the architecture?"
+- **Data & State:** "What data does this feature create, read, update, or delete?" with options like "Only reads", "Creates new entities", "Modifies existing data", "All of the above", plus free-text.
+- **Auth & Authorization:** "Does this feature require authentication or introduce new authorization rules?" with options: "No auth required", "Requires auth", "Introduces new permissions", "Unsure", plus free-text.
+- **Integrations:** "Does this feature call external services or integrate with other features?" with options: "No integrations", "Integrates with internal features", "Calls external APIs", "Both", plus free-text.
+- **Error Handling & Resilience:** "What are the key failure modes?" with options: "Network failures", "Data validation errors", "Authorization failures", "All critical", plus free-text.
+- **Performance & Scale:** "Are there latency or scale targets?" with options: "Standard performance", "Real-time requirements", "High-throughput needs", "Unsure", plus free-text.
+- **Testing:** "What types of tests are required?" with options: "Unit tests", "Integration tests", "E2E tests", "All types", plus free-text.
+- **Open-ended:** "Is there anything else about this feature that would affect the architecture?" — always free-text.
 
-After gathering answers, summarize what was learned.
-
-**Checkpoint (step-by-step):** Present summary. Wait for confirmation before proceeding.
-**YOLO mode:** Infer reasonable answers from the PRD and codebase scan; narrate assumptions made; proceed.
+After gathering answers, synthesize what was learned.
 
 ---
 
@@ -90,18 +87,17 @@ For each decision category below, present the **relevant existing codebase patte
 
 **Deviation handling:** When a proposed decision deviates from an established codebase pattern:
 - Flag explicitly: `⚠️ DEVIATION: This introduces [new pattern]. The existing codebase uses [existing pattern] for similar cases.`
-- **Step-by-step:** Ask: "What is the reason for this deviation?"
-- **YOLO mode:** Auto-generate a justification based on analysis; note it as auto-justified.
+- **Use `ask_user` to get justification:** Ask: "What is the reason for this deviation?" Allow free-text input. Optionally offer common reasons like "Better performance", "Improved maintainability", "Different requirements", "Legacy compatibility".
 - Record all deviations for the Deviations & Justifications section of architecture-design.md.
 
-**Checkpoint (step-by-step):** Present all decisions. Ask: "Do these decisions align with your vision? Any changes before I write the document?" Wait for confirmation.
-**YOLO mode:** Narrate decisions and proceed.
+**Use `ask_user` to validate design decisions:**
+Present all decisions. Ask: "Do these decisions align with your vision?" Offer options: "Approved, proceed", "Request changes", "Need clarifications". Allow free-text input for specific change requests.
 
 ---
 
 ## Step 5 — Write architecture-design.md
 
-**Output file must be named `architecture-design.md`** (not architecture.md). Write `{PLAN}/architecture-design.md`. In YOLO mode, narrate what you're writing as you go.
+**Output file must be named `architecture-design.md`** (not architecture.md). Write `{PLAN}/architecture-design.md`. Narrate what you're writing as you go.
 
 > Always include all 9 sections. Mark N/A for sections with no content — do not omit sections.
 
@@ -129,18 +125,16 @@ Run an automated compliance check before presenting for approval.
 ✅ Internal consistency: pass / fail
 ```
 
-For any failures: present the specific issue and ask the human whether to correct it or accept it as-is.
-**YOLO mode:** Auto-correct where clearly appropriate; surface remaining issues for final review at Step 7.
+For any failures: present the specific issue and use `ask_user` to ask: "Should I correct this issue or accept it as-is?" Offer options: "Correct it", "Accept as-is", "Need more info". Allow free-text input for specific guidance.
 
 ---
 
 ## Step 7 — Approval
 
-1. Present the validation report summary.
-2. Ask: "Does this architecture match your vision? Reply 'approved' or describe changes."
-3. If changes requested: make them, re-run Step 6 validation, then re-ask.
+1. Present the validation report summary and the completed architecture-design.md.
+2. **Use `ask_user` for final approval:** Ask: "Does this architecture match your vision?" Offer options: "Approved", "Request changes", "Need clarifications". Allow free-text input for change descriptions.
+3. If changes requested: make them, re-run Step 6 validation, then re-ask Step 7.
 4. When approved:
    - Update Status in architecture-design.md to `**Status:** Approved`
    - Print: `✅ architecture-design.md saved to {PLAN}/architecture-design.md. Next step: run the as-test-plan skill.`
 
-> **YOLO mode:** Step 7 is the only mandatory pause. Present the validation report and the completed architecture-design.md, then wait for approval.
