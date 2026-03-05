@@ -1,6 +1,6 @@
 # auto-scrum
 
-Auto-Scrum is a collection of GitHub Copilot skills that automate the full software development lifecycle - from requirements through delivery. Humans drive all planning decisions. AI agents handle autonomous execution.
+Auto-Scrum is a collection of GitHub Copilot skills that break down the software development lifecycle of a feature change for AI agents. Humans drive all planning decisions. AI agents handle autonomous execution.
 
 If [BMAD](https://github.com/bmad-code-org/BMAD-METHOD) is lawful and [GasTown](https://github.com/steveyegge/gastown) is chaotic, Auto-Scrum aims to be neutral.
 
@@ -92,7 +92,7 @@ git:
 | `/as-sprint-plan` | Scrum Master | Medium (review + approval) | `epic-breakdown.md`, `sprint-status.yaml` |
 | `/as-pipeline <feature-name>` | Orchestrator | None (unless hard blocker) | All implementation artifacts |
 | `/as-correct-course` | Orchestrator | None (auto-triggered) or Low (manual) | Sprint Change Proposal in `pipeline-report.md` |
-| `/as-tech-writer` | Tech Writer | Medium (describe ask) | Docs, diagrams |
+| `/as-tech-writer` (beta) | Tech Writer | Medium (describe ask) | Docs, diagrams |
 
 ## Pipeline Behavior
 
