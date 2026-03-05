@@ -13,10 +13,9 @@ If [BMAD](https://github.com/bmad-code-org/BMAD-METHOD) is lawful and [GasTown](
 
 ## Prerequisites
 
-- **GitHub Copilot** (with coding agent support)
-- **Git** (the project must be a git repository)
-- No other dependencies, packages, or tooling required
-
+* **GitHub Copilot** (with coding agent support)
+* **Git** (the project must be a git repository)
+* No other dependencies, packages, or tooling required
 
 ## Installation
 
@@ -41,18 +40,15 @@ cp -r skills/ your-project/.github/copilot/skills/
 Then customize `.auto-scrum/config.yml` for your project (created after your first /as-new command):
 
 ```yaml
+# Workflow Order
 
-## Getting Started
-
-```
-
-as-new <feature-name>                   → scaffold artifact directory
-as-prd <feature-name>                   → write Product Requirements Document
-as-ux-design <feature-name>                   → optional: UX design doc for UI-heavy features
-as-architect <feature-name>                   → write Architecture Design Document
-as-test-plan <feature-name>                   → write Test Plan
-as-sprint-plan <feature-name>                   → produce Epic Breakdown + Sprint Status
-as-pipeline <feature-name>                   → 🚀 autonomous execution begins
+as-new <feature-name>                    → scaffold artifact directory
+as-prd <feature-name>                     → write Product Requirements Document
+as-ux-design <feature-name>           → optional: UX design doc for UI-heavy features
+as-architect <feature-name>             → write Architecture Design Document
+as-test-plan <feature-name>             → write Test Plan
+as-sprint-plan <feature-name>          → produce Epic Breakdown + Sprint Status
+as-pipeline <feature-name>               → 🚀 autonomous execution begins
 
 ```
 
@@ -70,16 +66,16 @@ artifacts:
 
 agents:
   orchestrator:
-    model: claude-sonnet-4-5  # Model for pipeline orchestrator
+    model: claude-sonnet-4-6  # Model for pipeline orchestrator
   architect:
-    model: claude-sonnet-4-5  # Model for architect agent
+    model: claude-sonnet-4-6  # Model for architect agent
   developer:
-    model: claude-sonnet-4-5  # Model for developer agent
+    model: claude-sonnet-4-6  # Model for developer agent
   reviewer:
-    model: claude-sonnet-4-5  # Model for adversarial code reviewer
+    model: claude-sonnet-4-6  # Model for adversarial code reviewer
 
 git:
-  commit_frequency: story   # task | story | epic | never
+  commit_frequency: never   # task | story | epic | never
 ```
 
 ## Skills
@@ -111,10 +107,9 @@ The `/as-pipeline` skill:
 7. **Max review cycles:** After 3 failed review cycles, orchestrator makes a judgment call and continues.
 8. **Escalates to human only for:** missing required artifact OR unresolvable git conflict.
 
-
 ## Artifact Directory Structure
 
-```
+```text
 .auto-scrum/
   config.yml
   features/

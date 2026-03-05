@@ -17,28 +17,30 @@ Read `.auto-scrum/config.yml`. If missing, use defaults and warn:
 Set `SKILLS_DIR`:
 - If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
 - Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
-Ask the user: "What feature are we writing the PRD for? (This should match the directory name created by as-new)"
-Set `FEAT={feature-name}`, `BASE={artifacts.base_dir}`, `PLAN={BASE}/features/{FEAT}/planning/`.
+
+**Use `ask_user` to determine feature:**
+Ask: "What feature are we writing the PRD for? (This should match the directory name created by as-new)" Accept the user's input as `FEAT={feature-name}`.
+Set `BASE={artifacts.base_dir}`, `PLAN={BASE}/features/{FEAT}/planning/`.
 
 ## Step 2: Structured Discovery Q&A
 
-Begin by understanding what the user wants to build. Ask one focused question at a time with the `ask_user` tool, then adapt follow-up questions based on previous answers.
+Begin by understanding what the user wants to build. Ask one focused question at a time with the `ask_user` tool, then adapt follow-up questions based on previous answers. Always offer predefined options where applicable, but allow free-text input for custom answers and nuance.
 
 You may be given an existing set of requirements or a vague feature description. If so, use that as a starting point but probe for more detail and clarity. The goal is to collaboratively flesh out a comprehensive set of requirements that are specific, measurable, and testable.
 
-Start with the most fundamental question: what is the product or feature, and what problem does it solve?
+Start with the most fundamental question using `ask_user`: "What is the product or feature, and what problem does it solve?"
 
 Then organically explore these areas as the conversation warrants (not necessarily in this order — let the user's answers guide you):
 
-- **Target users & personas** — Who is this for? What are their needs and pain points?
-- **Goals & success metrics** — What does success look like? How will it be measured?
-- **Core use cases** — What are the key workflows and user stories?
-- **Functional requirements** — What must the product do? Be specific enough that each requirement has a clear pass/fail acceptance test.
-- **Non-functional requirements** — Performance, security, scalability, accessibility constraints with concrete thresholds where possible.
-- **Scope boundaries** — What is explicitly out of scope?
-- **Dependencies & integrations** — External systems, APIs, libraries, or teams involved.
-- **Risks & open questions** — What is uncertain or needs further investigation?
-- **Acceptance criteria** — How will we know the implementation is correct and complete?
+- **Target users & personas** — Ask with options like "B2B", "Consumer", "Internal team", "Other" + free-text.
+- **Goals & success metrics** — Ask what success looks like with open-ended free-text for specifics.
+- **Core use cases** — Ask about key workflows with predefined options if applicable + free-text.
+- **Functional requirements** — Ask what the product must do with free-text for specific requirements.
+- **Non-functional requirements** — Ask about performance, security, scalability, accessibility with options + free-text.
+- **Scope boundaries** — Ask what is out of scope with free-text.
+- **Dependencies & integrations** — Ask about external systems with options + free-text.
+- **Risks & open questions** — Ask what is uncertain using free-text.
+- **Acceptance criteria** — Ask how we'll know implementation is correct using free-text.
 
 Guidelines for the Q&A:
 
@@ -46,8 +48,7 @@ Guidelines for the Q&A:
 - When the user gives a short answer, probe deeper if the area is important.
 - When the user says "I don't know" or "TBD", record it as an open question — do not pressure them.
 - Actively ask about technical constraints and existing code patterns — this context is critical for the AI agent that will consume the PRD.
-- After gathering enough information on the core areas, ask the user if there is anything else they want to cover before you draft the PRD. This is the signal to move to Phase 2.
-- Use `ask_user` with well-crafted multiple-choice options where appropriate to help the user think through choices (e.g., prioritization, target platforms, auth strategies).
+- After gathering enough information on the core areas, use `ask_user` to ask: "Is there anything else you want to cover before I draft the PRD?" with options "Ready to draft", "More to cover", "Need review of notes" + free-text. This is the signal to move to Phase 3.
 - Keep the conversation efficient — typically 5-10 rounds of questions is enough for a solid first draft.
 
 ## Step 3: Codebase Examination
@@ -58,12 +59,14 @@ Before writing anything, examine the codebase:
 2. Search for existing implementations related to the feature domain.
 3. Read the 3–5 most relevant source files found.
 4. Identify: Gaps that the feature needs to fill, other impacted functional areas, and any constraints or patterns that should inform the requirements.
-5. Look for edge cases that have not been identified in the original requirements or user Q&A. Ask the user about those edge cases.
-6. Note any requirements the codebase suggests but the user didn't mention.
+5. Look for edge cases that have not been identified in the original requirements or user Q&A.
+
+**Use `ask_user` to validate codebase insights:**
+Present edge cases and requirements the codebase suggests. Ask: "Based on the codebase, I found these edge cases and patterns. Are there any that affect your feature requirements?" Offer options: "All relevant", "Some don't apply", "Need clarifications" + free-text for specifics.
 
 ## Step 4: Assumption Validation
 
-Identify any assumptions made during initial requirements and Q&A that are counter to existing implementation functionality. For each, ask the user to confirm or revise the assumption based on the codebase insights.
+Identify any assumptions made during initial requirements and Q&A that are counter to existing implementation functionality. For each, use `ask_user` to ask: "I found this assumption: [assumption]. Based on the codebase, [explanation]. Should we revise?" Offer options: "Revise assumption", "Keep as-is", "Need more info" + free-text for details.
 
 ## Step 5: Write prd.md
 
@@ -85,8 +88,8 @@ List all issues found (or "No issues found" if none).
 
 ## Step 7: User Approval
 
-Present the validation findings. Ask:
-"The PRD is complete. Validation issues: [list or 'none']. Do you approve this PRD, or would you like changes? Reply 'approved' or describe changes."
+Present the validation findings. **Use `ask_user` for final approval:**
+Ask: "The PRD is complete. Validation issues: [list or 'none']. Do you approve this PRD?" Offer options: "Approved", "Request changes", "Need clarifications" + free-text for change descriptions.
 
 If changes requested: make them and repeat Steps 5–6.
 
