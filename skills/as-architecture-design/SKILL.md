@@ -21,14 +21,14 @@ Set `SKILLS_DIR`:
 - Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 
 Load planning documents:
-- `{PLAN}/prd.md` — **required**; halt with: "❌ prd.md not found at `{PLAN}/prd.md`. Run the as-prd skill first."
-- `{PLAN}/ux-design.md` — optional; read if present.
+- `{PLAN}/prd.md` — **required**; check `{PLAN}/prd.md` first, then use hidden-aware fallback search (`rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/prd.md'`); halt if not found: "❌ prd.md not found. Run the as-prd skill first."
+- `{PLAN}/ux-design.md` — optional; read if present (use same fallback search logic).
 - `{BASE}/cross-feature/project-context.md` — optional but high priority; if found, note how many rules/conventions were loaded.
 
 Report to the user exactly what was found and loaded.
 
 **Use `ask_user` to confirm readiness to proceed:**
-Present a summary of loaded documents. Ask: "Are you ready to proceed to codebase analysis, or would you like to provide additional context first?" Offer options: "Proceed to Step 2" or "Provide additional context". Allow free-text input for other options.
+Present a summary of loaded documents. Ask: "Are you ready to proceed to codebase analysis, or would you like to provide additional context first?" Offer options: "Proceed to Step 2" or "Provide additional context". Include free-text input for other options.
 
 **Checkpoint:** Wait for the human to confirm before proceeding to Step 2.
 
@@ -50,7 +50,7 @@ Present a summary to the human:
 - **Potential impact areas** — existing code this feature will likely modify.
 
 **Use `ask_user` to validate codebase analysis:**
-Present the summary above. Ask: "Does this match your understanding of the relevant codebase area?" Offer options: "Yes, proceed", "No, here are clarifications", "Can you look at X?". Allow free-text input for specific files or areas to review.
+Present the summary above. Ask: "Does this match your understanding of the relevant codebase area?" Offer options: "Yes, proceed", "No, here are clarifications", "Can you look at X?". Include free-text input for specific files or areas to review.
 
 ---
 
@@ -59,7 +59,7 @@ Present the summary above. Ask: "Does this match your understanding of the relev
 Infer the feature type from the PRD (e.g., UI-heavy, API-only, data pipeline, background job). Ask only the question categories that are relevant given the feature type and what the PRD already covers.
 
 **Use `ask_user` to gather discovery answers:**
-For each relevant question category below, use the `ask_user` tool to ask structured questions. Offer predefined answer options where applicable, but always allow free-text input for nuance or custom answers.
+For each relevant question category below, use the `ask_user` tool to ask structured questions. Offer predefined answer options where applicable, but always include free-text input for nuance or custom answers.
 
 **Question categories:**
 - **Data & State:** "What data does this feature create, read, update, or delete?" with options like "Only reads", "Creates new entities", "Modifies existing data", "All of the above", plus free-text.
@@ -87,11 +87,11 @@ For each decision category below, present the **relevant existing codebase patte
 
 **Deviation handling:** When a proposed decision deviates from an established codebase pattern:
 - Flag explicitly: `⚠️ DEVIATION: This introduces [new pattern]. The existing codebase uses [existing pattern] for similar cases.`
-- **Use `ask_user` to get justification:** Ask: "What is the reason for this deviation?" Allow free-text input. Optionally offer common reasons like "Better performance", "Improved maintainability", "Different requirements", "Legacy compatibility".
+- **Use `ask_user` to get justification:** Ask: "What is the reason for this deviation?" Always include free-text input as an option. Optionally offer common reasons like "Better performance", "Improved maintainability", "Different requirements", "Legacy compatibility".
 - Record all deviations for the Deviations & Justifications section of architecture-design.md.
 
 **Use `ask_user` to validate design decisions:**
-Present all decisions. Ask: "Do these decisions align with your vision?" Offer options: "Approved, proceed", "Request changes", "Need clarifications". Allow free-text input for specific change requests.
+Present all decisions. Ask: "Do these decisions align with your vision?" Offer options: "Approved, proceed", "Request changes", "Need clarifications". Always free-text input for specific change requests as an option.
 
 ---
 
@@ -125,16 +125,20 @@ Run an automated compliance check before presenting for approval.
 ✅ Internal consistency: pass / fail
 ```
 
-For any failures: present the specific issue and use `ask_user` to ask: "Should I correct this issue or accept it as-is?" Offer options: "Correct it", "Accept as-is", "Need more info". Allow free-text input for specific guidance.
+For any failures: present the specific issue and use `ask_user` to ask: "Should I correct this issue or accept it as-is?" Offer options: "Correct it", "Accept as-is", "Need more info". Always include free-text input for specific guidance as an option.
 
 ---
 
 ## Step 7 — Approval
 
 1. Present the validation report summary and the completed architecture-design.md.
-2. **Use `ask_user` for final approval:** Ask: "Does this architecture match your vision?" Offer options: "Approved", "Request changes", "Need clarifications". Allow free-text input for change descriptions.
+2. **Use `ask_user` for final approval:** Ask: "Does this architecture match your vision?" Offer options: "Approved", "Request changes", "Need clarifications". Always include free-text input for change descriptions as an option.
 3. If changes requested: make them, re-run Step 6 validation, then re-ask Step 7.
 4. When approved:
    - Update Status in architecture-design.md to `**Status:** Approved`
-   - Print: `✅ architecture-design.md saved to {PLAN}/architecture-design.md. Next step: run the as-test-plan skill.`
+   - Print: `✅ architecture-design.md saved to {PLAN}/architecture-design.md`
+   - **Use `ask_user` for next workflow step:**
+     Ask: "Would you like to automatically start the as-test-plan skill now to create the Test Plan?"
+     Offer options: "Start as-test-plan now", "Continue later"
+     If user selects "Start as-test-plan now": execute `/as-test-plan {FEAT}`
 

@@ -61,5 +61,9 @@ Print the created directory tree:
     ├── checkpoints/
     └── retros/
 ```
-Print: `Next step: run the as-prd skill to create the Product Requirements Document.`
+
+**Use `ask_user` for next workflow step:**
+Ask: "Would you like to automatically start the as-prd skill now to create the Product Requirements Document, or continue in another session?"
+Offer options: "Start as-prd now", "Continue later"
+If user selects "Start as-prd now": execute `/as-prd {FEAT}` (substitute the actual feature name)
 

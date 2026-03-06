@@ -97,4 +97,8 @@ When approved:
 
 - Update the Status line to `**Status:** Approved`
 - Print: `✅ prd.md approved and saved to {PLAN}/prd.md`
-- Print: `Next step: run the as-architect skill (or as-ux-design first if this is a UI-heavy feature).`
+- **Use `ask_user` for next workflow step:**
+  Ask: "Would you like to automatically start the next skill now? For UI-heavy features, start as-ux-design first. Otherwise, start as-architect."
+  Offer options: "Start as-ux-design now", "Start as-architect now", "Continue later"
+  If user selects "Start as-ux-design now": execute `/as-ux-design {FEAT}`
+  If user selects "Start as-architect now": execute `/as-architecture-design {FEAT}`

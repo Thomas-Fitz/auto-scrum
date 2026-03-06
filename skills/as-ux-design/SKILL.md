@@ -39,4 +39,8 @@ Ask: "Does this UX design capture your vision? Reply 'approved' or describe chan
 If changes requested: make them and re-ask.
 When approved:
 - Update Status line to `**Status:** Approved`
-- Print: `✅ ux-design.md saved to {PLAN}/ux-design.md. Next step: run the as-architect skill.`
+- Print: `✅ ux-design.md saved to {PLAN}/ux-design.md`
+- **Use `ask_user` for next workflow step:**
+  Ask: "Would you like to automatically start the as-architect skill now to create the Architecture Design Document?"
+  Offer options: "Start as-architect now", "Continue later"
+  If user selects "Start as-architect now": execute `/as-architecture-design {FEAT}`
