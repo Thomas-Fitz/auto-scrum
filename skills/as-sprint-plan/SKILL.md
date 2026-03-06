@@ -19,10 +19,10 @@ Set `SKILLS_DIR`:
 - If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
 - Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 
-Read `{PLAN}/prd.md` — halt if missing: "❌ prd.md not found. Run the as-prd skill first."
-Read `{PLAN}/architecture-design.md` — halt if missing: "❌ architecture-design.md not found. Run the as-architect skill first."
-Read `{PLAN}/test-plan.md` — halt if missing: "❌ test-plan.md not found. Run the as-test-plan skill first."
-Read `{BASE}/cross-feature/project-context.md` if present.
+Read `{PLAN}/prd.md` (check `{PLAN}/prd.md` first, then use hidden-aware fallback search: `rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/prd.md'`) — halt if missing: "❌ prd.md not found. Run the as-prd skill first."
+Read `{PLAN}/architecture-design.md` (use same fallback search logic) — halt if missing: "❌ architecture-design.md not found. Run the as-architect skill first."
+Read `{PLAN}/test-plan.md` (use same fallback search logic) — halt if missing: "❌ test-plan.md not found. Run the as-test-plan skill first."
+Read `{BASE}/cross-feature/project-context.md` if present (use fallback search if needed).
 
 ## Step 2: Epic & Story Decomposition
 Analyze the PRD functional requirements and design to identify epics and stories.
@@ -60,4 +60,9 @@ Print summary: number of epics, total stories, list of all story keys.
 **Use `ask_user` for approval:**
 Ask: "Does this sprint plan look right?" Offer options: "Approved", "Request changes", "Need clarifications" + free-text for change descriptions.
 
-When approved: Print `✅ Sprint plan saved. Next step: run the as-pipeline skill with the feature name to begin autonomous execution.`
+When approved: Print `✅ Sprint plan saved.`
+
+**Use `ask_user` for next workflow step:**
+Ask: "Would you like to automatically start the as-pipeline skill now to begin autonomous execution?"
+Offer options: "Start as-pipeline now", "Continue later"
+If user selects "Start as-pipeline now": execute `/as-pipeline {FEAT}`

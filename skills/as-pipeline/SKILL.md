@@ -41,10 +41,16 @@ Set:
 - `PLAN = {BASE}/features/{FEAT}/planning/`
 - `IMPL = {BASE}/features/{FEAT}/implementation/`
 
-Ensure `.auto-scrum/` is listed in the project's `.gitignore`: if `.gitignore` does not exist or does not contain `.auto-scrum/`, append the line `.auto-scrum/` to it. This prevents auto-scrum artifacts from being accidentally committed.
+Ensure `.auto-scrum/` is listed in the project's `.gitignore` by checking:
+
+```bash
+git check-ignore -v .auto-scrum/
+```
+
+if `.gitignore` does not exist or does not contain `.auto-scrum/`, append the line `.auto-scrum/` to it. This prevents auto-scrum artifacts from being accidentally committed.
 
 ## Step 2: Implementation Readiness Check
-Verify all of the following exist:
+Verify all of the following exist (use hidden-aware fallback search for any missing file: `rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/prd.md'`):
 - `{IMPL}/sprint-status.yaml`
 - `{PLAN}/prd.md`
 - `{PLAN}/architecture-design.md`
@@ -101,7 +107,7 @@ For each story in this epic (in sprint-status.yaml order, status in [`backlog`, 
    - **Design Refs** — the specific sections/groups listed for this story
    - **Test Cases** — the TC-* IDs listed for this story
    - **AC IDs** — the specific AC IDs listed for this story
-   Then open each planning doc and extract the exact content those refs point to:
+   Then open each planning doc and extract the exact content those refs point to (use hidden-aware fallback search for any file if needed: `rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/*'`):
    - From `{PLAN}/architecture-design.md`: copy the full text of each referenced section/group
    - From `{PLAN}/test-plan.md`: copy the full row/description for each TC-* ID
    - From `{PLAN}/prd.md`: copy the exact acceptance criterion text for each AC ID
@@ -223,3 +229,8 @@ Print final summary:
    Review cycles total: {R}
    See {IMPL}/pipeline-report.md for full details.
 ```
+
+**Use `ask_user` for next workflow step:**
+Ask: "Pipeline execution is complete! Would you like to create documentation for this feature using as-tech-writer, or are you finished?"
+Offer options: "Start as-tech-writer now", "Finished - all done", "Continue later"
+If user selects "Start as-tech-writer now": execute `/as-tech-writer {FEAT}`
