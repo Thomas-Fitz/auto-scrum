@@ -89,10 +89,14 @@ For each epic in `sprint-status.yaml` order where epic status != `done`:
 
 ### 5a: Context Compaction
 Before the first story of each epic:
+
 1. Read the checkpoint template at `{SKILLS_DIR}/as-pipeline/templates/checkpoint.md`. Write `{IMPL}/checkpoints/checkpoint-epic-{N}.md` using that template, substituting all `{placeholder}` values with current runtime values.
 
 2. Print `[COMPACTING CONTEXT — re-reading checkpoint for Epic {N}]`
-3. Re-read: the checkpoint file, `sprint-status.yaml`, the current epic section from `epic-breakdown.md`, and relevant sections of `architecture-design.md`.
+
+3. Compact your context - what you did before is no longer as relevant. Compact your working memory to make room in the context window for upcoming work.
+
+4. Re-read: the checkpoint file, `sprint-status.yaml`, the current epic section from `epic-breakdown.md`, and relevant sections of `architecture-design.md`.
 
 ### 5b: Previous Epic Learnings (Epic N > 1)
 Find `{IMPL}/retros/epic-{N-1}-retro-*.md`. If found, extract the SMART action items from its "SMART Action Items for Next Epic" section. Note them — they will be included in the first story of this epic.

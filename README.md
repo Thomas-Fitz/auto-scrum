@@ -1,6 +1,6 @@
 # auto-scrum
 
-Auto-Scrum is a collection of GitHub Copilot skills that break down the software development lifecycle of a feature change for AI agents. Humans drive all planning decisions. AI agents handle autonomous execution.
+Auto-Scrum turns a complex code change into a structured development plan your AI agents can actually handle. Humans drive all planning decisions. AI agents handle autonomous execution.
 
 If [BMAD](https://github.com/bmad-code-org/BMAD-METHOD) is lawful and [GasTown](https://github.com/steveyegge/gastown) is chaotic, Auto-Scrum aims to be neutral.
 
