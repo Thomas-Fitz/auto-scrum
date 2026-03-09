@@ -30,24 +30,6 @@ cp -r skills/as-* ~/.claude/skills/
 
 Invoke them by asking Copilot CLI to use a skill by name (e.g. *"use the as-new skill"*) or via `/as-new`. You may need to restart your terminal or Copilot CLI for them to show up.
 
-### Global Install
-
-Copy the skill files into your `~/.copilot/skills/` directory:
-
-```bash
-cp -r skills/as-* ~/.copilot/skills/
-```
-
-Invoke them by asking Copilot CLI to use a skill by name (e.g. *"use the as-prd skill"*) or via `/skills`. You may need to restart your terminal or Copilot CLI for them to show up.
-
-### Project Specific Install
-
-Copy the skill files into your project:
-
-```bash
-cp -r skills/ your-project/.github/copilot/skills/
-```
-
 Then customize `.auto-scrum/config.yml` for your project (created after your first /as-new command):
 
 ```yaml
