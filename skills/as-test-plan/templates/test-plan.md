@@ -1,8 +1,9 @@
 # Test Plan: {feature-name}
 
 **References:** [prd.md](./prd.md), [architecture-design.md](./architecture-design.md)
+**Status:** Draft — Pending Approval
 **Test Framework:** [from project-context or inferred from codebase scan]
-**Existing Coverage:** [Summary of existing test files for this feature, if any]
+**Existing Coverage:** [summary of existing test files for this feature, if any]
 
 ---
 
@@ -11,30 +12,73 @@
 [Note: Indicate which ACs are already covered by existing tests and which are new]
 
 ## 2. Acceptance Criteria Coverage Matrix
-| AC ID | Description | Test Type | Test Case Name | Pass Condition | Existing? |
-|-------|-------------|-----------|----------------|----------------|-----------|
-| AC-1  | ...         | Unit      | ...            | ...            | No        |
 
-_Every AC from prd.md must have ≥1 row in this table. Mark "Yes" if already covered by existing tests._
+| AC ID | Description | Priority | Test Type | Scenario Name | Existing? |
+|-------|-------------|----------|-----------|---------------|-----------|
+| AC-1  | ...         | P0       | ...       | ...           | No        |
+
+_Every AC from prd.md must have at least one row. Mark "Yes" if already covered by existing tests._
 
 ## 3. Unit Tests
-[For each unit test case: file to create, function/class to test, inputs, expected outputs, edge cases to cover]
-[Note: Only list new test cases not already covered by existing tests]
+
+[For each unit test scenario: function/class under test, inputs, expected outputs, edge cases. Only list new scenarios not covered by existing tests.]
+
+```
+SCENARIO: [Name]
+  GIVEN [precondition]
+  WHEN [action]
+  THEN [expected outcome]
+  AC: [AC-N]
+  PRIORITY: [P0-P3]
+  TYPE: unit
+```
 
 ## 4. Integration Tests
-[For each integration test case: components under test, setup/teardown, steps, expected state after]
-[Note: Only list new test cases not already covered by existing tests]
+
+[For each integration test: components under test, setup/teardown, expected state changes. Only list new scenarios.]
+
+```
+SCENARIO: [Name]
+  GIVEN [precondition]
+  WHEN [action]
+  THEN [expected outcome]
+  AC: [AC-N]
+  PRIORITY: [P0-P3]
+  TYPE: integration
+```
 
 ## 5. End-to-End Tests
-[For each E2E test case: user journey tested, preconditions, steps, expected UI/system state]
-[Note: Only list new test cases not already covered by existing tests]
+
+[For each E2E test case: user journey tested, preconditions, steps, expected system state. Only list new scenarios.]
+
+```
+SCENARIO: [Name]
+  GIVEN [precondition]
+  WHEN [action]
+  THEN [expected outcome]
+  AC: [AC-N]
+  PRIORITY: [P0-P3]
+  TYPE: e2e
+```
 
 ## 6. Edge Cases & Negative Tests
-[Error scenarios, boundary conditions, permission checks, missing inputs]
 
-## 7. Pass/Fail Criteria
-- All unit tests pass: **required**
-- All integration tests pass: **required**
-- All E2E tests pass: **required**
+[Error scenarios, boundary conditions, invalid inputs, impossible states, recovery from failures. Each in GIVEN-WHEN-THEN format.]
+
+## 7. Regression Impact
+
+### Existing Files Affected
+| File | Existing Tests? | Risk | Regression Scenario Needed? |
+|------|----------------|------|-----------------------------|
+
+### Regression Scenarios
+[Scenarios that verify existing behavior is preserved after this feature's changes are integrated]
+
+## 8. Pass/Fail Criteria
+
+- All P0 scenarios pass: **required for merge**
+- All P1 scenarios pass: **required for merge**
+- All P2 scenarios pass: **required for release**
+- P3 scenarios: best effort
+- No flaky tests (any test that fails intermittently must be fixed or removed)
 - Code coverage ≥ [X]%: [target from project-context or 80% default]
-- No HIGH/MEDIUM security issues found in code review

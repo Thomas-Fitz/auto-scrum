@@ -22,12 +22,67 @@
 [Endpoint definitions: method, path, request shape, response shape, error codes. Reference existing API conventions.]
 
 ## 5. Novel Patterns
-[Any new patterns being introduced. Each must reference why an existing pattern was insufficient.]
+[Any new patterns being introduced that don't have standard solutions in the codebase. If none, mark N/A.]
 
-## 6. Implementation Notes
+### [Pattern Name]
+- **Purpose:** [What problem this pattern solves]
+- **Why existing patterns are insufficient:** [What was tried or considered and why it doesn't work]
+- **Components:** [List each component involved and its responsibility]
+- **Data Flow:** [How data moves between components — sequence diagram if complex]
+- **State Management:** [How state is tracked and transitioned — state machine diagram if applicable]
+- **Edge Cases & Failure Modes:** [What can go wrong and how the pattern handles it]
+- **Implementation Guide:**
+```
+[Concrete code example showing the pattern in action — enough for a dev agent to implement without ambiguity]
+```
+[Repeat for each novel pattern]
+
+## 6. Cross-Cutting Concerns
+[Mandatory patterns that all code for this feature must follow. Each must include a concrete code example.]
+
+### Error Handling
+[Strategy: try-catch, result objects, signal-based, global handler. What's recoverable vs fatal.]
+```
+[Code example showing the error handling pattern]
+```
+
+### Logging & Debug
+[Log levels, format, destination. What gets logged at each level.]
+```
+[Code example showing the logging pattern]
+```
+
+### Event/Signal Conventions
+[Signal naming convention, event payload structure, sync vs async. How components subscribe and unsubscribe.]
+```
+[Code example showing signal declaration and emission]
+```
+
+### Configuration & Tuning
+[Where tunable values live (constants file, config, environment variables, data-driven definitions). How they are structured and accessed.]
+
+## 7. Implementation Patterns
+[Consistency rules that all agents must follow when implementing this feature. Every pattern must include a concrete code example.]
+
+### Naming Conventions
+[File naming, class naming, function naming, variable naming for this feature's domain]
+
+### Code Organization
+[Where new files go, how they relate to existing structure, test file locations]
+
+### Communication Patterns
+[How this feature's components communicate — events, direct calls, message bus. Must be consistent with existing codebase patterns.]
+```
+[Code example showing the communication pattern]
+```
+
+### Anti-Patterns to Avoid
+[Known pitfalls relevant to this feature. What NOT to do and why.]
+
+## 8. Implementation Notes
 [Key constraints and decisions the dev agent must follow. File paths to create/modify. Sequencing guidance.]
 
-## 7. Codebase Impact
+## 9. Codebase Impact
 
 ### Files Modified
 [List of existing files that will be changed, with brief description of what changes]
@@ -38,14 +93,14 @@
 ### Files Deleted
 [Any files to be removed, with rationale. If none: N/A]
 
-## 8. Pattern Alignment
+## 10. Pattern Alignment
 [How this design follows established codebase conventions. Reference specific existing files/components as examples.]
 
 ### Patterns Followed
 | Area | Existing Pattern | How This Feature Follows It | Reference |
 |------|-----------------|----------------------------|-----------|
 
-## 9. Deviations & Justifications
+## 11. Deviations & Justifications
 [Any place where this design departs from existing patterns. Required for each deviation identified in Step 4.]
 
 ### Deviations

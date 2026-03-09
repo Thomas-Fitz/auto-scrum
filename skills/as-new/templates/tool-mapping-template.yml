@@ -1,0 +1,10 @@
+# Maps generic tool names used in skills to platform-specific tool names.
+# Edit these values if your platform uses different tool names.
+
+# Set your platform in .auto-scrum/config.yml under auto_scrum.platform
+
+copilot:
+  ask_user: ask_user
+
+claude:
+  ask_user: AskUserQuestion

@@ -20,6 +20,8 @@ Set `SKILLS_DIR`:
 - If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
 - Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 
+**Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
+
 Load planning documents:
 - `{PLAN}/prd.md` — **required**; check `{PLAN}/prd.md` first, then use hidden-aware fallback search (`rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/prd.md'`); halt if not found: "❌ prd.md not found. Run the as-prd skill first."
 - `{PLAN}/ux-design.md` — optional; read if present (use same fallback search logic).
@@ -85,6 +87,29 @@ For each decision category below, present the **relevant existing codebase patte
 - **State management:** client-side and server-side state, following established patterns.
 - **Integration points:** how this feature connects to other parts of the system.
 
+**Cross-cutting concerns (address for every feature):**
+
+These decisions affect all code written for this feature and must be consistent with the rest of the codebase. If existing patterns were found in Step 2, default to them. If not, establish them now:
+
+- **Error handling:** How does this feature handle errors and edge cases? What's recoverable vs fatal? Specify the pattern (try-catch, result objects, signal-based, global handler) and provide a concrete code example.
+- **Logging/debug:** What logging approach does this feature use? Log levels, format, destination. Provide a concrete code example.
+- **Event/signal conventions:** How do this feature's components communicate? Signal naming conventions, event payload structure, sync vs async. Provide concrete code examples showing the naming pattern.
+- **Configuration/tuning values:** How are this feature's tunable values stored (hardcoded constants, config files, environment variables, data-driven definitions)? Where do they live?
+
+**Novel pattern design (when applicable):**
+
+If this feature requires patterns that don't have standard solutions in the codebase, design them collaboratively with the user:
+
+1. Identify the core components involved in the novel pattern.
+2. Map the data flow between components.
+3. Design the state management approach (state machine diagram if complex).
+4. Create sequence diagrams for complex interaction flows.
+5. Define the interfaces and contracts between components.
+6. Consider edge cases and failure modes.
+7. Write a concrete implementation guide with code examples sufficient for an AI dev agent to build without ambiguity.
+
+Document each novel pattern with: pattern name, purpose, components, data flow, state management, example code, and which parts of the feature use it.
+
 **Deviation handling:** When a proposed decision deviates from an established codebase pattern:
 - Flag explicitly: `⚠️ DEVIATION: This introduces [new pattern]. The existing codebase uses [existing pattern] for similar cases.`
 - **Use `ask_user` to get justification:** Ask: "What is the reason for this deviation?" Always include free-text input as an option. Optionally offer common reasons like "Better performance", "Improved maintainability", "Different requirements", "Legacy compatibility".
@@ -99,7 +124,7 @@ Present all decisions. Ask: "Do these decisions align with your vision?" Offer o
 
 **Output file must be named `architecture-design.md`** (not architecture.md). Write `{PLAN}/architecture-design.md`. Narrate what you're writing as you go.
 
-> Always include all 9 sections. Mark N/A for sections with no content — do not omit sections.
+> Always include all sections from the template. Mark N/A for sections with no content — do not omit sections.
 
 Read the template at `{SKILLS_DIR}/as-architecture-design/templates/architecture-design.md`. Write `{PLAN}/architecture-design.md` using its full content, substituting `{feature-name}`. Include the `ux-design.md` reference only if that file exists.
 
@@ -113,8 +138,9 @@ Run an automated compliance check before presenting for approval.
 1. **project-context.md compliance:** For each rule/convention in `project-context.md`, verify the design doesn't violate it. List any conflicts.
 2. **Live codebase alignment:** For each design section, verify the proposed patterns are consistent with actual code found in Step 2.
 3. **Deviation completeness:** Confirm every deviation identified in Step 4 has a Deviations & Justifications entry in the document.
-4. **Codebase impact completeness:** Confirm the Codebase Impact section (§7) accounts for all files touched by decisions made in Step 4.
+4. **Codebase impact completeness:** Confirm the Codebase Impact section (§9) accounts for all files touched by decisions made in Step 4.
 5. **Internal consistency:** Check for contradictions between sections (e.g., a Technology Decision that conflicts with a Pattern Alignment claim).
+6. **No placeholders:** Scan the entire document for placeholder text — `{{placeholder}}`, `TODO`, `TBD`, `[fill in]`, or any template markers that were not replaced with actual content. Every section must have real content or be explicitly marked N/A.
 
 **Output the validation report:**
 ```
@@ -123,6 +149,7 @@ Run an automated compliance check before presenting for approval.
 ✅ Deviations documented: N / N
 ✅ Codebase impact completeness: pass / fail
 ✅ Internal consistency: pass / fail
+✅ No placeholders: pass / fail (N remaining)
 ```
 
 For any failures: present the specific issue and use `ask_user` to ask: "Should I correct this issue or accept it as-is?" Offer options: "Correct it", "Accept as-is", "Need more info". Always include free-text input for specific guidance as an option.

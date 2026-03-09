@@ -16,6 +16,9 @@ Read `.auto-scrum/config.yml` (warn if missing, use `.auto-scrum` default).
 Set `SKILLS_DIR`:
 - If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
 - Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
+
+**Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
+
 Read `{PLAN}/prd.md` — if it doesn't exist, halt with: "❌ PRD not found at {PLAN}/prd.md. Run the as-prd skill first."
 
 Check PRD Status line:

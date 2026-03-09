@@ -22,9 +22,10 @@ so that {benefit}.
 
 ## Dev Notes
 **Architecture:** [Paste the exact architecture-design.md section content from the Design Refs — not a link, the actual text/code snippets/before-after examples]
+**Anti-patterns to avoid:** [Paste the Anti-Patterns to Avoid section from architecture-design.md if the story touches any of those areas]
 **Files to modify:** [Exact file paths, no vague references]
 **Files to create:** [Exact file paths]
-**Test cases to satisfy:** [For each TC-* ID from traceability columns: paste the full test case description/scenario from test-plan.md]
+**Test cases to satisfy:** [For each test scenario from traceability columns: paste the full GIVEN-WHEN-THEN scenario from test-plan.md, including its test type (unit/integration/e2e)]
 **Testing approach:** [Framework, test file locations, what to assert]
 **Edge cases:** [Specific edge cases to handle]
 **Integration points:** [What this story touches that affects other components]

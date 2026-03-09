@@ -28,7 +28,7 @@ Each story requires exactly:
 These are never skipped, merged, or combined across stories.
 
 **Rule 4 — Sub-agents are dispatched via the Task tool.**
-Use `agent_type: general-purpose` for both dev and reviewer sub-agents. Never attempt to perform their responsibilities inline.
+Use `agent_type: general-purpose` for both dev and reviewer sub-agents. Never attempt to perform their responsibilities inline. On fix cycles (review cycle 2+), **resume** existing sub-agents using their stored agent IDs instead of spawning fresh ones — this preserves their prior context and avoids re-reading the entire codebase. If your platform does not support agent resumption, dispatch a fresh agent instead.
 
 ---
 
@@ -84,6 +84,8 @@ Set `SKILLS_DIR`:
 - If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
 - Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 
+**Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
+
 ## Step 5: Per-Epic Loop
 For each epic in `sprint-status.yaml` order where epic status != `done`:
 
@@ -109,11 +111,11 @@ For each story in this epic (in sprint-status.yaml order, status in [`backlog`, 
 2. If not the first story of the entire pipeline: read the previous story's file, specifically its Dev Agent Record section.
 3. Read the traceability columns for this story from `{IMPL}/epic-breakdown.md`:
    - **Design Refs** — the specific sections/groups listed for this story
-   - **Test Cases** — the TC-* IDs listed for this story
+   - **Test Cases (Type)** — the scenario names and their test types listed for this story
    - **AC IDs** — the specific AC IDs listed for this story
    Then open each planning doc and extract the exact content those refs point to (use hidden-aware fallback search for any file if needed: `rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/*'`):
    - From `{PLAN}/architecture-design.md`: copy the full text of each referenced section/group
-   - From `{PLAN}/test-plan.md`: copy the full row/description for each TC-* ID
+   - From `{PLAN}/test-plan.md`: copy the full GIVEN-WHEN-THEN scenario for each test case, including its type
    - From `{PLAN}/prd.md`: copy the exact acceptance criterion text for each AC ID
    This extracted content is what you will embed directly in the story file — do not leave vague pointers like "see architecture-design.md §3"; paste the substance inline.
 4. Read the story template at `{SKILLS_DIR}/as-pipeline/templates/story-template.md`. Write `{IMPL}/stories/{story-key}.md` using that template, populating all fields with the content extracted in steps 1–3 above.
@@ -141,7 +143,7 @@ Task tool:
     substituting {IMPL}, {BASE}, {PLAN}, and {story-key} with their current values.]
 ```
 
-After the Task completes: read the story file. Verify story status is `review` in sprint-status.yaml. If not, re-dispatch once more.
+After the Task completes: **store the returned agent ID as `DEV_AGENT_ID`**. Read the story file. Verify story status is `review` in sprint-status.yaml. If not, re-dispatch once more (and update `DEV_AGENT_ID` with the new agent ID).
 
 #### Step 5c-iii: Git Commit
 Based on `git.commit_frequency`:
@@ -164,17 +166,40 @@ Initialize `review_cycles = 0`.
   Increment `review_cycles`.
 
   Dispatch reviewer sub-agent using the **Task tool**:
-  ```
-  Task tool:
-    agent_type: general-purpose
-    prompt: |
-      [Read `{SKILLS_DIR}/as-pipeline/prompts/reviewer-agent.md` and use its full contents as this prompt,
-      substituting {IMPL}, {story-key}, {review_cycles}, and {PLAN} with their current values.]
-  ```
+
+  - **Cycle 1 (first review):** dispatch a fresh reviewer sub-agent:
+    ```
+    Task tool:
+      agent_type: general-purpose
+      prompt: |
+        [Read `{SKILLS_DIR}/as-pipeline/prompts/reviewer-agent.md` and use its full contents as this prompt,
+        substituting {IMPL}, {story-key}, {review_cycles}, and {PLAN} with their current values.]
+    ```
+    **Store the returned agent ID as `REVIEWER_AGENT_ID`.**
+
+  - **Cycle 2+ (subsequent reviews):** **resume** the existing reviewer sub-agent instead of spawning a new one (if your platform supports agent resumption; otherwise dispatch fresh):
+    ```
+    Task tool:
+      resume: {REVIEWER_AGENT_ID}
+      prompt: |
+        Review cycle {review_cycles}. Re-read the story file at {IMPL}/stories/{story-key}.md
+        and sprint-status.yaml. The dev agent has applied fixes since your last review.
+        Follow your review process again, focusing only on files changed since the last cycle.
+    ```
 
   After Task completes: read sprint-status.yaml. Check story status.
   If `done`: exit the review loop.
-  If `in-progress`: re-dispatch dev agent (Step 5c-ii) then loop back to review.
+  If `in-progress`: **resume** the dev agent to apply fixes (if your platform supports agent resumption; otherwise dispatch fresh):
+    ```
+    Task tool:
+      resume: {DEV_AGENT_ID}
+      prompt: |
+        Your implementation was rejected. Read the latest "## Review Cycle {review_cycles} Findings"
+        section in {IMPL}/stories/{story-key}.md. Fix ALL HIGH and MEDIUM issues listed there.
+        Re-run tests for changed files. Update the Dev Agent Record and set story status to 'review'
+        in both the story file and {IMPL}/sprint-status.yaml.
+    ```
+    Then loop back to review.
 
 **After MAX_REVIEW_CYCLES failed review cycles:**
   Make a judgment call:

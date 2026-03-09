@@ -37,6 +37,15 @@ Set `FEAT={feature-name}`.
 
 Set `BASE={artifacts.base_dir}`.
 
+**Read or create tool mapping:**
+- If `{BASE}/tool-mapping.yml` **exists**: read it.
+- If `{BASE}/tool-mapping.yml` **does not exist**:
+  1. Read `{SKILLS_DIR}/as-new/templates/tool-mapping-template.yml`.
+  2. Write `{BASE}/tool-mapping.yml` with the contents of the template.
+
+Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`).
+Resolve tool names: for all tool references in this and subsequent skills, look up the generic tool name under the `{PLATFORM}` key in `tool-mapping.yml` and use the mapped platform-specific tool name.
+
 ## Step 2: Idempotency Check
 Check if `{BASE}/features/{FEAT}/` already exists.
 - If it does: print `⚠️  Feature directory already exists at {BASE}/features/{FEAT}/. No files were overwritten.` and stop.
@@ -62,7 +71,7 @@ Print the created directory tree:
     └── retros/
 ```
 
-**Use `ask_user` for next workflow step:**
+**Use the `ask_user` tool for next workflow step:**
 Ask: "Would you like to automatically start the as-prd skill now to create the Product Requirements Document, or continue in another session?"
 Offer options: "Start as-prd now", "Continue later"
 If user selects "Start as-prd now": execute `/as-prd {FEAT}` (substitute the actual feature name)

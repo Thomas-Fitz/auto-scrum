@@ -18,6 +18,8 @@ Set `SKILLS_DIR`:
 - If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
 - Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
 
+**Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
+
 **Use `ask_user` to determine feature:**
 Ask: "What feature are we writing the PRD for? (This should match the directory name created by as-new)" Accept the user's input as `FEAT={feature-name}`.
 Set `BASE={artifacts.base_dir}`, `PLAN={BASE}/features/{FEAT}/planning/`.

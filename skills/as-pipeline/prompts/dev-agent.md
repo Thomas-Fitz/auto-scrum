@@ -12,6 +12,7 @@ CRITICAL RULES — follow these exactly:
 7. Update the Dev Agent Record in the story file: fill in Agent Model Used, Completion Notes, File List (every file changed/created), Plan Deviations.
 8. Update story status to 'review' in BOTH: the story file (Status: line) AND {IMPL}/sprint-status.yaml.
 9. NEVER lie about tests passing. Tests must actually exist and pass 100%.
+10. **Anti-patterns:** Read the "Anti-Patterns to Avoid" section in the story's architecture notes (Dev Notes). Do not introduce any of the listed patterns.
 
 Supporting context:
 - Sprint status: {IMPL}/sprint-status.yaml
