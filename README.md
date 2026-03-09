@@ -13,11 +13,22 @@ If [BMAD](https://github.com/bmad-code-org/BMAD-METHOD) is lawful and [GasTown](
 
 ## Prerequisites
 
-* **GitHub Copilot** (with coding agent support)
+* **GitHub Copilot** or **Claude Code**
 * **Git** (the project must be a git repository)
-* No other dependencies, packages, or tooling required
 
 ## Installation
+
+Copy the skill files into your global skills directory.
+
+```bash
+# copilot
+cp -r skills/as-* ~/.copilot/skills/
+
+# claude
+cp -r skills/as-* ~/.claude/skills/
+```
+
+Invoke them by asking Copilot CLI to use a skill by name (e.g. *"use the as-new skill"*) or via `/as-new`. You may need to restart your terminal or Copilot CLI for them to show up.
 
 ### Global Install
 
@@ -83,16 +94,16 @@ git:
 | Skill | Agent | Human Involvement | Output |
 | --------- | ------- | ------------------ | -------- |
 | `/as-new <feature-name>` | — | None | Feature directory scaffold |
-| `/as-generate-project-context` | — | Low (review output) | `project-context.md` |
-| `/as-document-project` | — | Low (review output) | Architecture + source tree docs |
+| `/as-generate-project-context` [beta] | — | Low (review output) | `project-context.md` |
+| `/as-document-project` [beta] | — | Low (review output) | Architecture + source tree docs |
 | `/as-prd` | Product Manager | High (Q&A + approval) | `prd.md` |
-| `/as-ux-design` | UX Designer | High (Q&A + approval) | `ux-design.md` |
+| `/as-ux-design` [beta] | UX Designer | High (Q&A + approval) | `ux-design.md` |
 | `/as-architecture-design` | Architect | High (Q&A + approval) | `architecture-design.md` |
 | `/as-test-plan` | QA | Medium (review + approval) | `test-plan.md` |
 | `/as-sprint-plan` | Scrum Master | Medium (review + approval) | `epic-breakdown.md`, `sprint-status.yaml` |
 | `/as-pipeline <feature-name>` | Orchestrator | None (unless hard blocker) | All implementation artifacts |
 | `/as-correct-course` | Orchestrator | None (auto-triggered) or Low (manual) | Sprint Change Proposal in `pipeline-report.md` |
-| `/as-tech-writer` (beta) | Tech Writer | Medium (describe ask) | Docs, diagrams |
+| `/as-tech-writer` [beta] | Tech Writer | Medium (describe ask) | Docs, diagrams |
 
 ## Pipeline Behavior
 
