@@ -13,11 +13,16 @@
 
 ## 2. Acceptance Criteria Coverage Matrix
 
-| AC ID | Description | Priority | Test Type | Scenario Name | Existing? |
-|-------|-------------|----------|-----------|---------------|-----------|
-| AC-1  | ...         | P0       | ...       | ...           | No        |
+| AC ID | Description | Priority | Testability | Test Type | Scenario Name | Existing? |
+|-------|-------------|----------|-------------|-----------|---------------|-----------|
+| AC-1  | ...         | P0       | AUTO        | ...       | ...           | No        |
 
 _Every AC from prd.md must have at least one row. Mark "Yes" if already covered by existing tests._
+
+**Testability values:**
+- `AUTO` — automated test required (code behavior, business logic, APIs, data integrity)
+- `AGENT-REVIEW` — no automated test; reviewer agent verifies by inspection (documentation updates, content changes, config-only changes, visual/structural output)
+- `NONE` — not testable by test or inspection; only build/lint/compile verification (dead code removal, unused import cleanup, comment-only changes)
 
 ## 3. Unit Tests
 
