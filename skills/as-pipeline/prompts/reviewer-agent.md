@@ -13,7 +13,7 @@ REQUIRED STEPS — execute all of them:
    - **Security vulnerabilities** — injection risks, missing validation, auth issues?
    - **Architecture compliance** — does implementation match architecture-design.md?
    - **Anti-patterns** — does the code avoid the pitfalls listed in the architecture doc's "Anti-Patterns to Avoid" section?
-   - **Test quality** — are tests meaningful or just smoke? Do they test real behavior?
+   - **Test quality** — for `AUTO` ACs: are tests meaningful or just smoke? Do they test real behavior? For `AGENT-REVIEW` ACs: read the changed content and confirm it is correct and complete (e.g., documentation is accurate, no broken links, content matches requirements). For `NONE` ACs: confirm the target code or content no longer exists and the build/lint passes. Do NOT flag a missing automated test as an issue for `AGENT-REVIEW` or `NONE` ACs.
    Do not manufacture issues — only report genuine problems.
 4. Classify each issue: HIGH (blocks correctness or security) / MEDIUM (significant gap) / LOW (polish/improvement).
 4b. Fast-path: if ALL ACs are IMPLEMENTED and ALL classified issues are LOW severity — skip steps 5 and 6. Go directly to step 7, document all LOW findings with "no fix needed", then apply rule 8a (APPROVED). LOW issues alone are never grounds for rejection.

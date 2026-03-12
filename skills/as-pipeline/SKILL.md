@@ -115,7 +115,7 @@ For each story in this epic (in sprint-status.yaml order, status in [`backlog`, 
    - **AC IDs** — the specific AC IDs listed for this story
    Then open each planning doc and extract the exact content those refs point to (use hidden-aware fallback search for any file if needed: `rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/*'`):
    - From `{PLAN}/architecture-design.md`: copy the full text of each referenced section/group
-   - From `{PLAN}/test-plan.md`: copy the full GIVEN-WHEN-THEN scenario for each test case, including its type
+   - From `{PLAN}/test-plan.md`: copy the full GIVEN-WHEN-THEN scenario for each test case, including its type and testability level (AUTO / AGENT-REVIEW / NONE). For AGENT-REVIEW ACs, note what the reviewer agent should inspect. For NONE ACs, note what build/lint check confirms completion.
    - From `{PLAN}/prd.md`: copy the exact acceptance criterion text for each AC ID
    This extracted content is what you will embed directly in the story file — do not leave vague pointers like "see architecture-design.md §3"; paste the substance inline.
 4. Read the story template at `{SKILLS_DIR}/as-pipeline/templates/story-template.md`. Write `{IMPL}/stories/{story-key}.md` using that template, populating all fields with the content extracted in steps 1–3 above.
@@ -124,8 +124,9 @@ For each story in this epic (in sprint-status.yaml order, status in [`backlog`, 
    - [ ] Every AC has ≥1 task
    - [ ] No ambiguous language ("should", "might", "probably")
    - [ ] All file paths are specific (exact paths, not "in the auth module")
-   - [ ] Every task is small enough for one TDD cycle
+   - [ ] Every AUTO task is small enough for one TDD cycle; AGENT-REVIEW and NONE tasks have appropriate non-TDD subtasks
    - [ ] A developer could implement without asking questions
+   - [ ] Every task has its Testability level (AUTO / AGENT-REVIEW / NONE) annotated from test-plan.md
 
 6. Update sprint-status.yaml: `{story-key}: ready-for-dev`
 

@@ -48,6 +48,13 @@ Assign each AC a priority level based on risk:
 - AC involves secondary workflows or alternate paths → P2
 - AC involves cosmetic behavior, edge cases, or rare conditions → P3
 
+**Assign each AC a testability level:**
+- `AUTO` — AC describes code behavior, business logic, API contracts, data integrity, or state changes that can be asserted in an automated test. An automated test is required.
+- `AGENT-REVIEW` — AC describes a documentation update, content change, config-only change, or structural output where correctness can only be verified by reading the result. No automated test; the reviewer agent verifies by inspection.
+- `NONE` — AC describes removal of dead code, unused imports, or comment-only changes where the compiler/linter confirms the result. No test or inspection beyond a passing build.
+
+For `AGENT-REVIEW` and `NONE` ACs: skip test scenario design (Steps 4–6) for those ACs. They will not appear in sections 3–6 of the test plan. Document them only in the Coverage Matrix with their testability level and a brief rationale.
+
 ## Step 4: Design Test Scenarios
 For each AC, design one or more test scenarios using the GIVEN-WHEN-THEN format. Group scenarios by test type (unit, integration, E2E).
 
@@ -70,7 +77,7 @@ Read the template at `{SKILLS_DIR}/as-test-plan/templates/test-plan.md`. Write `
 ## Step 6: Coverage & Regression Verification
 
 **Coverage check:**
-Count the scenarios in the Coverage Matrix. Verify: every AC has at least one test scenario. If any AC has no coverage (existing or planned): add a scenario before saving.
+Count the scenarios in the Coverage Matrix. Verify: every `AUTO` AC has at least one test scenario. If any `AUTO` AC has no coverage (existing or planned): add a scenario before saving. `AGENT-REVIEW` and `NONE` ACs do not require test scenarios.
 
 **Regression impact check:**
 Review the architecture document's Codebase Impact section (Files Modified). For each existing file being modified:
@@ -80,14 +87,14 @@ Review the architecture document's Codebase Impact section (Files Modified). For
 
 **Validation report:**
 ```
-AC coverage: {TOTAL_ACS} ACs → {scenario_count} scenarios ({existing_covered} existing, {new_planned} new)
+AC coverage: {TOTAL_ACS} ACs → {auto_count} AUTO ({scenario_count} scenarios, {existing_covered} existing, {new_planned} new) | {agent_review_count} AGENT-REVIEW | {none_count} NONE
 Priority distribution: P0={n}, P1={n}, P2={n}, P3={n}
 Regression risks: {n} existing files with test coverage that may be affected
 No placeholders: pass / fail
 ```
 
 ## Step 7: Summary
-Print: `✅ test-plan.md saved. AC coverage: {TOTAL_ACS} ACs → {scenario_count} scenarios ({existing_covered} existing, {new_planned} new).`
+Print: `✅ test-plan.md saved. AC coverage: {TOTAL_ACS} ACs → {auto_count} AUTO ({scenario_count} scenarios, {existing_covered} existing, {new_planned} new) | {agent_review_count} AGENT-REVIEW | {none_count} NONE.`
 
 **Use `ask_user` for next workflow step:**
 Ask: "Would you like to automatically start the as-sprint-plan skill now to create the Sprint Plan?"
