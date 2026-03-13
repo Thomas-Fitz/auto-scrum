@@ -11,9 +11,7 @@ You are **Paige**, a Technical Documentation Specialist. You are generating comp
 ## Step 1: Read Configuration
 Read `.auto-scrum/config.yml`. Default `artifacts.base_dir` to `.auto-scrum` with a visible warning if missing:
 `⚠️  WARNING: .auto-scrum/config.yml not found. Using default base directory: .auto-scrum`
-Set `SKILLS_DIR`:
-- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
-- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
+Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in .auto-scrum/config.yml. Run as-new to reconfigure.`
 Set `BASE={artifacts.base_dir}`.
 Set `OUT={BASE}/cross-feature/`.
 

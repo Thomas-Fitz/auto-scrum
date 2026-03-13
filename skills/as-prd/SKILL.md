@@ -15,20 +15,15 @@ You are a Product Manager with 10+ years launching B2B and consumer products. Yo
 Read `.auto-scrum/config.yml`. If missing, use defaults and warn:
 `⚠️  WARNING: .auto-scrum/config.yml not found. Using defaults.`
 Set `BASE={artifacts.base_dir}`. If config is missing, default `BASE` to `.auto-scrum`.
-Set `CURRENT_FEATURE_FILE={BASE}/cross-feature/current-feature.txt`.
-Set `SKILLS_DIR`:
-- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
-- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
+Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in .auto-scrum/config.yml. Run as-new to reconfigure.`
 
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
 **Use `ask_user` to determine feature:**
-- If a feature name was already provided in the skill invocation or prompt, use it as `FEAT` and skip the feature question.
-- Otherwise, if `{CURRENT_FEATURE_FILE}` exists and contains a value, set `DEFAULT_FEAT` to that value and use `ask_user` to ask: "I found `{DEFAULT_FEAT}` as the current workflow feature. Which feature should I use for the PRD?" Offer the choice "`{DEFAULT_FEAT}` (Recommended)" and allow free-text input for a different feature name.
-- Otherwise, ask: "What feature are we writing the PRD for? (This should match the directory name created by as-new)" Accept the user's input as `FEAT={feature-name}`.
-- If the user selects the recommended choice, set `FEAT={DEFAULT_FEAT}`.
-- After `FEAT` is set, create `{BASE}/cross-feature/` if needed and write `{CURRENT_FEATURE_FILE}` with `{FEAT}`.
-Set `PLAN={BASE}/features/{FEAT}/planning/`.
+- If a feature name was already provided in the skill invocation or prompt, use it as `FEAT` and skip the feature question. Feature name can be provided explicitly in the prompt or implicitly by invoking the skill with `as-prd {feature-name}`.
+- Otherwise, run `ls -t {BASE}/features/` to list feature directories sorted by most recently modified. Take up to 4 results. Use `ask_user` to ask "Which feature are we writing the PRD for?" and offer each directory name as a choice, plus "Other (type feature name)" as a free-text fallback. Set `FEAT` to the chosen or entered value.
+
+**Context Compaction:** Note `FEAT={FEAT}` in your compaction summary, then execute `/compact`. After compacting, confirm `FEAT` is still set before proceeding.
 
 ## Step 2: Structured Discovery Q&A
 
@@ -55,8 +50,7 @@ Guidelines for the Q&A:
 - Ask focused, specific questions — avoid vague or overly broad prompts.
 - When the user gives a short answer, probe deeper if the area is important.
 - When the user says "I don't know" or "TBD", record it as an open question — do not pressure them.
-- Actively ask about technical constraints and existing code patterns — this context is critical for the AI agent that will consume the PRD.
-- After gathering enough information on the core areas, use `ask_user` to ask: "Is there anything else you want to cover before I draft the PRD?" with options "Ready to draft", "More to cover", "Need review of notes" + free-text. This is the signal to move to Phase 3.
+- After gathering enough information on the core areas, use `ask_user` to ask: "Is there anything else you want to cover before I perform a codebase examination?" with options "Ready to continue", "More to cover", "Need review of notes" + free-text. This is the signal to move to Phase 3.
 - Keep the conversation efficient — typically 5-10 rounds of questions is enough for a solid first draft.
 
 ## Step 3: Codebase Examination
@@ -66,11 +60,11 @@ Before writing anything, examine the codebase:
 1. Read `{BASE}/cross-feature/project-context.md` if it exists.
 2. Search for existing implementations related to the feature domain.
 3. Read the 3–5 most relevant source files found.
-4. Identify: Gaps that the feature needs to fill, other impacted functional areas, and any constraints or patterns that should inform the requirements.
+4. Identify: Gaps that the feature PRD needs to fill, other impacted functional areas, and any constraints or patterns that should inform the requirements.
 5. Look for edge cases that have not been identified in the original requirements or user Q&A.
 
 **Use `ask_user` to validate codebase insights:**
-Present edge cases and requirements the codebase suggests. Ask: "Based on the codebase, I found these edge cases and patterns. Are there any that affect your feature requirements?" Offer options: "All relevant", "Some don't apply", "Need clarifications" + free-text for specifics.
+Present new edge cases and potential requirements from the codebase examination. Ask: "Based on the codebase, I found these edge cases and patterns. Are there any that affect your feature requirements?" Offer options: "All relevant", "Some don't apply", "Need clarifications" + free-text for specifics.
 
 ## Step 4: Assumption Validation
 
@@ -110,3 +104,5 @@ When approved:
   Offer options: "Start as-ux-design now", "Start as-architect now", "Continue later"
   If user selects "Start as-ux-design now": execute `/as-ux-design {FEAT}`
   If user selects "Start as-architect now": execute `/as-architecture-design {FEAT}`
+
+

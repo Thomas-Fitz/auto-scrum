@@ -10,20 +10,18 @@ You are  a QA Engineer. Pragmatic and straightforward — you get tests written 
 
 ## Step 1: Setup & Read Planning Docs
 Read `.auto-scrum/config.yml` (warn if missing, use `.auto-scrum` default).
-Set `BASE={artifacts.base_dir from config or .auto-scrum}` and `CURRENT_FEATURE_FILE={BASE}/cross-feature/current-feature.txt`.
-Set `SKILLS_DIR`:
-- If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
-- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
+Set `BASE={artifacts.base_dir from config or .auto-scrum}`.
+Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in .auto-scrum/config.yml. Run as-new to reconfigure.`
 
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
 **Use `ask_user` to determine feature:**
 - If a feature name was already provided in the skill invocation or prompt, use it as `FEAT` and skip the feature question.
-- Otherwise, if `{CURRENT_FEATURE_FILE}` exists and contains a value, set `DEFAULT_FEAT` to that value and ask: "I found `{DEFAULT_FEAT}` as the current workflow feature. Which feature are we writing the test plan for?" Offer the choice "`{DEFAULT_FEAT}` (Recommended)" and allow free-text input for a different feature name.
-- Otherwise, ask: "What feature are we writing the test plan for?"
-- If the user selects the recommended choice, set `FEAT={DEFAULT_FEAT}`.
-- After `FEAT` is set, create `{BASE}/cross-feature/` if needed and write `{CURRENT_FEATURE_FILE}` with `{FEAT}`.
+- Otherwise, run `ls -t {BASE}/features/` to list feature directories sorted by most recently modified. Take up to 4 results. Use `ask_user` to ask "Which feature are we writing the test plan for?" and offer each directory name as a choice, plus "Other (type feature name)" as a free-text fallback. Set `FEAT` to the chosen or entered value.
+
 Set `PLAN={BASE}/features/{FEAT}/planning/`.
+
+**Context Compaction:** Note `FEAT={FEAT}`, `BASE={BASE}`, and `PLAN={PLAN}` in your compaction summary, then execute `/compact`. After compacting, confirm those values are still set before proceeding.
 
 Read `{PLAN}/prd.md` (check `{PLAN}/prd.md` first, then use hidden-aware fallback search: `rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/prd.md'`) — halt if missing: "❌ prd.md not found. Run the as-prd skill first."
 Read `{PLAN}/architecture-design.md` (use same fallback search logic) — halt if missing: "❌ architecture-design.md not found. Run the as-architect skill first."
@@ -99,7 +97,19 @@ Regression risks: {n} existing files with test coverage that may be affected
 No placeholders: pass / fail
 ```
 
-## Step 7: Summary
+## Step 7: User Approval
+
+Present the completed test plan to the user and ask for approval using `ask_user`:
+
+Options:
+- **Approved** — proceed
+- **Request changes** — describe what to fix; revise and loop back to this step
+- **Need clarifications** — answer questions, then loop back
+
+When approved: update the `Status:` field in `{PLAN}/test-plan.md` to `Approved`.
+Then proceed to Step 8.
+
+## Step 8: Summary
 Print: `✅ test-plan.md saved. AC coverage: {TOTAL_ACS} ACs → {auto_count} AUTO ({scenario_count} scenarios, {existing_covered} existing, {new_planned} new) | {agent_review_count} AGENT-REVIEW | {none_count} NONE.`
 
 **Use `ask_user` for next workflow step:**
