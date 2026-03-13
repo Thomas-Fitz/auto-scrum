@@ -7,7 +7,7 @@ description: Lightweight development skill for small, surgical changes — one-l
 
 **Announce at start:** "I'm using the as-quick-dev skill. I'll orchestrate this change through requirements, architecture, implementation, and review."
 
-You are an orchestrator for small, surgical changes. Your job is to run the right discovery and execution sub-agents in sequence and make sure the human stays informed at each handoff. You never implement or review code yourself.
+You are an orchestrator for small, surgical changes. Your job is to run discovery and the execution sub-agents in sequence and make sure the human stays informed at each handoff. You never implement or review code yourself.
 
 ---
 
@@ -34,19 +34,28 @@ Set `IMPL = {BASE}/quick-dev`.
 
 ---
 
-## Step 2 — Requirements Discovery (as-prd Quick Mode)
+## Step 2 — Requirements Discovery (as-prd abbreviated)
 
-Read `{SKILLS_DIR}/as-prd/SKILL.md`. Find the `## Quick Mode — Invoked by as-quick-dev` section and execute those instructions directly. Execute the Quick Mode steps yourself using `ask_user` to gather requirements from the user.
+Read `{SKILLS_DIR}/as-prd/SKILL.md`. Adopt the PM persona from that skill. Execute **Step 2 (Structured Discovery Q&A)**, **Step 3 (Codebase Examination)**, and **Step 4 (Assumption Validation)** with these quick-dev constraints:
+- Limit to 3–5 questions per steps; prioritize the most critical ones
+- Use `ask_user` to ask questions one at a time
+- Skip Steps 5–7 (writing prd.md, automated validation, user approval)
+- Do not save anything to disk
 
-After completing the Quick Mode steps: read the template at `{SKILLS_DIR}/as-prd/templates/quick-requirements-summary.md` and produce a completed version with all placeholder values replaced by real content. Store as `REQUIREMENTS_SUMMARY`.
+After completing those steps: read the template at `{SKILLS_DIR}/as-prd/templates/quick-requirements-summary.md` and produce a completed version with all placeholder values replaced by real content. Store as `REQUIREMENTS_SUMMARY`.
 
 ---
 
-## Step 3 — Architecture Discovery (as-architecture-design Quick Mode)
+## Step 3 — Architecture Discovery (as-architecture-design abbreviated)
 
-Read `{SKILLS_DIR}/as-architecture-design/SKILL.md`. Find the `## Quick Mode — Invoked by as-quick-dev` section and execute those instructions directly. Execute the Quick Mode steps yourself, using `REQUIREMENTS_SUMMARY` from Step 2 in place of `prd.md` and using `ask_user` for architecture Q&A.
+Read `{SKILLS_DIR}/as-architecture-design/SKILL.md`. Adopt the architect persona from that skill. Execute **Step 2 (Codebase Pattern Analysis)**, **Step 3 (Structured Discovery Q&A)**, and **Step 4 (Design Decisions)** with these quick-dev constraints:
+- Use `REQUIREMENTS_SUMMARY` from Step 2 in place of prd.md
+- Limit to 3–5 questions per step; skip anything already covered in requirements discovery
+- Use `ask_user` to ask questions one at a time
+- Skip Steps 5–7 (writing architecture-design.md, pattern compliance validation, approval)
+- Do not save anything to disk
 
-After completing the Quick Mode steps: read the template at `{SKILLS_DIR}/as-architecture-design/templates/quick-design-summary.md` and produce a completed version with all placeholder values replaced by real content. Store as `DESIGN_SUMMARY`.
+After completing those steps: read the template at `{SKILLS_DIR}/as-architecture-design/templates/quick-design-summary.md` and produce a completed version with all placeholder values replaced by real content. Store as `DESIGN_SUMMARY`.
 
 ---
 
@@ -75,50 +84,7 @@ If cancelled: stop with `❌ Change cancelled.`
 
 ## Step 5 — Write Story File
 
-Write a story file at `{IMPL}/stories/{STORY_KEY}.md` using the pipeline's story structure. Populate all fields from `REQUIREMENTS_SUMMARY` and `DESIGN_SUMMARY`:
-
-```markdown
-# Quick-Dev Story: {STORY_KEY}
-
-Status: ready-for-dev
-
-## Story
-As a developer,
-I want to {change description from REQUIREMENTS_SUMMARY},
-so that {why from REQUIREMENTS_SUMMARY}.
-
-## Acceptance Criteria
-{List each AC from REQUIREMENTS_SUMMARY, numbered to match AC-1, AC-2, etc.}
-
-## Tasks / Subtasks
-{For each file in "Files to modify" / "Files to create" from DESIGN_SUMMARY, create a task.
- Assign testability based on DESIGN_SUMMARY testing approach:
- - Code changes with unit/integration tests → AUTO (use TDD subtasks: failing test, implement, refactor)
- - Doc/config/copy changes → AGENT-REVIEW (implement and verify build)
- - Removal of dead code or unused imports → NONE (remove and verify build/lint)}
-
-## Dev Notes
-**Architecture:** {Implementation approach from DESIGN_SUMMARY}
-**Anti-patterns to avoid:** {Pattern deviations from DESIGN_SUMMARY, framed as what to avoid — or "None"}
-**Files to modify:** {from DESIGN_SUMMARY}
-**Files to create:** {from DESIGN_SUMMARY, or "None"}
-**Test cases to satisfy:** {Testing approach from DESIGN_SUMMARY — include type and what to assert}
-**Testing approach:** {from DESIGN_SUMMARY}
-**Edge cases:** {from DESIGN_SUMMARY}
-**Integration points:** {Integration risks from DESIGN_SUMMARY}
-
-### Previous Learnings
-N/A — as-quick-dev session
-
-### References
-- Derived from as-quick-dev session: Requirements Summary and Design Summary above
-
-## Dev Agent Record
-### Agent Model Used
-### Completion Notes
-### File List
-### Plan Deviations
-```
+Read the template at `{SKILLS_DIR}/as-quick-dev/templates/story.md`. Populate all placeholder values from `REQUIREMENTS_SUMMARY` and `DESIGN_SUMMARY`, then write the result to `{IMPL}/stories/{STORY_KEY}.md`.
 
 > ⚠️ Do NOT create a `sprint-status.yaml`. The dev and reviewer agents will update story status in the story file only.
 
@@ -202,20 +168,6 @@ After the reviewer completes: read the story file's latest `## Review Cycle N Fi
   Options: "Accept as-is with known issues", "Try one more fix cycle", "Abandon this change".
 
 ---
-
-## Step 8 — Git Commit
-
-**Use `ask_user` to ask about committing:**
-Ask: "The change is done. Would you like to commit it?"
-Offer options: "Yes — commit now", "No — I'll commit manually".
-
-If "Yes — commit now":
-1. Run `git add -A -- ':!{BASE}/quick-dev'` to stage implementation changes, excluding the quick-dev story artifact.
-2. Run `git diff --cached --quiet`. If nothing is staged: print `Nothing to commit.` and stop.
-3. Read the "Completion Notes" from the Dev Agent Record section of `{IMPL}/stories/{STORY_KEY}.md`.
-4. Compose a concise commit message (≤72 chars) based on the Completion Notes. Plain language. No prefixes, no ticket keys, no boilerplate. Do NOT add any `Co-authored-by` or other trailer lines — the commit author must be exclusively the human git user.
-5. Run `git commit -m "{message}"`.
-6. Print: `✅ Committed: {message}`
 
 Print final summary:
 ```
