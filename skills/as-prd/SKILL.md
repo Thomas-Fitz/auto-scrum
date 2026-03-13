@@ -23,6 +23,8 @@ Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's
 - If a feature name was already provided in the skill invocation or prompt, use it as {FEAT} and skip the feature question. Feature name can be provided explicitly in the prompt or implicitly by invoking the skill with `as-prd {feature-name}`.
 - Otherwise, ask: "What feature are we writing the PRD for? (This should match the directory name created by as-new)" Accept the user's input as `{FEAT}={feature-name}`.
 
+**Context Compaction:** Execute `/compact`. Retain: `BASE`, `SKILLS_DIR`, `PLATFORM`, and `FEAT`.
+
 ## Step 2: Structured Discovery Q&A
 
 Begin by understanding what the user wants to build. Ask one focused question at a time with the `ask_user` tool, then adapt follow-up questions based on previous answers. Always offer predefined options where applicable, but allow free-text input for custom answers and nuance.

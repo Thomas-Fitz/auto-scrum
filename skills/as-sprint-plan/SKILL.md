@@ -11,23 +11,22 @@ You are a Technical Scrum Master and Story Preparation Specialist. Crisp and che
 ## Step 1: Setup & Read Planning Docs
 
 Read `.auto-scrum/config.yml` (warn if missing, use `.auto-scrum` default).
-Set `BASE={artifacts.base_dir from config or .auto-scrum}` and `CURRENT_FEATURE_FILE={BASE}/cross-feature/current-feature.txt`.
+Set `BASE={artifacts.base_dir from config or .auto-scrum}`
 Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in .auto-scrum/config.yml. Run as-new to reconfigure.`
 
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
 **Use `ask_user` to determine feature:**
 - If a feature name was already provided in the skill invocation or prompt, use it as `FEAT` and skip the feature question.
-- Otherwise, if `{CURRENT_FEATURE_FILE}` exists and contains a value, set `DEFAULT_FEAT` to that value and ask: "I found `{DEFAULT_FEAT}` as the current workflow feature. Which feature are we sprint-planning?" Offer the choice "`{DEFAULT_FEAT}` (Recommended)" and allow free-text input for a different feature name.
-- Otherwise, ask: "What feature are we sprint-planning?" Accept the user's input as `FEAT={feature-name}`.
-- If the user selects the recommended choice, set `FEAT={DEFAULT_FEAT}`.
-- After `FEAT` is set, create `{BASE}/cross-feature/` if needed and write `{CURRENT_FEATURE_FILE}` with `{FEAT}`.
+- Otherwise, ask: "What feature are we sprint-planning?" Accept the user's input as {FEAT}.
 Set `PLAN={BASE}/features/{FEAT}/planning/`, `IMPL={BASE}/features/{FEAT}/implementation/`.
 
 Read `{PLAN}/prd.md` (check `{PLAN}/prd.md` first, then use hidden-aware fallback search: `rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/prd.md'`) — halt if missing: "❌ prd.md not found. Run the as-prd skill first."
 Read `{PLAN}/architecture-design.md` (use same fallback search logic) — halt if missing: "❌ architecture-design.md not found. Run the as-architect skill first."
 Read `{PLAN}/test-plan.md` (use same fallback search logic) — halt if missing: "❌ test-plan.md not found. Run the as-test-plan skill first."
 Read `{BASE}/cross-feature/project-context.md` if present (use fallback search if needed).
+
+**Context Compaction:** Execute `/compact`. Retain: `BASE`, `SKILLS_DIR`, `PLATFORM`, `FEAT`, `PLAN`, `IMPL`, and the contents of all artifacts loaded above. Those artifacts are saved to disk and can be re-read as needed.
 
 ## Step 2: Dependency Analysis
 

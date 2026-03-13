@@ -63,8 +63,6 @@ Create the following directories:
 - `{BASE}/features/{FEAT}/implementation/checkpoints/`
 - `{BASE}/features/{FEAT}/implementation/retros/`
 
-Write `{CURRENT_FEATURE_FILE}` with `{FEAT}` so subsequent ordered workflow skills can suggest the same feature by default.
-
 ## Step 4: Print summary
 Print the created directory tree:
 ```

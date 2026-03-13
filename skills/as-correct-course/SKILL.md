@@ -16,20 +16,17 @@ Determine mode: if a deviation description was provided as input, use autonomous
 
 ## Step 1: Setup
 Read `.auto-scrum/config.yml` (warn if missing, use `.auto-scrum` default).
-Set `BASE={artifacts.base_dir from config or .auto-scrum}` and `CURRENT_FEATURE_FILE={BASE}/cross-feature/current-feature.txt`.
+Set `BASE={artifacts.base_dir from config or .auto-scrum}`
 Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in .auto-scrum/config.yml. Run as-new to reconfigure.`
 
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
 If **autonomous mode**: use the deviation description and feature name provided in the prompt.
 If **manual mode**:
-- If a feature name was already provided in the skill invocation or prompt, use it as `FEAT`.
-- Otherwise, if `{CURRENT_FEATURE_FILE}` exists and contains a value, set `DEFAULT_FEAT` to that value and use `ask_user` to ask: "I found `{DEFAULT_FEAT}` as the current workflow feature. Which feature is affected by this deviation?" Offer the choice "`{DEFAULT_FEAT}` (Recommended)" and allow free-text input for a different feature name.
+- If a feature name was already provided in the skill invocation or prompt, use it as {FEAT}.
 - Otherwise, ask: "What feature is affected by this deviation?"
-- If the user selects the recommended choice, set `FEAT={DEFAULT_FEAT}`.
 - Then ask: "Describe the deviation you've discovered."
 
-After `FEAT` is set, create `{BASE}/cross-feature/` if needed and write `{CURRENT_FEATURE_FILE}` with `{FEAT}`.
 Set `PLAN={BASE}/features/{FEAT}/planning/`, `IMPL={BASE}/features/{FEAT}/implementation/`.
 
 ## Step 2: Load Context
