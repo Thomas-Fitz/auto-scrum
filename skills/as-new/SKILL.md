@@ -6,7 +6,7 @@ description: Scaffold a new auto-scrum feature artifact directory under .auto-sc
 
 **Announce at start:** "I'm using the as-new skill to scaffold the feature directory."
 
-You are initializing a new auto-scrum feature. Ask the user for the feature name if not already provided (e.g., `user-authentication`).
+You are initializing a new auto-scrum feature. If a feature name was already provided in the skill invocation, use it as `FEAT`. Otherwise, ask the user for the feature name (e.g., `user-authentication`).
 
 ## Step 1: Read Configuration
 
@@ -36,6 +36,7 @@ Set `FEAT={feature-name}`.
   4. Use `.auto-scrum` as the base directory.
 
 Set `BASE={artifacts.base_dir}`.
+Set `CURRENT_FEATURE_FILE={BASE}/cross-feature/current-feature.txt`.
 
 **Read or create tool mapping:**
 - If `{BASE}/tool-mapping.yml` **exists**: read it.
@@ -53,11 +54,14 @@ Check if `{BASE}/features/{FEAT}/` already exists.
 
 ## Step 3: Create Directory Structure
 Create the following directories:
+- `{BASE}/cross-feature/`
 - `{BASE}/features/{FEAT}/planning/`
 - `{BASE}/features/{FEAT}/implementation/`
 - `{BASE}/features/{FEAT}/implementation/stories/`
 - `{BASE}/features/{FEAT}/implementation/checkpoints/`
 - `{BASE}/features/{FEAT}/implementation/retros/`
+
+Write `{CURRENT_FEATURE_FILE}` with `{FEAT}` so subsequent ordered workflow skills can suggest the same feature by default.
 
 ## Step 4: Print summary
 Print the created directory tree:

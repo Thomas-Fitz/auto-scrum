@@ -34,10 +34,14 @@ Use `agent_type: general-purpose` for both dev and reviewer sub-agents. Never at
 
 ## Step 1: Setup
 Read `.auto-scrum/config.yml`. If missing, warn and use defaults.
-Ask for the feature name if not already provided (e.g., `user-authentication`).
+Set `BASE = {artifacts.base_dir}` (default: `.auto-scrum`) and `CURRENT_FEATURE_FILE = {BASE}/cross-feature/current-feature.txt`.
+Determine the feature:
+- If a feature name was already provided in the skill invocation or prompt, use it as `FEAT` and skip the feature question.
+- Otherwise, if `{CURRENT_FEATURE_FILE}` exists and contains a value, set `DEFAULT_FEAT` to that value and use `ask_user` to ask: "I found `{DEFAULT_FEAT}` as the current workflow feature. Which feature should the pipeline execute?" Offer the choice "`{DEFAULT_FEAT}` (Recommended)" and allow free-text input for a different feature name.
+- Otherwise, ask for the feature name (e.g., `user-authentication`).
+- If the user selects the recommended choice, set `FEAT = {DEFAULT_FEAT}`.
+- After `FEAT` is set, create `{BASE}/cross-feature/` if needed and write `{CURRENT_FEATURE_FILE}` with `{FEAT}`.
 Set:
-- `FEAT = {feature-name}`
-- `BASE = {artifacts.base_dir}`
 - `PLAN = {BASE}/features/{FEAT}/planning/`
 - `IMPL = {BASE}/features/{FEAT}/implementation/`
 
