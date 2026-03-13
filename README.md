@@ -34,17 +34,16 @@ Then customize `.auto-scrum/config.yml` for your project (created after your fir
 
 ```yaml
 # Workflow Order
+as-new <feature-name>                      → scaffold artifact directory
+as-prd <feature-name>                      → write Product Requirements Document
+as-ux-design <feature-name>                → optional: UX design doc for UI-heavy features
+as-architect <feature-name>                → write Architecture Design Document
+as-test-plan <feature-name>                → write Test Plan
+as-sprint-plan <feature-name>              → produce Epic Breakdown + Sprint Status
+as-pipeline <feature-name>                 → 🚀 autonomous execution begins
 
-# Quick workflow (for small changes):
-as-quick-dev                                  → surgical change: requirements → architecture → implement → review
-
-as-new <feature-name>                    → scaffold artifact directory
-as-prd <feature-name>                     → write Product Requirements Document
-as-ux-design <feature-name>           → optional: UX design doc for UI-heavy features
-as-architect <feature-name>             → write Architecture Design Document
-as-test-plan <feature-name>             → write Test Plan
-as-sprint-plan <feature-name>          → produce Epic Breakdown + Sprint Status
-as-pipeline <feature-name>               → 🚀 autonomous execution begins
+# Quick Workflow - Small Changes (beta):
+as-quick-dev                               → requirements → architecture → implement → review
 
 ```
 
