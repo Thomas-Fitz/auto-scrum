@@ -72,6 +72,10 @@ agents:
 
 git:
   commit_frequency: never   # task | story | epic | never
+
+auto_scrum:
+  platform: copilot             # 'copilot' | 'claude'
+  skills_dir: ~/.copilot/skills # Set automatically by as-new; update if you move your skills
 ```
 
 ## Skills

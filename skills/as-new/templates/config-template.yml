@@ -27,9 +27,6 @@ pipeline:
 
 auto_scrum:
   platform: copilot             # 'copilot' | 'claude'
-  install_mode: project         # 'project' | 'global'
-                                # project = skills are at .github/copilot/skills/
-                                # global  = skills are at {global_skills_dir}
-  global_skills_dir: ~/.copilot/skills  # only used when install_mode: global
-                                         # change this if you installed skills to a custom path
-                                         # tilde (~) is expanded to the user's home directory
+  skills_dir: ~/.copilot/skills # Path where auto-scrum skills are installed
+                                # Set automatically by as-new; update if you move your skills
+                                # tilde (~) is expanded to the user's home directory

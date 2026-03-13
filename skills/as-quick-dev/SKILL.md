@@ -13,19 +13,17 @@ You are an orchestrator for small, surgical changes. Your job is to run the righ
 
 ## Step 1 — Setup
 
-Probe for `SKILLS_DIR` by checking these directories in order for `as-prd/SKILL.md` (expand `~`):
-1. `~/.copilot/skills`  2. `~/.claude/skills`  3. `.github/copilot/skills`  4. `.claude/skills`
-If none found: default to `.github/copilot/skills` and warn: `⚠️ Could not locate skills directory.`
+Read `.auto-scrum/config.yml`. Set `SKILLS_DIR = {auto_scrum.skills_dir}` (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in .auto-scrum/config.yml. Run as-new to reconfigure.`
+Set `BASE = {artifacts.base_dir}` (default: `.auto-scrum`). Set `PLATFORM = {auto_scrum.platform}` (default: `copilot`).
+**Read tool mapping:** Read `{BASE}/tool-mapping.yml`. For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
-Read `{SKILLS_DIR}/as-setup/SKILL.md` and execute its instructions to resolve `BASE`, `PLATFORM`, config, and tool-mapping.
+> Skip setup steps above if `SKILLS_DIR`, `BASE`, and `PLATFORM` are already resolved from an earlier step this session.
 
-> Skip the probe and as-setup call if `SKILLS_DIR`, `BASE`, and `PLATFORM` are already resolved from a prior as-setup call this session.
-
-Additionally, read the following from `.auto-scrum/config.yml` (these are specific to as-quick-dev):
-- `agents.developer.model` → `DEV_MODEL` (default: `claude-sonnet-4-6`)
-- `agents.reviewer.model` → `REVIEWER_MODEL` (default: `claude-sonnet-4-6`)
-- `agents.developer.type` → `DEV_AGENT_TYPE` (default: `general-purpose`)
-- `agents.reviewer.type` → `REVIEWER_AGENT_TYPE` (default: `general-purpose`)
+Then, read the following from `.auto-scrum/config.yml` (these are specific to as-quick-dev):
+- `agents.developer.model` → `DEV_MODEL`
+- `agents.reviewer.model` → `REVIEWER_MODEL`
+- `agents.developer.type` → `DEV_AGENT_TYPE`
+- `agents.reviewer.type` → `REVIEWER_AGENT_TYPE` 
 
 Read `{BASE}/cross-feature/project-context.md` if it exists. Store its contents as `PROJECT_CONTEXT`. If not found, set `PROJECT_CONTEXT = "Not available"`.
 

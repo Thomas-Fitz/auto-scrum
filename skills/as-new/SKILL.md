@@ -14,13 +14,8 @@ Set `FEAT={feature-name}`.
 
 **Resolve SKILLS_DIR**:
 - If `.auto-scrum/config.yml` exists:
-  - Read it and check `auto_scrum.install_mode`.
-  - If `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
-  - Otherwise: probe the following candidate directories in order and use the first that contains `as-new/templates/config-template.yml` (expand `~` in all paths):
-      1. `~/.copilot/skills`
-      2. `~/.claude/skills`
-      3. `.github/copilot/skills`
-      4. `.claude/skills`
+  - Read it and set `SKILLS_DIR = {auto_scrum.skills_dir}` (expand `~` to the user's home directory).
+  - If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in .auto-scrum/config.yml. Re-run as-new to reconfigure.`
 - If `.auto-scrum/config.yml` does not exist:
   1. Probe candidate skill directories in this order (expand `~` in all paths):
      - `~/.copilot/skills`
@@ -39,6 +34,7 @@ Set `FEAT={feature-name}`.
   3. Write `.auto-scrum/config.yml` with all settings from the base config, then override:
      - `project.name` → `{FEAT}` (set to the feature/project name)
      - `artifacts.base_dir` → `.auto-scrum` (always project-relative)
+     - `auto_scrum.skills_dir` → `{SKILLS_DIR}` (the directory found by probing above)
   4. Use `.auto-scrum` as the base directory.
 
 Set `BASE={artifacts.base_dir}`.
