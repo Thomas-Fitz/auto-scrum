@@ -10,7 +10,7 @@ You are initializing a new auto-scrum feature. If a feature name was already pro
 
 ## Step 1: Read Configuration
 
-Set `FEAT={feature-name}`.
+Remember the feature name as {FEAT} going forward in this session. Retain this through any compaction or summarization steps, unless the user explicitly changes it.
 
 **Resolve SKILLS_DIR**:
 - If `.auto-scrum/config.yml` exists:
@@ -36,9 +36,9 @@ Set `FEAT={feature-name}`.
      - `artifacts.base_dir` → `.auto-scrum` (always project-relative)
      - `auto_scrum.skills_dir` → `{SKILLS_DIR}` (the directory found by probing above)
   4. Use `.auto-scrum` as the base directory.
+  5. Print: `✅ Created .auto-scrum/config.yml with base settings. You can customize this at any time.`
 
 Set `BASE={artifacts.base_dir}`.
-Set `CURRENT_FEATURE_FILE={BASE}/cross-feature/current-feature.txt`.
 
 **Read or create tool mapping:**
 - If `{BASE}/tool-mapping.yml` **exists**: read it.
