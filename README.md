@@ -35,6 +35,9 @@ Then customize `.auto-scrum/config.yml` for your project (created after your fir
 ```yaml
 # Workflow Order
 
+# Quick workflow (for small changes):
+as-quick-dev                                  → surgical change: requirements → architecture → implement → review
+
 as-new <feature-name>                    → scaffold artifact directory
 as-prd <feature-name>                     → write Product Requirements Document
 as-ux-design <feature-name>           → optional: UX design doc for UI-heavy features
@@ -75,6 +78,7 @@ git:
 
 | Skill | Agent | Human Involvement | Output |
 | --------- | ------- | ------------------ | -------- |
+| `/as-quick-dev` [beta] | Senior Developer | Medium (Q&A + approach approval) | No artifacts — direct implementation via dev + reviewer agents |
 | `/as-new <feature-name>` | — | None | Feature directory scaffold |
 | `/as-generate-project-context` [beta] | — | Low (review output) | `project-context.md` |
 | `/as-document-project` [beta] | — | Low (review output) | Architecture + source tree docs |

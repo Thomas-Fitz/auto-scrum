@@ -13,7 +13,12 @@ Read `.auto-scrum/config.yml` (warn if missing, use `.auto-scrum` default).
 Set `BASE={artifacts.base_dir from config or .auto-scrum}` and `CURRENT_FEATURE_FILE={BASE}/cross-feature/current-feature.txt`.
 Set `SKILLS_DIR`:
 - If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
-- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
+- Otherwise (project or unset): probe the following candidate directories in order and use the first that contains `as-prd/SKILL.md` (expand `~` in all paths):
+  1. `~/.copilot/skills`
+  2. `~/.claude/skills`
+  3. `.github/copilot/skills`
+  4. `.claude/skills`
+  If none found: default to `.github/copilot/skills` and warn: `⚠️ Could not locate skills directory. Defaulting to .github/copilot/skills`
 
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
@@ -99,7 +104,19 @@ Regression risks: {n} existing files with test coverage that may be affected
 No placeholders: pass / fail
 ```
 
-## Step 7: Summary
+## Step 7: User Approval
+
+Present the completed test plan to the user and ask for approval using `ask_user`:
+
+Options:
+- **Approved** — proceed
+- **Request changes** — describe what to fix; revise and loop back to this step
+- **Need clarifications** — answer questions, then loop back
+
+When approved: update the `Status:` field in `{PLAN}/test-plan.md` to `Approved`.
+Then proceed to Step 8.
+
+## Step 8: Summary
 Print: `✅ test-plan.md saved. AC coverage: {TOTAL_ACS} ACs → {auto_count} AUTO ({scenario_count} scenarios, {existing_covered} existing, {new_planned} new) | {agent_review_count} AGENT-REVIEW | {none_count} NONE.`
 
 **Use `ask_user` for next workflow step:**

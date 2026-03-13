@@ -16,7 +16,12 @@ Read `.auto-scrum/config.yml` — warn if missing, use `.auto-scrum` as default.
 Set `BASE={artifacts.base_dir from config or .auto-scrum}` and `CURRENT_FEATURE_FILE={BASE}/cross-feature/current-feature.txt`.
 Set `SKILLS_DIR`:
 - If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
-- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
+- Otherwise (project or unset): probe the following candidate directories in order and use the first that contains `as-prd/SKILL.md` (expand `~` in all paths):
+  1. `~/.copilot/skills`
+  2. `~/.claude/skills`
+  3. `.github/copilot/skills`
+  4. `.claude/skills`
+  If none found: default to `.github/copilot/skills` and warn: `⚠️ Could not locate skills directory. Defaulting to .github/copilot/skills`
 
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
@@ -175,3 +180,37 @@ For any failures: present the specific issue and use `ask_user` to ask: "Should 
      Offer options: "Start as-test-plan now", "Continue later"
      If user selects "Start as-test-plan now": execute `/as-test-plan {FEAT}`
 
+
+---
+
+## Quick Mode — Invoked by as-quick-dev
+
+> This section is only executed when as-quick-dev calls this skill. Normal invocations ignore it.
+
+You are running in Quick Mode. Skip all standard steps above. Execute only the steps in this section.
+
+**Context:** as-quick-dev has already resolved `SKILLS_DIR`, `BASE`, and `REQUIREMENTS_SUMMARY` (from as-prd Quick Mode). Use those values in place of prd.md.
+
+### QM-1: Targeted Codebase Scan
+
+Based on `REQUIREMENTS_SUMMARY`, identify and read 3–5 files most likely to be touched by this change.
+
+### QM-2: Architecture Q&A
+
+Ask the user 3–5 focused questions (one at a time with `ask_user`) about:
+1. Where exactly should this change live? (file, function, layer)
+2. Are there existing patterns to follow, or is this a deviation?
+3. Any downstream effects or callers to update?
+4. Error handling / rollback considerations?
+5. (Optional) Testing approach — unit, integration, or none needed?
+
+Do not ask more than 5 questions.
+
+### QM-3: Follow-up Scan
+
+Based on answers, read up to 3 more files if needed to confirm the approach.
+
+### QM-4: Produce Design Summary
+
+Read the template at `{SKILLS_DIR}/as-architecture-design/templates/quick-design-summary.md`.
+Produce a completed version with all placeholder values replaced by real content. Return it to the caller (as-quick-dev). Do not save it to disk.

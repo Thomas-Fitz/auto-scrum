@@ -18,7 +18,12 @@ Set `BASE={artifacts.base_dir}`. If config is missing, default `BASE` to `.auto-
 Set `CURRENT_FEATURE_FILE={BASE}/cross-feature/current-feature.txt`.
 Set `SKILLS_DIR`:
 - If `auto_scrum.install_mode` is `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
-- Otherwise (project or unset): `SKILLS_DIR = .github/copilot/skills`
+- Otherwise (project or unset): probe the following candidate directories in order and use the first that contains `as-prd/SKILL.md` (expand `~` in all paths):
+  1. `~/.copilot/skills`
+  2. `~/.claude/skills`
+  3. `.github/copilot/skills`
+  4. `.claude/skills`
+  If none found: default to `.github/copilot/skills` and warn: `⚠️ Could not locate skills directory. Defaulting to .github/copilot/skills`
 
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
@@ -110,3 +115,33 @@ When approved:
   Offer options: "Start as-ux-design now", "Start as-architect now", "Continue later"
   If user selects "Start as-ux-design now": execute `/as-ux-design {FEAT}`
   If user selects "Start as-architect now": execute `/as-architecture-design {FEAT}`
+
+---
+
+## Quick Mode — Invoked by as-quick-dev
+
+> This section is only executed when as-quick-dev calls this skill. Normal invocations ignore it.
+
+You are running in Quick Mode. Skip all standard steps above. Execute only the steps in this section.
+
+**Context:** as-quick-dev has already resolved `SKILLS_DIR` and `BASE`. Use those values.
+
+### QM-1: Abbreviated Requirements Discovery
+
+Ask the user 3–5 focused questions (one at a time with `ask_user`) to understand:
+1. What is changing and why?
+2. What type of change is this? (bug fix / feature addition / refactor / doc update / config change / other)
+3. Who or what is affected?
+4. Are there any constraints, dependencies, or things that must NOT change?
+5. (Optional follow-up if needed) Any edge cases or failure modes to watch for?
+
+Do not ask more than 5 questions. Stop when you have enough to fill out the Requirements Summary.
+
+### QM-2: Codebase Scan
+
+Read 3–5 files most relevant to the change. Use glob/grep to find them if needed. Note what you find.
+
+### QM-3: Produce Requirements Summary
+
+Read the template at `{SKILLS_DIR}/as-prd/templates/quick-requirements-summary.md`.
+Produce a completed version with all placeholder values replaced by real content. Return it to the caller (as-quick-dev). Do not save it to disk.

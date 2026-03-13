@@ -16,14 +16,20 @@ Set `FEAT={feature-name}`.
 - If `.auto-scrum/config.yml` exists:
   - Read it and check `auto_scrum.install_mode`.
   - If `global`: `SKILLS_DIR = {auto_scrum.global_skills_dir}` (default: `~/.copilot/skills`), then expand `~` to the user's home directory before reading files.
-  - Otherwise: `SKILLS_DIR = .github/copilot/skills`
+  - Otherwise: probe the following candidate directories in order and use the first that contains `as-new/templates/config-template.yml` (expand `~` in all paths):
+      1. `~/.copilot/skills`
+      2. `~/.claude/skills`
+      3. `.github/copilot/skills`
+      4. `.claude/skills`
 - If `.auto-scrum/config.yml` does not exist:
-  1. Probe candidate skill directories in this order:
-     - `~/.copilot/skills` (expand `~` to the user's home directory)
+  1. Probe candidate skill directories in this order (expand `~` in all paths):
+     - `~/.copilot/skills`
+     - `~/.claude/skills`
      - `.github/copilot/skills`
+     - `.claude/skills`
   2. Set `SKILLS_DIR` to the first directory that contains `as-new/templates/config-template.yml`.
-  3. If neither candidate contains that template, halt with:
-     `❌ Could not find as-new config template. Checked ~/.copilot/skills/as-new/templates/config-template.yml and .github/copilot/skills/as-new/templates/config-template.yml.`
+  3. If no candidate contains that template, halt with:
+     `❌ Could not find as-new config template. Checked: ~/.copilot/skills, ~/.claude/skills, .github/copilot/skills, .claude/skills`
 
 **Read or create project config:**
 - If `.auto-scrum/config.yml` **exists**: read it, use `artifacts.base_dir` as the base directory.
