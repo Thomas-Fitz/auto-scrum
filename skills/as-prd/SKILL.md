@@ -20,10 +20,10 @@ Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
 **Use `ask_user` to determine feature:**
-- If a feature name was already provided in the skill invocation or prompt, use it as {FEAT} and skip the feature question. Feature name can be provided explicitly in the prompt or implicitly by invoking the skill with `as-prd {feature-name}`.
-- Otherwise, ask: "What feature are we writing the PRD for? (This should match the directory name created by as-new)" Accept the user's input as `{FEAT}={feature-name}`.
+- If a feature name was already provided in the skill invocation or prompt, use it as `FEAT` and skip the feature question. Feature name can be provided explicitly in the prompt or implicitly by invoking the skill with `as-prd {feature-name}`.
+- Otherwise, run `ls -t {BASE}/features/` to list feature directories sorted by most recently modified. Take up to 4 results. Use `ask_user` to ask "Which feature are we writing the PRD for?" and offer each directory name as a choice, plus "Other (type feature name)" as a free-text fallback. Set `FEAT` to the chosen or entered value.
 
-**Context Compaction:** Execute `/compact`. Retain: `BASE`, `SKILLS_DIR`, `PLATFORM`, and `FEAT`.
+**Context Compaction:** Note `FEAT={FEAT}` in your compaction summary, then execute `/compact`. After compacting, confirm `FEAT` is still set before proceeding.
 
 ## Step 2: Structured Discovery Q&A
 

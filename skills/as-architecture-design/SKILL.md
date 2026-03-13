@@ -20,10 +20,10 @@ Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's
 
 **Use `ask_user` to determine feature:**
 - If a feature name was already provided in the skill invocation or prompt, use it as `FEAT` and skip the feature question.
-- Otherwise, use `ask_user` to ask: "What feature are we designing architecture for?" Accept the user's input as {FEAT}`.
+- Otherwise, run `ls -t {BASE}/features/` to list feature directories sorted by most recently modified. Take up to 4 results. Use `ask_user` to ask "Which feature are we designing architecture for?" and offer each directory name as a choice, plus "Other (type feature name)" as a free-text fallback. Set `FEAT` to the chosen or entered value.
 Set `PLAN={BASE}/features/{FEAT}/planning/`.
 
-**Context Compaction:** Execute `/compact`. Retain: `BASE`, `SKILLS_DIR`, `PLATFORM`, `FEAT`, `PLAN`, and the contents of all artifacts loaded above. Those artifacts are saved to disk and can be re-read as needed.
+**Context Compaction:** Note `FEAT={FEAT}`, `BASE={BASE}`, and `PLAN={PLAN}` in your compaction summary, then execute `/compact`. After compacting, confirm those values are still set before proceeding.
 
 Load planning documents:
 - `{PLAN}/prd.md` — **required**; check `{PLAN}/prd.md` first, then use hidden-aware fallback search (`rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/prd.md'`); halt if not found: "❌ prd.md not found. Run the as-prd skill first."

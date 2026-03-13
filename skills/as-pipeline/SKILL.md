@@ -37,7 +37,7 @@ Read `.auto-scrum/config.yml`. If missing, warn and use defaults.
 Set `BASE = {artifacts.base_dir}` (default: `.auto-scrum`)
 Determine the feature:
 - If a feature name was already provided in the skill invocation or prompt, use it as `FEAT` and skip the feature question.
-- Otherwise, ask for the feature name (e.g., `user-authentication`). Set {FEAT} = user input in kebab-case.
+- Otherwise, run `ls -t {BASE}/features/` to list feature directories sorted by most recently modified. Take up to 4 results. Use `ask_user` to ask "Which feature should the pipeline execute?" and offer each directory name as a choice, plus "Other (type feature name)" as a free-text fallback. Set `FEAT` to the chosen or entered value.
 Set:
 - `PLAN = {BASE}/features/{FEAT}/planning/`
 - `IMPL = {BASE}/features/{FEAT}/implementation/`
@@ -50,7 +50,7 @@ git check-ignore -v .auto-scrum/
 
 if `.gitignore` does not exist or does not contain `.auto-scrum/`, append the line `.auto-scrum/` to it. This prevents auto-scrum artifacts from being accidentally committed.
 
-**Context Compaction:** Execute `/compact`. Retain: `BASE`, `SKILLS_DIR`, `PLATFORM`, `FEAT`, `PLAN`, and `IMPL`. Planning artifacts are saved to disk and will be read in Step 2.
+**Context Compaction:** Note `FEAT={FEAT}`, `BASE={BASE}`, `PLAN={PLAN}`, and `IMPL={IMPL}` in your compaction summary, then execute `/compact`. After compacting, confirm those values are still set before proceeding.
 
 ## Step 2: Implementation Readiness Check
 Verify all of the following exist (use hidden-aware fallback search for any missing file: `rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/prd.md'`):
@@ -95,9 +95,9 @@ Before the first story of each epic:
 
 1. Read the checkpoint template at `{SKILLS_DIR}/as-pipeline/templates/checkpoint.md`. Write `{IMPL}/checkpoints/checkpoint-epic-{N}.md` using that template, substituting all `{placeholder}` values with current runtime values.
 
-2. Execute `/compact`.
+2. Note `FEAT={FEAT}`, `BASE={BASE}`, `PLAN={PLAN}`, `IMPL={IMPL}` in your compaction summary, then execute `/compact`.
 
-3. Re-read: the checkpoint file, `sprint-status.yaml`, the current epic section from `epic-breakdown.md`, and relevant sections of `architecture-design.md`.
+3. Re-read: the checkpoint file, `sprint-status.yaml`, the current epic section from `epic-breakdown.md`, and relevant sections of `architecture-design.md`. Confirm `FEAT`, `BASE`, `PLAN`, and `IMPL` are still set.
 
 ### 5b: Previous Epic Learnings (Epic N > 1)
 Find `{IMPL}/retros/epic-{N-1}-retro-*.md`. If found, extract the SMART action items from its "SMART Action Items for Next Epic" section. Note them — they will be included in the first story of this epic.

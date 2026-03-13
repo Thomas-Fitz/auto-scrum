@@ -16,12 +16,12 @@ Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
 **Use `ask_user` to determine feature:**
-- If a feature name was already provided in the skill invocation or prompt, use it as {FEAT} and skip the feature question.
-- Otherwise, ask: "What feature are we writing the test plan for?" Set as {FEAT}.
+- If a feature name was already provided in the skill invocation or prompt, use it as `FEAT` and skip the feature question.
+- Otherwise, run `ls -t {BASE}/features/` to list feature directories sorted by most recently modified. Take up to 4 results. Use `ask_user` to ask "Which feature are we writing the test plan for?" and offer each directory name as a choice, plus "Other (type feature name)" as a free-text fallback. Set `FEAT` to the chosen or entered value.
 
 Set `PLAN={BASE}/features/{FEAT}/planning/`.
 
-**Context Compaction:** Execute `/compact`. Retain: `BASE`, `SKILLS_DIR`, `PLATFORM`, `FEAT`, `PLAN`, and the contents of all artifacts loaded above. Those artifacts are saved to disk and can be re-read as needed.
+**Context Compaction:** Note `FEAT={FEAT}`, `BASE={BASE}`, and `PLAN={PLAN}` in your compaction summary, then execute `/compact`. After compacting, confirm those values are still set before proceeding.
 
 Read `{PLAN}/prd.md` (check `{PLAN}/prd.md` first, then use hidden-aware fallback search: `rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/prd.md'`) — halt if missing: "❌ prd.md not found. Run the as-prd skill first."
 Read `{PLAN}/architecture-design.md` (use same fallback search logic) — halt if missing: "❌ architecture-design.md not found. Run the as-architect skill first."
