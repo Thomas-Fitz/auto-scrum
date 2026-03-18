@@ -1,6 +1,6 @@
 ---
 name: as-new
-description: Scaffold a new auto-scrum feature artifact directory under .auto-scrum/features/{feature-name}/
+description: Scaffold a new auto-scrum feature artifact directory under ~/.auto-scrum/features/{feature-name}/
 ---
 # as-new — New Feature Scaffold
 
@@ -13,10 +13,10 @@ You are initializing a new auto-scrum feature. If a feature name was already pro
 Remember the feature name as {FEAT} going forward in this session. Retain this through any compaction or summarization steps, unless the user explicitly changes it.
 
 **Resolve SKILLS_DIR**:
-- If `.auto-scrum/config.yml` exists:
+- If `~/.auto-scrum/config.yml` exists:
   - Read it and set `SKILLS_DIR = {auto_scrum.skills_dir}` (expand `~` to the user's home directory).
-  - If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in .auto-scrum/config.yml. Re-run as-new to reconfigure.`
-- If `.auto-scrum/config.yml` does not exist:
+  - If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in ~/.auto-scrum/config.yml. Re-run as-new to reconfigure.`
+- If `~/.auto-scrum/config.yml` does not exist:
   1. Probe candidate skill directories in this order (expand `~` in all paths):
      - `~/.copilot/skills`
      - `~/.claude/skills`
@@ -26,25 +26,27 @@ Remember the feature name as {FEAT} going forward in this session. Retain this t
   3. If no candidate contains that template, halt with:
      `❌ Could not find as-new config template. Checked: ~/.copilot/skills, ~/.claude/skills, .github/copilot/skills, .claude/skills`
 
-**Read or create project config:**
-- If `.auto-scrum/config.yml` **exists**: read it, use `artifacts.base_dir` as the base directory.
-- If `.auto-scrum/config.yml` **does not exist**:
-  1. Print: `⚠️  WARNING: .auto-scrum/config.yml not found. Creating from your base config.`
-  2. Read `{SKILLS_DIR}/as-new/templates/config-template.yml` as the base.
-  3. Write `.auto-scrum/config.yml` with all settings from the base config, then override:
-     - `project.name` → `{FEAT}` (set to the feature/project name)
-     - `artifacts.base_dir` → `.auto-scrum` (always project-relative)
-     - `auto_scrum.skills_dir` → `{SKILLS_DIR}` (the directory found by probing above)
-  4. Use `.auto-scrum` as the base directory.
-  5. Print: `✅ Created .auto-scrum/config.yml with base settings. You can customize this at any time.`
+**Initialize scaffolding if needed:**
+- Note whether `~/.auto-scrum/config.yml` exists before this step (`CONFIG_WAS_MISSING = true/false`).
+- If `~/.auto-scrum/config.yml` does **not** exist:
+  1. Run: `bash {SKILLS_DIR}/as-setup/setup.sh`
+  2. If the script exits with a non-zero status, halt and display the script's error output.
 
-Set `BASE={artifacts.base_dir}`.
+**Read global config:**
+Read `~/.auto-scrum/config.yml`.
 
-**Read or create tool mapping:**
-- If `{BASE}/tool-mapping.yml` **exists**: read it.
-- If `{BASE}/tool-mapping.yml` **does not exist**:
-  1. Read `{SKILLS_DIR}/as-new/templates/tool-mapping-template.yml`.
-  2. Write `{BASE}/tool-mapping.yml` with the contents of the template.
+- If `CONFIG_WAS_MISSING` was `true` (config was just created by setup.sh):
+  Update `project.name` in `~/.auto-scrum/config.yml` to `{FEAT}`:
+  ```bash
+  # macOS
+  sed -i '' "s|name: my-project|name: {FEAT}|" ~/.auto-scrum/config.yml
+  # Linux
+  sed -i "s|name: my-project|name: {FEAT}|" ~/.auto-scrum/config.yml
+  ```
+
+Set `BASE=~/.auto-scrum` (expand `~` to the user's home directory).
+
+**Read tool mapping:** Read `{BASE}/tool-mapping.yml`.
 
 Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`).
 Resolve tool names: for all tool references in this and subsequent skills, look up the generic tool name under the `{PLATFORM}` key in `tool-mapping.yml` and use the mapped platform-specific tool name.

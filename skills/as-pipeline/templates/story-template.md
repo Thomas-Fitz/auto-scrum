@@ -1,6 +1,7 @@
 # Story {epic_num}.{story_num}: {story_title}
 
 Status: ready-for-dev
+Repo: {repo}
 
 ## Story
 As a {role},

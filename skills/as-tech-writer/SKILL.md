@@ -77,7 +77,8 @@ Write a clear explanation with:
 
 ### US — Update Standards
 
-Read `.auto-scrum/config.yml` for `artifacts.base_dir`. Default to `.auto-scrum`.
+Read `~/.auto-scrum/config.yml`. If missing, halt with: `❌ ~/.auto-scrum/config.yml not found. Run as-new to initialize auto-scrum.`
+Set `BASE=~/.auto-scrum` (expand `~` to the user's home directory).
 Set `STANDARDS={BASE}/cross-feature/documentation-standards.md`.
 
 Read or create `{STANDARDS}`.

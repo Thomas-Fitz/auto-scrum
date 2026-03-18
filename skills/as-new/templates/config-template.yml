@@ -3,9 +3,6 @@ project:
   name: my-project          # Display name for reports and artifacts
   user: developer           # Developer or team name
 
-artifacts:
-  base_dir: .auto-scrum     # Root directory for all auto-scrum artifacts
-
 agents:
   orchestrator:
     model: claude-sonnet-4-6  # Model ID for the pipeline orchestrator
