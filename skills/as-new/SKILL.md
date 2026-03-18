@@ -26,24 +26,27 @@ Remember the feature name as {FEAT} going forward in this session. Retain this t
   3. If no candidate contains that template, halt with:
      `❌ Could not find as-new config template. Checked: ~/.copilot/skills, ~/.claude/skills, .github/copilot/skills, .claude/skills`
 
-**Read or create global config:**
-- If `~/.auto-scrum/config.yml` **exists**: read it.
-- If `~/.auto-scrum/config.yml` **does not exist**:
-  1. Print: `⚠️  ~/.auto-scrum/config.yml not found. Creating from your base config.`
-  2. Read `{SKILLS_DIR}/as-new/templates/config-template.yml` as the base.
-  3. Create the `~/.auto-scrum/` directory if it does not exist.
-  4. Write `~/.auto-scrum/config.yml` with all settings from the base config, then override:
-     - `project.name` → `{FEAT}` (set to the feature/project name)
-     - `auto_scrum.skills_dir` → `{SKILLS_DIR}` (the directory found by probing above)
-  5. Print: `✅ Created ~/.auto-scrum/config.yml with base settings. You can customize this at any time.`
+**Initialize scaffolding if needed:**
+- Note whether `~/.auto-scrum/config.yml` exists before this step (`CONFIG_WAS_MISSING = true/false`).
+- If `~/.auto-scrum/config.yml` does **not** exist:
+  1. Run: `bash {SKILLS_DIR}/as-setup/setup.sh`
+  2. If the script exits with a non-zero status, halt and display the script's error output.
+
+**Read global config:**
+Read `~/.auto-scrum/config.yml`.
+
+- If `CONFIG_WAS_MISSING` was `true` (config was just created by setup.sh):
+  Update `project.name` in `~/.auto-scrum/config.yml` to `{FEAT}`:
+  ```bash
+  # macOS
+  sed -i '' "s|name: my-project|name: {FEAT}|" ~/.auto-scrum/config.yml
+  # Linux
+  sed -i "s|name: my-project|name: {FEAT}|" ~/.auto-scrum/config.yml
+  ```
 
 Set `BASE=~/.auto-scrum` (expand `~` to the user's home directory).
 
-**Read or create tool mapping:**
-- If `{BASE}/tool-mapping.yml` **exists**: read it.
-- If `{BASE}/tool-mapping.yml` **does not exist**:
-  1. Read `{SKILLS_DIR}/as-new/templates/tool-mapping-template.yml`.
-  2. Write `{BASE}/tool-mapping.yml` with the contents of the template.
+**Read tool mapping:** Read `{BASE}/tool-mapping.yml`.
 
 Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`).
 Resolve tool names: for all tool references in this and subsequent skills, look up the generic tool name under the `{PLATFORM}` key in `tool-mapping.yml` and use the mapped platform-specific tool name.

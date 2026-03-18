@@ -13,7 +13,24 @@ You are an orchestrator for small, surgical changes. Your job is to run discover
 
 ## Step 1 — Setup
 
-Read `~/.auto-scrum/config.yml`. If missing, halt with: `❌ ~/.auto-scrum/config.yml not found. Run as-new to initialize auto-scrum.`
+**Check for scaffolding:**
+If `~/.auto-scrum/config.yml` does **not** exist:
+1. Probe candidate skill directories in this order (expand `~` in all paths):
+   - `~/.copilot/skills`
+   - `~/.claude/skills`
+   - `.github/copilot/skills`
+   - `.claude/skills`
+   Set `SKILLS_DIR` to the first directory that contains `as-setup/setup.sh`.
+   If no candidate contains that script, halt with:
+   `❌ Could not find as-setup/setup.sh. Checked: ~/.copilot/skills, ~/.claude/skills, .github/copilot/skills, .claude/skills`
+2. Use `ask_user` to prompt:
+   "auto-scrum isn't initialized yet (`~/.auto-scrum/config.yml` not found). Run setup now?"
+   Options: "Run setup", "Cancel"
+3. If "Cancel": halt with `❌ Setup skipped. Run as-new or bash {SKILLS_DIR}/as-setup/setup.sh to initialize auto-scrum.`
+4. If "Run setup": run `bash {SKILLS_DIR}/as-setup/setup.sh`
+   If the script exits with a non-zero status, halt and display the script's error output.
+
+Read `~/.auto-scrum/config.yml`.
 Set `BASE=~/.auto-scrum` (expand `~` to the user's home directory). Set `PLATFORM = {auto_scrum.platform}` (default: `copilot`).
 Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in ~/.auto-scrum/config.yml. Run as-new to reconfigure.`
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.

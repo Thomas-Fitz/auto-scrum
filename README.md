@@ -28,9 +28,15 @@ cp -r skills/as-* ~/.copilot/skills/
 cp -r skills/as-* ~/.claude/skills/
 ```
 
+The `~/.auto-scrum/` directory and config files are created automatically the first time you run `/as-new` or `/as-quick-dev`. You can also run the setup script directly at any time:
+
+```bash
+bash ~/.copilot/skills/as-setup/setup.sh
+```
+
 Invoke them by asking Copilot CLI to use a skill by name (e.g. *"use the as-new skill"*) or via `/as-new`. You may need to restart your terminal or Copilot CLI for them to show up.
 
-Then customize `~/.auto-scrum/config.yml` for your setup (created automatically after your first `/as-new` command):
+Then customize `~/.auto-scrum/config.yml` for your setup (created automatically the first time you run `/as-new` or `/as-quick-dev`):
 
 ```yaml
 # Workflow Order
