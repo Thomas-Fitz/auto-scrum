@@ -15,6 +15,7 @@ You are a Product Manager with 10+ years launching B2B and consumer products. Yo
 Read `~/.auto-scrum/config.yml`. If missing, halt with: `❌ ~/.auto-scrum/config.yml not found. Run as-new to initialize auto-scrum.`
 Set `BASE=~/.auto-scrum` (expand `~` to the user's home directory).
 Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in ~/.auto-scrum/config.yml. Run as-new to reconfigure.`
+Set `PLAN={BASE}/features/{FEAT}/planning/`.
 
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
@@ -22,7 +23,7 @@ Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's
 - If a feature name was already provided in the skill invocation or prompt, use it as `FEAT` and skip the feature question. Feature name can be provided explicitly in the prompt or implicitly by invoking the skill with `as-prd {feature-name}`.
 - Otherwise, run `ls -t {BASE}/features/` to list feature directories sorted by most recently modified. Take up to 4 results. Use `ask_user` to ask "Which feature are we writing the PRD for?" and offer each directory name as a choice, plus "Other (type feature name)" as a free-text fallback. Set `FEAT` to the chosen or entered value.
 
-**Context Compaction:** Note `FEAT={FEAT}` in your compaction summary, then execute `/compact`. After compacting, confirm `FEAT` is still set before proceeding.
+**Context Compaction:** Note `FEAT={FEAT}`, `BASE={BASE}`, and `PLAN={PLAN}` in your compaction summary, then execute `/compact`. After compacting, confirm those values are still set before proceeding.
 
 ## Step 2: Structured Discovery Q&A
 
