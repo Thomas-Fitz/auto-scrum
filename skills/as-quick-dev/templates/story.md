@@ -1,6 +1,7 @@
 # Quick-Dev Story: {STORY_KEY}
 
 Status: ready-for-dev
+Repo: {repo}
 
 ## Story
 As a developer,

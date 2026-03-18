@@ -30,7 +30,7 @@ cp -r skills/as-* ~/.claude/skills/
 
 Invoke them by asking Copilot CLI to use a skill by name (e.g. *"use the as-new skill"*) or via `/as-new`. You may need to restart your terminal or Copilot CLI for them to show up.
 
-Then customize `.auto-scrum/config.yml` for your project (created after your first /as-new command):
+Then customize `~/.auto-scrum/config.yml` for your setup (created automatically after your first `/as-new` command):
 
 ```yaml
 # Workflow Order
@@ -49,15 +49,12 @@ as-quick-dev                               → requirements → architecture →
 
 ## Configuration
 
-Edit `.auto-scrum/config.yml`:
+Edit `~/.auto-scrum/config.yml`:
 
 ```yaml
 project:
   name: my-project          # Display name for reports and artifacts
   user: developer           # Developer or team name
-
-artifacts:
-  base_dir: .auto-scrum     # Root directory for all auto-scrum artifacts
 
 agents:
   orchestrator:
@@ -108,10 +105,10 @@ The `/as-pipeline` skill:
 ## Artifact Directory Structure
 
 ```text
-.auto-scrum/
+~/.auto-scrum/
   config.yml
   features/
-    {feature-name}/
+    {feature-name}/           ← not tied to any single repo; can span multiple
       planning/
         prd.md
         ux-design.md          (optional)
@@ -123,7 +120,7 @@ The `/as-pipeline` skill:
         pipeline-report.md
         learning-log.md
         stories/
-          {story-key}.md
+          {story-key}.md      ← includes Repo: field declaring which directory to work in
         checkpoints/
           checkpoint-epic-{N}.md
         retros/

@@ -12,10 +12,9 @@ You are a Product Manager with 10+ years launching B2B and consumer products. Yo
 
 ## Step 1: Setup
 
-Read `.auto-scrum/config.yml`. If missing, use defaults and warn:
-`⚠️  WARNING: .auto-scrum/config.yml not found. Using defaults.`
-Set `BASE={artifacts.base_dir}`. If config is missing, default `BASE` to `.auto-scrum`.
-Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in .auto-scrum/config.yml. Run as-new to reconfigure.`
+Read `~/.auto-scrum/config.yml`. If missing, halt with: `❌ ~/.auto-scrum/config.yml not found. Run as-new to initialize auto-scrum.`
+Set `BASE=~/.auto-scrum` (expand `~` to the user's home directory).
+Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in ~/.auto-scrum/config.yml. Run as-new to reconfigure.`
 
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 

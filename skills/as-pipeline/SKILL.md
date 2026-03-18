@@ -33,8 +33,8 @@ Use `agent_type: general-purpose` for both dev and reviewer sub-agents. Never at
 ---
 
 ## Step 1: Setup
-Read `.auto-scrum/config.yml`. If missing, warn and use defaults.
-Set `BASE = {artifacts.base_dir}` (default: `.auto-scrum`)
+Read `~/.auto-scrum/config.yml`. If missing, halt with: `❌ ~/.auto-scrum/config.yml not found. Run as-new to initialize auto-scrum.`
+Set `BASE=~/.auto-scrum` (expand `~` to the user's home directory).
 Determine the feature:
 - If a feature name was already provided in the skill invocation or prompt, use it as `FEAT` and skip the feature question.
 - Otherwise, run `ls -t {BASE}/features/` to list feature directories sorted by most recently modified. Take up to 4 results. Use `ask_user` to ask "Which feature should the pipeline execute?" and offer each directory name as a choice, plus "Other (type feature name)" as a free-text fallback. Set `FEAT` to the chosen or entered value.
@@ -42,18 +42,10 @@ Set:
 - `PLAN = {BASE}/features/{FEAT}/planning/`
 - `IMPL = {BASE}/features/{FEAT}/implementation/`
 
-Ensure `.auto-scrum/` is listed in the project's `.gitignore` by checking:
-
-```bash
-git check-ignore -v .auto-scrum/
-```
-
-if `.gitignore` does not exist or does not contain `.auto-scrum/`, append the line `.auto-scrum/` to it. This prevents auto-scrum artifacts from being accidentally committed.
-
 **Context Compaction:** Note `FEAT={FEAT}`, `BASE={BASE}`, `PLAN={PLAN}`, and `IMPL={IMPL}` in your compaction summary, then execute `/compact`. After compacting, confirm those values are still set before proceeding.
 
 ## Step 2: Implementation Readiness Check
-Verify all of the following exist (use hidden-aware fallback search for any missing file: `rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/prd.md'`):
+Verify all of the following exist:
 - `{IMPL}/sprint-status.yaml`
 - `{PLAN}/prd.md`
 - `{PLAN}/architecture-design.md`
@@ -83,7 +75,7 @@ Print: `📍 Resuming from story: {story-key}` OR `🚀 Starting pipeline from f
 ## Step 4: Read Config for Git Behavior
 Read `git.commit_frequency` from config. Default to `story` if not set.
 Read `pipeline.max_review_cycles` from config. Default to `3` if not set. Store as `MAX_REVIEW_CYCLES`.
-Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in .auto-scrum/config.yml. Run as-new to reconfigure.`
+Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in ~/.auto-scrum/config.yml. Run as-new to reconfigure.`
 
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
@@ -112,12 +104,12 @@ For each story in this epic (in sprint-status.yaml order, status in [`backlog`, 
    - **Design Refs** — the specific sections/groups listed for this story
    - **Test Cases (Type)** — the scenario names and their test types listed for this story
    - **AC IDs** — the specific AC IDs listed for this story
-   Then open each planning doc and extract the exact content those refs point to (use hidden-aware fallback search for any file if needed: `rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/*'`):
+   Then open each planning doc and extract the exact content those refs point to:
    - From `{PLAN}/architecture-design.md`: copy the full text of each referenced section/group
    - From `{PLAN}/test-plan.md`: copy the full GIVEN-WHEN-THEN scenario for each test case, including its type and testability level (AUTO / AGENT-REVIEW / NONE). For AGENT-REVIEW ACs, note what the reviewer agent should inspect. For NONE ACs, note what build/lint check confirms completion.
    - From `{PLAN}/prd.md`: copy the exact acceptance criterion text for each AC ID
    This extracted content is what you will embed directly in the story file — do not leave vague pointers like "see architecture-design.md §3"; paste the substance inline.
-4. Read the story template at `{SKILLS_DIR}/as-pipeline/templates/story-template.md`. Write `{IMPL}/stories/{story-key}.md` using that template, populating all fields with the content extracted in steps 1–3 above.
+4. Read the story template at `{SKILLS_DIR}/as-pipeline/templates/story-template.md`. Write `{IMPL}/stories/{story-key}.md` using that template, populating all fields with the content extracted in steps 1–3 above. Set the `Repo:` field to the absolute path of the current working directory (expand `~` to the user's home directory).
 
 5. Run story quality checklist — if ANY fail, rewrite the story before continuing:
    - [ ] Every AC has ≥1 task
@@ -148,7 +140,7 @@ After the Task completes: **store the returned agent ID as `DEV_AGENT_ID`**. Rea
 #### Step 5c-iii: Git Commit
 Based on `git.commit_frequency`:
 - `task` or `story`:
-  1. Run `git add -A -- ':!.auto-scrum'` to stage implementation changes, excluding all `.auto-scrum` artifacts.
+  1. Run `git add -A` to stage implementation changes.
   2. Run `git diff --cached --quiet` to check if anything is staged. If nothing is staged, skip the commit.
   3. Read the "Completion Notes" from the Dev Agent Record section of `{IMPL}/stories/{story-key}.md`.
   4. Compose a concise commit message (≤72 chars) summarizing what was implemented. Use plain language based on the Completion Notes. No prefixes, no story keys, no boilerplate. Do NOT add any `Co-authored-by` or other trailer lines — the commit author must be exclusively the human git user.
@@ -226,7 +218,7 @@ End of per-story loop.
 
 ### 5d: Epic Git Commit
 If `git.commit_frequency` == `epic`:
-1. Run `git add -A -- ':!.auto-scrum'` to stage all implementation changes from this epic.
+1. Run `git add -A` to stage all implementation changes from this epic.
 2. Run `git diff --cached --quiet` to check if anything is staged. If nothing is staged, skip the commit.
 3. Compose a concise commit message summarizing what the epic delivered — based on the epic goal from `epic-breakdown.md` and the completed stories. No prefixes, no epic keys, no boilerplate. Do NOT add any `Co-authored-by` or other trailer lines — the commit author must be exclusively the human git user.
 4. Run `git commit -m "{message}"`.

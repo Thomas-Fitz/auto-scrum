@@ -13,13 +13,16 @@ You are an orchestrator for small, surgical changes. Your job is to run discover
 
 ## Step 1 — Setup
 
-Read `.auto-scrum/config.yml`. Set `SKILLS_DIR = {auto_scrum.skills_dir}` (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in .auto-scrum/config.yml. Run as-new to reconfigure.`
-Set `BASE = {artifacts.base_dir}` (default: `.auto-scrum`). Set `PLATFORM = {auto_scrum.platform}` (default: `copilot`).
+Read `~/.auto-scrum/config.yml`. If missing, halt with: `❌ ~/.auto-scrum/config.yml not found. Run as-new to initialize auto-scrum.`
+Set `BASE=~/.auto-scrum` (expand `~` to the user's home directory). Set `PLATFORM = {auto_scrum.platform}` (default: `copilot`).
+Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in ~/.auto-scrum/config.yml. Run as-new to reconfigure.`
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
 > Skip setup steps above if `SKILLS_DIR`, `BASE`, and `PLATFORM` are already resolved from an earlier step this session.
 
-Then, read the following from `.auto-scrum/config.yml` (these are specific to as-quick-dev):
+Capture the current working directory as `REPO` (expand `~` to the user's home directory). This is the repository the dev and reviewer agents will work in.
+
+Then, read the following from `~/.auto-scrum/config.yml` (these are specific to as-quick-dev):
 - `agents.developer.model` → `DEV_MODEL`
 - `agents.reviewer.model` → `REVIEWER_MODEL`
 - `agents.developer.type` → `DEV_AGENT_TYPE`
@@ -82,7 +85,7 @@ If cancelled: stop with `❌ Change cancelled.`
 
 ## Step 5 — Write Story File
 
-Read the template at `{SKILLS_DIR}/as-quick-dev/templates/story.md`. Populate all placeholder values from `REQUIREMENTS_SUMMARY` and `DESIGN_SUMMARY`, then write the result to `{IMPL}/stories/{STORY_KEY}.md`.
+Read the template at `{SKILLS_DIR}/as-quick-dev/templates/story.md`. Populate all placeholder values from `REQUIREMENTS_SUMMARY` and `DESIGN_SUMMARY`. Set the `Repo:` field to `{REPO}`. Write the result to `{IMPL}/stories/{STORY_KEY}.md`.
 
 > ⚠️ Do NOT create a `sprint-status.yaml`. The dev and reviewer agents will update story status in the story file only.
 
