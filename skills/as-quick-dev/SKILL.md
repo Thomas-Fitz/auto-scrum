@@ -25,8 +25,6 @@ Then, read the following from `.auto-scrum/config.yml` (these are specific to as
 - `agents.developer.type` → `DEV_AGENT_TYPE`
 - `agents.reviewer.type` → `REVIEWER_AGENT_TYPE` 
 
-Read `{BASE}/cross-feature/project-context.md` if it exists. Store its contents as `PROJECT_CONTEXT`. If not found, set `PROJECT_CONTEXT = "Not available"`.
-
 Create the quick-dev story directory if it doesn't exist: `{BASE}/quick-dev/stories/`
 
 Generate a story key from the current timestamp: `qd-{YYYYMMDD-HHmmSS}`. Store as `STORY_KEY`.

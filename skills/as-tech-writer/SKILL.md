@@ -24,7 +24,7 @@ Wait for the user's response, then follow the matching workflow below.
 
 Ask: "Describe in detail what document you want created. Include: audience, purpose, format, and any specific sections required."
 
-Research thoroughly: read relevant source code, existing documentation, and `{BASE}/cross-feature/project-context.md` if it exists.
+Research thoroughly: read relevant source code and existing documentation.
 
 Write a full draft. Use Mermaid diagrams where a picture replaces prose. Follow CommonMark markdown standards.
 

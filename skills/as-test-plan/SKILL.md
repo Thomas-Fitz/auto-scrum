@@ -25,8 +25,6 @@ Set `PLAN={BASE}/features/{FEAT}/planning/`.
 
 Read `{PLAN}/prd.md` (check `{PLAN}/prd.md` first, then use hidden-aware fallback search: `rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/prd.md'`) — halt if missing: "❌ prd.md not found. Run the as-prd skill first."
 Read `{PLAN}/architecture-design.md` (use same fallback search logic) — halt if missing: "❌ architecture-design.md not found. Run the as-architect skill first."
-Read `{BASE}/cross-feature/project-context.md` if present (for test framework and conventions; use fallback search if needed).
-
 ## Step 2: Check Existing Test Coverage
 Before planning new tests, scan the codebase for existing test files related to this feature:
 - Search test directories (e.g., `__tests__/`, `test/`, `.test.js/.test.ts`, `.spec.js/.spec.ts`)
