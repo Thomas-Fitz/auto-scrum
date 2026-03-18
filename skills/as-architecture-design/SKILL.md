@@ -28,8 +28,6 @@ Set `PLAN={BASE}/features/{FEAT}/planning/`.
 Load planning documents:
 - `{PLAN}/prd.md` — **required**; check `{PLAN}/prd.md` first, then use hidden-aware fallback search (`rg --files --hidden -g '.auto-scrum/**'` or `find . -path '*/.auto-scrum/features/*/planning/prd.md'`); halt if not found: "❌ prd.md not found. Run the as-prd skill first."
 - `{PLAN}/ux-design.md` — optional; read if present (use same fallback search logic).
-- `{BASE}/cross-feature/project-context.md` — optional but high priority; if found, note how many rules/conventions were loaded.
-
 Report to the user exactly what was found and loaded.
 
 **Use `ask_user` to confirm readiness to proceed:**
@@ -138,16 +136,14 @@ Read the template at `{SKILLS_DIR}/as-architecture-design/templates/architecture
 Run an automated compliance check before presenting for approval.
 
 **Checks:**
-1. **project-context.md compliance:** For each rule/convention in `project-context.md`, verify the design doesn't violate it. List any conflicts.
-2. **Live codebase alignment:** For each design section, verify the proposed patterns are consistent with actual code found in Step 2.
-3. **Deviation completeness:** Confirm every deviation identified in Step 4 has a Deviations & Justifications entry in the document.
-4. **Codebase impact completeness:** Confirm the Codebase Impact section (§9) accounts for all files touched by decisions made in Step 4.
-5. **Internal consistency:** Check for contradictions between sections (e.g., a Technology Decision that conflicts with a Pattern Alignment claim).
-6. **No placeholders:** Scan the entire document for placeholder text — `{{placeholder}}`, `TODO`, `TBD`, `[fill in]`, or any template markers that were not replaced with actual content. Every section must have real content or be explicitly marked N/A.
+1. **Live codebase alignment:** For each design section, verify the proposed patterns are consistent with actual code found in Step 2.
+2. **Deviation completeness:** Confirm every deviation identified in Step 4 has a Deviations & Justifications entry in the document.
+3. **Codebase impact completeness:** Confirm the Codebase Impact section (§9) accounts for all files touched by decisions made in Step 4.
+4. **Internal consistency:** Check for contradictions between sections (e.g., a Technology Decision that conflicts with a Pattern Alignment claim).
+5. **No placeholders:** Scan the entire document for placeholder text — `{{placeholder}}`, `TODO`, `TBD`, `[fill in]`, or any template markers that were not replaced with actual content. Every section must have real content or be explicitly marked N/A.
 
 **Output the validation report:**
 ```
-✅ project-context.md: N rules checked — N passed / N failed
 ✅ Codebase alignment: N areas checked — N aligned / N flagged
 ✅ Deviations documented: N / N
 ✅ Codebase impact completeness: pass / fail

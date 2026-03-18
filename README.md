@@ -83,8 +83,6 @@ auto_scrum:
 | --------- | ------- | ------------------ | -------- |
 | `/as-quick-dev` [beta] | Senior Developer | Medium (Q&A + approach approval) | No artifacts — direct implementation via dev + reviewer agents |
 | `/as-new <feature-name>` | — | None | Feature directory scaffold |
-| `/as-generate-project-context` [beta] | — | Low (review output) | `project-context.md` |
-| `/as-document-project` [beta] | — | Low (review output) | Architecture + source tree docs |
 | `/as-prd` | Product Manager | High (Q&A + approval) | `prd.md` |
 | `/as-ux-design` [beta] | UX Designer | High (Q&A + approval) | `ux-design.md` |
 | `/as-architecture-design` | Architect | High (Q&A + approval) | `architecture-design.md` |
@@ -131,9 +129,6 @@ The `/as-pipeline` skill:
         retros/
           epic-{N}-retro-{YYYY-MM-DD}.md
   cross-feature/
-    project-context.md
-    architecture.md
-    source-tree.md
 ```
 
 ## Sprint Status Schema

@@ -57,11 +57,10 @@ Guidelines for the Q&A:
 
 Before writing anything, examine the codebase:
 
-1. Read `{BASE}/cross-feature/project-context.md` if it exists.
-2. Search for existing implementations related to the feature domain.
-3. Read the 3–5 most relevant source files found.
-4. Identify: Gaps that the feature PRD needs to fill, other impacted functional areas, and any constraints or patterns that should inform the requirements.
-5. Look for edge cases that have not been identified in the original requirements or user Q&A.
+1. Search for existing implementations related to the feature domain.
+2. Read the 3–5 most relevant source files found.
+3. Identify: Gaps that the feature PRD needs to fill, other impacted functional areas, and any constraints or patterns that should inform the requirements.
+4. Look for edge cases that have not been identified in the original requirements or user Q&A.
 
 **Use `ask_user` to validate codebase insights:**
 Present new edge cases and potential requirements from the codebase examination. Ask: "Based on the codebase, I found these edge cases and patterns. Are there any that affect your feature requirements?" Offer options: "All relevant", "Some don't apply", "Need clarifications" + free-text for specifics.
