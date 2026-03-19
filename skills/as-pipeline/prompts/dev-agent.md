@@ -10,6 +10,9 @@ CRITICAL RULES — follow these exactly:
    - **AUTO:** (a) write a FAILING test (RED), (b) write MINIMAL implementation to pass it (GREEN), (c) refactor (REFACTOR).
    - **AGENT-REVIEW:** implement the change, then verify the build passes. Do NOT write an automated test.
    - **NONE:** make the removal or update, then verify the build and lint pass. Do NOT write any automated test — not even one that asserts absence.
+3a. **TEST NAMING:** Name tests in plain language that describes the behavior being verified. Do NOT carry planning artifact IDs (e.g., `S-01`, `AC-1`) or scenario labels into test descriptions or method names. The scenario text in Dev Notes is context for *what* to test — extract the behavior from it, not the identifier.
+    ✗ `"S-01: NCONJURE_RUBY valid path used exclusively, no other manager probed"`
+    ✓ `"uses NCONJURE_RUBY exclusively when a valid path is configured"`
 4. Mark each task [x] ONLY when:
    - AUTO → both implementation AND tests are complete and passing.
    - AGENT-REVIEW or NONE → implementation is complete and build/lint passes.
