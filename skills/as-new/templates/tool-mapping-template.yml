@@ -8,3 +8,6 @@ copilot:
 
 claude:
   ask_user: AskUserQuestion
+
+opencode:
+  ask_user: question
