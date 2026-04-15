@@ -5,13 +5,13 @@ project:
 
 agents:
   orchestrator:
-    model: claude-sonnet-4-6  # Model ID for the pipeline orchestrator
+    model: claude-opus-4.6  # Model ID for the pipeline orchestrator
   architect:
-    model: claude-sonnet-4-6  # Model ID for the architect agent
+    model: claude-opus-4.6  # Model ID for the architect agent
   developer:
-    model: claude-sonnet-4-6  # Model ID for the developer agent
+    model: claude-opus-4.6  # Model ID for the developer agent
   reviewer:
-    model: claude-sonnet-4-6  # Model ID for the adversarial code reviewer
+    model: claude-opus-4.6  # Model ID for the adversarial code reviewer
 
 git:
   # task | story | epic | never (default: never)
@@ -23,7 +23,7 @@ pipeline:
   max_review_cycles: 3
 
 auto_scrum:
-  platform: copilot             # 'copilot' | 'claude'
+  platform: copilot             # 'copilot' | 'claude' | 'opencode'
   skills_dir: ~/.copilot/skills # Path where auto-scrum skills are installed
-                                # Set automatically by as-new; update if you move your skills
-                                # tilde (~) is expanded to the user's home directory
+                                # Set automatically by setup; update if you move your skills
+                                # e.g. ~/.copilot/skills, ~/.claude/skills, ~/.config/opencode/skills

@@ -13,7 +13,7 @@ If [BMAD](https://github.com/bmad-code-org/BMAD-METHOD) is lawful and [GasTown](
 
 ## Prerequisites
 
-* **GitHub Copilot** or **Claude Code**
+* **GitHub Copilot**, **Claude Code**, or **[OpenCode](https://opencode.ai)**
 * **Git** (the project must be a git repository)
 
 ## Installation
@@ -26,15 +26,25 @@ cp -r skills/as-* ~/.copilot/skills/
 
 # claude
 cp -r skills/as-* ~/.claude/skills/
+
+# opencode
+cp -r skills/as-* ~/.config/opencode/skills/
 ```
 
 The `~/.auto-scrum/` directory and config files are created automatically the first time you run `/as-new` or `/as-quick-dev`. You can also run the setup script directly at any time:
 
 ```bash
+# copilot
 bash ~/.copilot/skills/as-setup/setup.sh
+
+# claude
+bash ~/.claude/skills/as-setup/setup.sh
+
+# opencode (also installs /as-* slash commands)
+bash ~/.config/opencode/skills/as-setup/setup.sh
 ```
 
-Invoke them by asking Copilot CLI to use a skill by name (e.g. *"use the as-new skill"*) or via `/as-new`. You may need to restart your terminal or Copilot CLI for them to show up.
+Invoke skills via `/as-new` in Copilot CLI, Claude Code, or OpenCode. You can also say *"use the as-new skill"* and the agent will load it automatically. You may need to restart your terminal for skills to show up.
 
 Then customize `~/.auto-scrum/config.yml` for your setup (created automatically the first time you run `/as-new` or `/as-quick-dev`):
 
@@ -76,8 +86,8 @@ git:
   commit_frequency: never   # task | story | epic | never
 
 auto_scrum:
-  platform: copilot             # 'copilot' | 'claude'
-  skills_dir: ~/.copilot/skills # Set automatically by as-new; update if you move your skills
+  platform: copilot             # 'copilot' | 'claude' | 'opencode'
+  skills_dir: ~/.copilot/skills # Set automatically by setup; update if you move your skills
 ```
 
 ## Skills

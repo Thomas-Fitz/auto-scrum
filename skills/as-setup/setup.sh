@@ -54,12 +54,21 @@ CONFIG_FILE="$AUTO_SCRUM_DIR/config.yml"
 if [[ ! -f "$CONFIG_FILE" ]]; then
   cp "$CONFIG_TEMPLATE" "$CONFIG_FILE"
 
-  # Replace the placeholder skills_dir value with the actual detected path.
+  # Replace the placeholder skills_dir and platform values with the actual detected path.
   # Keeps any inline comment on the line intact.
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' "s|skills_dir: ~/.copilot/skills|skills_dir: $SKILLS_DIR|" "$CONFIG_FILE"
+    sed -i '' "s|skills_dir: [^ #]*|skills_dir: $SKILLS_DIR|" "$CONFIG_FILE"
   else
-    sed -i "s|skills_dir: ~/.copilot/skills|skills_dir: $SKILLS_DIR|" "$CONFIG_FILE"
+    sed -i "s|skills_dir: [^ #]*|skills_dir: $SKILLS_DIR|" "$CONFIG_FILE"
+  fi
+
+  # Auto-detect platform from install location
+  if [[ "$SKILLS_DIR" == "$HOME/.config/opencode/"* ]]; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i '' "s|platform: [^ #]*|platform: opencode|" "$CONFIG_FILE"
+    else
+      sed -i "s|platform: [^ #]*|platform: opencode|" "$CONFIG_FILE"
+    fi
   fi
 
   echo "✅ Created $CONFIG_FILE"
@@ -78,6 +87,30 @@ if [[ ! -f "$TOOL_MAPPING_FILE" ]]; then
   echo "✅ Created $TOOL_MAPPING_FILE"
 else
   echo "⚠️  $TOOL_MAPPING_FILE already exists — skipped."
+fi
+
+# --- Create OpenCode commands (if applicable) ---
+
+if [[ "$SKILLS_DIR" == "$HOME/.config/opencode/"* ]]; then
+  OPENCODE_COMMANDS_SRC="$SCRIPT_DIR/opencode-commands"
+  OPENCODE_COMMANDS_DIR="$HOME/.config/opencode/commands"
+
+  if [[ -d "$OPENCODE_COMMANDS_SRC" ]]; then
+    mkdir -p "$OPENCODE_COMMANDS_DIR"
+    copied=0
+    for cmd_file in "$OPENCODE_COMMANDS_SRC"/*.md; do
+      dest="$OPENCODE_COMMANDS_DIR/$(basename "$cmd_file")"
+      if [[ ! -f "$dest" ]]; then
+        cp "$cmd_file" "$dest"
+        copied=$((copied + 1))
+      fi
+    done
+    if [[ $copied -gt 0 ]]; then
+      echo "✅ Created $copied OpenCode command(s) in $OPENCODE_COMMANDS_DIR"
+    else
+      echo "⚠️  OpenCode commands already exist — skipped."
+    fi
+  fi
 fi
 
 echo ""

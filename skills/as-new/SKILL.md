@@ -18,13 +18,14 @@ Remember the feature name as {FEAT} going forward in this session. Retain this t
   - If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in ~/.auto-scrum/config.yml. Re-run as-new to reconfigure.`
 - If `~/.auto-scrum/config.yml` does not exist:
   1. Probe candidate skill directories in this order (expand `~` in all paths):
+     - `~/.config/opencode/skills`
      - `~/.copilot/skills`
      - `~/.claude/skills`
      - `.github/copilot/skills`
      - `.claude/skills`
   2. Set `SKILLS_DIR` to the first directory that contains `as-new/templates/config-template.yml`.
   3. If no candidate contains that template, halt with:
-     `❌ Could not find as-new config template. Checked: ~/.copilot/skills, ~/.claude/skills, .github/copilot/skills, .claude/skills`
+     `❌ Could not find as-new config template. Checked: ~/.config/opencode/skills, ~/.copilot/skills, ~/.claude/skills, .github/copilot/skills, .claude/skills`
 
 **Initialize scaffolding if needed:**
 - Note whether `~/.auto-scrum/config.yml` exists before this step (`CONFIG_WAS_MISSING = true/false`).

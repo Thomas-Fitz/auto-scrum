@@ -16,13 +16,14 @@ You are an orchestrator for small, surgical changes. Your job is to run discover
 **Check for scaffolding:**
 If `~/.auto-scrum/config.yml` does **not** exist:
 1. Probe candidate skill directories in this order (expand `~` in all paths):
+   - `~/.config/opencode/skills`
    - `~/.copilot/skills`
    - `~/.claude/skills`
    - `.github/copilot/skills`
    - `.claude/skills`
    Set `SKILLS_DIR` to the first directory that contains `as-setup/setup.sh`.
    If no candidate contains that script, halt with:
-   `❌ Could not find as-setup/setup.sh. Checked: ~/.copilot/skills, ~/.claude/skills, .github/copilot/skills, .claude/skills`
+   `❌ Could not find as-setup/setup.sh. Checked: ~/.config/opencode/skills, ~/.copilot/skills, ~/.claude/skills, .github/copilot/skills, .claude/skills`
 2. Use `ask_user` to prompt:
    "auto-scrum isn't initialized yet (`~/.auto-scrum/config.yml` not found). Run setup now?"
    Options: "Run setup", "Cancel"
