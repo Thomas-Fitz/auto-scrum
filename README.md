@@ -97,7 +97,7 @@ auto_scrum:
 | `/as-quick-dev` [beta] | Senior Developer | Medium (Q&A + approach approval) | No artifacts — direct implementation via dev + reviewer agents |
 | `/as-new <feature-name>` | — | None | Feature directory scaffold |
 | `/as-prd` | Product Manager | High (Q&A + approval) | `prd.md` |
-| `/as-ux-design` [beta] | UX Designer | High (Q&A + approval) | `ux-design.md` |
+| `/as-ux-design` [beta] | UX Designer | High (Q&A + approval) | `ux-design.md` (+ optional HTML/CSS/JS prototype) |
 | `/as-architecture-design` | Architect | High (Q&A + approval) | `architecture-design.md` |
 | `/as-test-plan` | QA | Medium (review + approval) | `test-plan.md` |
 | `/as-sprint-plan` | Scrum Master | Medium (review + approval) | `epic-breakdown.md`, `sprint-status.yaml` |
@@ -131,6 +131,8 @@ The `/as-pipeline` skill:
         architecture-design.md
         test-plan.md
         epic-breakdown.md
+      prototypes/             (optional, from as-ux-design)
+        *.html, style.css
       implementation/
         sprint-status.yaml
         pipeline-report.md
