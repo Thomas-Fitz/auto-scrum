@@ -77,6 +77,8 @@ agents:
     model: claude-sonnet-4-6  # Model for pipeline orchestrator
   architect:
     model: claude-sonnet-4-6  # Model for architect agent
+  qa:
+    model: claude-sonnet-4-6  # Model for test-plan codebase-analysis agent
   developer:
     model: claude-sonnet-4-6  # Model for developer agent
   reviewer:

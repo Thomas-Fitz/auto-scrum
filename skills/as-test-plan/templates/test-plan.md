@@ -1,6 +1,6 @@
 # Test Plan: {feature-name}
 
-**References:** [prd.md](./prd.md), [architecture-design.md](./architecture-design.md)
+**References:** [prd.md](./prd.md), [architecture-design.md](./architecture-design.md)[, ux-design.md](./ux-design.md)] _(include ux-design.md only if it exists)_
 **Status:** Draft — Pending Approval
 **Test Framework:** [from project-context or inferred from codebase scan]
 **Existing Coverage:** [summary of existing test files for this feature, if any]
@@ -78,6 +78,20 @@ SCENARIO: [Name]
 
 ### Regression Scenarios
 [Scenarios that verify existing behavior is preserved after this feature's changes are integrated]
+
+### Cross-Feature Test Impact
+[For each production API being changed or removed by this feature, grep the test suite for tests in OTHER features that call or assert on that API. List them here so dev agents can update those tests proactively within the relevant story, rather than discovering stale expectations during final regression verification.]
+
+| Changed API | External Test File | Tests Affected | Expected Update |
+|-------------|-------------------|----------------|-----------------|
+
+_If no external tests touch the changed APIs, write "None identified" and note which APIs were searched._
+
+### Regression Sweep Map
+[Machine-usable behavioral-coupling map the pipeline runs per-story: for each file/module this feature changes, the sibling test filter(s) that must run alongside its own tests — INCLUDING couplings that are not call-graph-obvious (shared module, data schema, lifecycle). The dev and reviewer agents run these after the changed-file tests; the epic/feature full-suite sweep is the backstop. If a changed module has no non-obvious coupling, state that explicitly.]
+
+| Changed file / module (glob) | Required test filter | Why coupled |
+|------------------------------|----------------------|-------------|
 
 ## 8. Pass/Fail Criteria
 
