@@ -3,11 +3,19 @@ project:
   name: my-project          # Display name for reports and artifacts
   user: developer           # Developer or team name
 
+artifacts:
+  # Root directory for all auto-scrum artifacts.
+  #   ~/.auto-scrum — global, can span multiple repos (default)
+  #   .auto-scrum   — project-relative, versioned alongside the repo
+  base_dir: ~/.auto-scrum
+
 agents:
   orchestrator:
     model: claude-opus-4.6  # Model ID for the pipeline orchestrator
   architect:
     model: claude-opus-4.6  # Model ID for the architect agent
+  qa:
+    model: claude-opus-4.6  # Model ID for the test-plan codebase-analysis agent
   developer:
     model: claude-opus-4.6  # Model ID for the developer agent
   reviewer:
@@ -21,6 +29,12 @@ pipeline:
   # Maximum dev/review loop iterations per story before the orchestrator
   # makes a judgment call and moves on.
   max_review_cycles: 3
+
+  # When the expensive FULL-suite regression sweep runs. The cheap per-story
+  # targeted sweep runs regardless.
+  #   epic    — full sweep before each epic's retro (early detection; default)
+  #   feature — one full sweep at feature completion (cheaper; later detection)
+  sweep_cadence: epic
 
 auto_scrum:
   platform: copilot             # 'copilot' | 'claude' | 'opencode'

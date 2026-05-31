@@ -40,6 +40,7 @@ Then organically explore these areas as the conversation warrants (not necessari
 - **Core use cases** — Ask about key workflows with predefined options if applicable + free-text.
 - **Functional requirements** — Ask what the product must do with free-text for specific requirements.
 - **Non-functional requirements** — Ask about performance, security, scalability, accessibility with options + free-text.
+- **Systems impact** — Ask how this feature affects or ripples into existing components and workflows. Probe for second-order effects on other parts of the system.
 - **Scope boundaries** — Ask what is out of scope with free-text.
 - **Dependencies & integrations** — Ask about external systems with options + free-text.
 - **Risks & open questions** — Ask what is uncertain using free-text.
@@ -50,20 +51,23 @@ Guidelines for the Q&A:
 - Ask focused, specific questions — avoid vague or overly broad prompts.
 - When the user gives a short answer, probe deeper if the area is important.
 - When the user says "I don't know" or "TBD", record it as an open question — do not pressure them.
+- Actively ask about technical constraints and existing code patterns — this context is critical for the AI agent that will consume the PRD.
 - After gathering enough information on the core areas, use `ask_user` to ask: "Is there anything else you want to cover before I perform a codebase examination?" with options "Ready to continue", "More to cover", "Need review of notes" + free-text. This is the signal to move to Phase 3.
 - Keep the conversation efficient — typically 5-10 rounds of questions is enough for a solid first draft.
 
 ## Step 3: Codebase Examination
 
-Before writing anything, examine the codebase:
+Before writing anything, examine the codebase. **Delegate the codebase search and file reading to a single read-only explore subagent** — dispatch it using the `dispatch_subagent` mechanism with the `explore_agent` type from `tool-mapping.yml` (if those keys are absent from your `tool-mapping.yml`, dispatch your platform's standard read-only exploration subagent). This keeps the heavy file reads out of your context: the subagent reads broadly in its own throwaway context and returns only a findings digest. Instruct it to be **very thorough** and to sweep broadly for any functionality this feature touches, not just the obvious matches. Give it the feature name and the discovery Q&A summary for orientation, and ask it to return:
 
-1. Search for existing implementations related to the feature domain.
-2. Read the 3–5 most relevant source files found.
-3. Identify: Gaps that the feature PRD needs to fill, other impacted functional areas, and any constraints or patterns that should inform the requirements.
-4. Look for edge cases that have not been identified in the original requirements or user Q&A.
+1. Existing implementations related to the feature domain — read the most relevant source files (**at minimum the 3–5 strongest matches, more when the feature surface is broad**) and report what they do and the patterns/conventions they establish.
+2. **Impact on other systems** — components, modules, and features that interact with or are affected by this feature: shared systems this feature depends on or modifies, and any state or data it reads or writes.
+3. Gaps the feature needs to fill, other impacted functional areas, and any constraints or patterns that should inform the requirements.
+4. Edge cases not identified in the original requirements or user Q&A.
+
+Have it return a concise structured digest (findings + concrete `file:line` references), not raw file dumps. Read the digest and carry only its conclusions forward.
 
 **Use `ask_user` to validate codebase insights:**
-Present new edge cases and potential requirements from the codebase examination. Ask: "Based on the codebase, I found these edge cases and patterns. Are there any that affect your feature requirements?" Offer options: "All relevant", "Some don't apply", "Need clarifications" + free-text for specifics.
+Present new edge cases, related systems discovered, and potential requirements from the codebase examination. Ask: "Based on the codebase, I found these related systems, edge cases, and patterns. Are there any that affect your feature requirements?" Offer options: "All relevant", "Some don't apply", "Need clarifications" + free-text for specifics.
 
 ## Step 4: Assumption Validation
 
@@ -75,6 +79,8 @@ Read the template at `{SKILLS_DIR}/as-prd/templates/prd.md`. Write `{PLAN}/prd.m
 
 > ⚠️ This file must be named `prd.md` at exactly `{PLAN}/prd.md` — the pipeline depends on this path.
 
+**Critical writing rule — no implementation names:** The PRD describes *what* must exist and *what behavior* is required, never *how* it should be named in code. Do not propose variable names, property names, class names, function names, enum values, or any other code identifiers. For example, write "expose a configurable minimum markup tolerance" instead of "expose `MarkupToleranceMin`". Naming is the architect's responsibility.
+
 ## Step 6: Automated Validation
 
 Review the written PRD against these criteria:
@@ -84,6 +90,8 @@ Review the written PRD against these criteria:
 - **Testability:** Every AC can be answered yes/no.
 - **Traceability:** Every user story maps to ≥1 FR.
 - **Specificity:** No vague phrases like "should be fast" or "user-friendly."
+- **Systems Impact:** The systems-impact analysis identifies concrete components affected and no known conflicts are left unaddressed.
+- **No Implementation Names:** The PRD does not propose any code identifiers (variable names, class names, property names, function names, enum values). It describes behaviors and capabilities only.
 
 List all issues found (or "No issues found" if none).
 
