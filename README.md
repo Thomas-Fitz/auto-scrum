@@ -59,7 +59,7 @@ as-sprint-plan <feature-name>              → produce Epic Breakdown + Sprint S
 as-pipeline <feature-name>                 → 🚀 autonomous execution begins
 
 # Quick Workflow - Small Changes (beta):
-as-quick-dev                               → requirements → architecture → implement → review
+as-quick-dev                               → complexity gate → context scan → requirements → architecture → test plan → implement → review
 
 ```
 

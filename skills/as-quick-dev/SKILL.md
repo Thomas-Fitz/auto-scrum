@@ -51,25 +51,71 @@ Create the quick-dev story directory if it doesn't exist: `{BASE}/quick-dev/stor
 Generate a story key from the current timestamp: `qd-{YYYYMMDD-HHmmSS}`. Store as `STORY_KEY`.
 Set `IMPL = {BASE}/quick-dev`.
 
+**Capture the task description.** The user provides a change to make (e.g. "fix the off-by-one in the pagination helper", "add a `--dry-run` flag to the import command", "refactor the retry logic to use the shared backoff util"). If no task description was given in the invocation or prompt, use `ask_user` to ask: "What change do you need? Describe the task." Store as `TASK`.
+
+### Complexity Gate — is this a quick-dev or a full pipeline job?
+
+Before any other work, judge whether `TASK` belongs in this lightweight flow or the full planning pipeline. Use holistic judgment, **not** mechanical keyword matching.
+
+**Escalation signals (too complex for quick-dev):**
+- Multiple subsystems / modules changing together
+- A new system, service, or subsystem built from scratch
+- Changes to core data models, schemas, or public APIs that other components depend on
+- Scope spanning many files across unrelated areas of the codebase (roughly >5 files, or unrelated directories)
+- Architectural uncertainty — the request is really "how should we design/architect this?"
+- A new cross-cutting concern introduced (new auth model, new persistence layer, new framework)
+
+**Simplicity signals (good fit for quick-dev):**
+- Single module / component focus
+- Bug fix, config change, copy/doc update, small refactor, or localized enhancement
+- Adding behavior to an existing, well-defined component
+- Confident, specific request with clear scope
+- ~1–5 files affected
+
+**If 2+ escalation signals are present**, use `ask_user`:
+"This looks like it may be too big for a quick change — I'd recommend the full planning pipeline."
+Offer options: "Use full pipeline", "Proceed with quick-dev anyway".
+If the user chooses the full pipeline: print `Start with /as-new <feature-name>, then /as-prd to begin the full planning pipeline.` and stop.
+
+Otherwise, proceed to Step 2.
+
 ---
 
-## Step 2 — Requirements Discovery (as-prd abbreviated)
+## Step 2 — Context Gathering (delegated)
 
-Read `{SKILLS_DIR}/as-prd/SKILL.md`. Adopt the PM persona from that skill. Execute **Step 2 (Structured Discovery Q&A)**, **Step 3 (Codebase Examination)**, and **Step 4 (Assumption Validation)** with these quick-dev constraints:
-- Limit to 3–5 questions per steps; prioritize the most critical ones
+**Delegate the codebase scan to a single read-only explore subagent** — dispatch it using the `dispatch_subagent` mechanism with the `explore_agent` type from `tool-mapping.yml`, running on `{DEV_MODEL}` (if those keys are absent from your `tool-mapping.yml`, dispatch your platform's standard read-only exploration subagent). This keeps the heavy file reads out of your context: the subagent reads broadly in its own throwaway context and returns only a findings digest. This single scan replaces the per-step codebase scans the borrowed as-prd / as-architecture steps would otherwise each run — **do not let Steps 3 and 4 scan again.**
+
+Give it `TASK` for orientation and instruct it to be **very thorough** — keep expanding until it understands all code related to this change, not just the obvious matches — and to return a concise structured digest (findings plus concrete `file:line` references, **not raw file dumps**) covering:
+
+1. **Files to modify / create** — the specific files this change touches, each with path and purpose.
+2. **Relevant patterns & conventions** — code style, existing patterns for similar functionality, import/export conventions, error-handling approach, and the nearby **test patterns / framework / harness** to follow.
+3. **Dependencies & impact** — internal module dependencies, external libraries, config files that may need updates, related files that might be affected, and any state/data this change reads or writes.
+4. **Constraints & gotchas** — anti-patterns to avoid and stack-specific pitfalls relevant to this change.
+5. **Edge cases** — cases implied by the code that the task description did not call out.
+6. **Existing tests** — test files covering this area, what they assert, and whether they will need updating.
+
+Read the digest and carry only its conclusions forward. Store it as `CONTEXT_DIGEST`.
+
+---
+
+## Step 3 — Requirements Discovery (as-prd abbreviated)
+
+Read `{SKILLS_DIR}/as-prd/SKILL.md`. Adopt the PM persona from that skill. Execute **Step 2 (Structured Discovery Q&A)** and **Step 4 (Assumption Validation)** with these quick-dev constraints:
+- The codebase examination (that skill's Step 3) was already delegated in Step 2 above — do **not** repeat it. Use `CONTEXT_DIGEST` in its place.
+- Limit to 3–5 questions; prioritize the most critical ones
 - Use `ask_user` to ask questions one at a time
 - Skip Steps 5–7 (writing prd.md, automated validation, user approval)
 - Do not save anything to disk
 
-After completing those steps: read the template at `{SKILLS_DIR}/as-prd/templates/quick-requirements-summary.md` and produce a completed version with all placeholder values replaced by real content. Store as `REQUIREMENTS_SUMMARY`.
+After completing those steps: read the template at `{SKILLS_DIR}/as-prd/templates/quick-requirements-summary.md` and produce a completed version with all placeholder values replaced by real content. Number the acceptance criteria AC-1, AC-2, etc. Store as `REQUIREMENTS_SUMMARY`.
 
 ---
 
-## Step 3 — Architecture Discovery (as-architecture-design abbreviated)
+## Step 4 — Architecture Discovery (as-architecture-design abbreviated)
 
-Read `{SKILLS_DIR}/as-architecture-design/SKILL.md`. Adopt the architect persona from that skill. Execute **Step 2 (Codebase Pattern Analysis)**, **Step 3 (Structured Discovery Q&A)**, and **Step 4 (Design Decisions)** with these quick-dev constraints:
-- Use `REQUIREMENTS_SUMMARY` from Step 2 in place of prd.md
-- Limit to 3–5 questions per step; skip anything already covered in requirements discovery
+Read `{SKILLS_DIR}/as-architecture-design/SKILL.md`. Adopt the architect persona from that skill. Execute **Step 3 (Structured Discovery Q&A)** and **Step 4 (Design Decisions)** with these quick-dev constraints:
+- The codebase pattern analysis (that skill's Step 2) was already delegated in Step 2 above — do **not** repeat it. Use `CONTEXT_DIGEST` (files, patterns, dependencies, gotchas) and `REQUIREMENTS_SUMMARY` in place of prd.md and that skill's Step 2 scan output.
+- Limit to 3–5 questions; skip anything already covered in requirements discovery
 - Use `ask_user` to ask questions one at a time
 - Skip Steps 5–7 (writing architecture-design.md, pattern compliance validation, approval)
 - Do not save anything to disk
@@ -78,9 +124,25 @@ After completing those steps: read the template at `{SKILLS_DIR}/as-architecture
 
 ---
 
-## Step 4 — Approach Confirmation
+## Step 5 — Test Planning (as-test-plan abbreviated)
 
-Present both summaries clearly to the user:
+Read `{SKILLS_DIR}/as-test-plan/SKILL.md`. Adopt the QA Engineer persona from that skill. Execute an abbreviated version of **Step 3 (Extract & Prioritize Acceptance Criteria)** and **Step 4 (Design Test Scenarios)** with these quick-dev constraints:
+- Use the numbered ACs from `REQUIREMENTS_SUMMARY`, plus `DESIGN_SUMMARY` and `CONTEXT_DIGEST` (existing tests, framework, conventions) as input
+- Assign each AC a testability level:
+  - `AUTO` — code behavior/logic/contract/state that can be asserted in an automated test
+  - `AGENT-REVIEW` — doc, config, or structural change verified by inspection
+  - `NONE` — dead-code/unused-import/comment-only removal confirmed by build/lint
+- Design a concrete GIVEN-WHEN-THEN scenario for each `AUTO` AC (every `AUTO` AC needs ≥1 scenario). Skip scenario design for `AGENT-REVIEW` and `NONE` ACs.
+- Skip AC priority assignment (P0–P3), writing test-plan.md, coverage/regression verification, and approval — those belong to the full pipeline
+- Do not save anything to disk
+
+After completing those steps: read the template at `{SKILLS_DIR}/as-quick-dev/templates/quick-test-summary.md` and produce a completed version with all placeholder values replaced by real content. Store as `TEST_SUMMARY`.
+
+---
+
+## Step 6 — Approach Confirmation
+
+Present the summaries clearly to the user:
 
 ```
 CHANGE BRIEF
@@ -88,6 +150,8 @@ CHANGE BRIEF
 {REQUIREMENTS_SUMMARY}
 
 {DESIGN_SUMMARY}
+
+{TEST_SUMMARY}
 ─────────────────────────────────────────────────────────
 ```
 
@@ -101,17 +165,17 @@ If cancelled: stop with `❌ Change cancelled.`
 
 ---
 
-## Step 5 — Write Story File
+## Step 7 — Write Story File
 
-Read the template at `{SKILLS_DIR}/as-quick-dev/templates/story.md`. Populate all placeholder values from `REQUIREMENTS_SUMMARY` and `DESIGN_SUMMARY`. Set the `Repo:` field to `{REPO}`. Write the result to `{IMPL}/stories/{STORY_KEY}.md`.
+Read the template at `{SKILLS_DIR}/as-quick-dev/templates/story.md`. Populate all placeholder values from `REQUIREMENTS_SUMMARY`, `DESIGN_SUMMARY`, and `TEST_SUMMARY` (the AC testability and GIVEN-WHEN-THEN scenarios drive the Tasks/Subtasks and the Test Scenarios block). Set the `Repo:` field to `{REPO}`. Write the result to `{IMPL}/stories/{STORY_KEY}.md`.
 
 > ⚠️ Do NOT create a `sprint-status.yaml`. The dev and reviewer agents will update story status in the story file only.
 
 ---
 
-## Step 6 — Dev Agent Dispatch
+## Step 8 — Dev Agent Dispatch
 
-> ⛔ **RULE:** Do NOT implement the change yourself. You MUST dispatch a dev sub-agent via the Task tool. Do not proceed to Step 7 until this sub-agent returns.
+> ⛔ **RULE:** Do NOT implement the change yourself. You MUST dispatch a dev sub-agent via the Task tool. Do not proceed to Step 9 until this sub-agent returns.
 
 Read the dev agent prompt at `{SKILLS_DIR}/as-pipeline/prompts/dev-agent.md`.
 
@@ -139,7 +203,7 @@ After the Task completes: read the story file at `{IMPL}/stories/{STORY_KEY}.md`
 
 ---
 
-## Step 7 — Adversarial Reviewer
+## Step 9 — Adversarial Reviewer
 
 > ⛔ **RULE:** Do NOT review the change yourself. You MUST dispatch a reviewer sub-agent via the Task tool.
 
@@ -169,7 +233,7 @@ Task tool:
 Store the returned agent ID as `REVIEWER_AGENT_ID`.
 
 After the reviewer completes: read the story file's latest `## Review Cycle N Findings` section.
-- **Story status `done`**: proceed to Step 8.
+- **Story status `done`**: proceed to the final summary.
 - **Story status `in-progress`** (REJECTED): resume the dev agent once to apply fixes:
   ```
   Task tool:
