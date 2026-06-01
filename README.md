@@ -115,10 +115,13 @@ The `/as-pipeline` skill:
 2. **Resume:** Detects `in-progress` or `review` stories and resumes from them.
 3. **Per-epic:** Writes a checkpoint file, compacts context, then processes each story.
 4. **Per-story:** Orchestrator writes the story → dev agent implements (TDD) → adversarial reviewer finds + fixes issues → learning log updated.
-5. **Correct Course:** After each story, evaluates for plan deviations and handles them autonomously.
-6. **Epic Retro:** After each epic, synthesizes learnings for the next epic.
-7. **Max review cycles:** After 3 failed review cycles, orchestrator makes a judgment call and continues.
-8. **Escalates to human only for:** missing required artifact OR unresolvable git conflict.
+5. **Follow-up triage:** After each story, out-of-scope items the dev/reviewer surfaced are routed to exactly one of: interleave now, a cleanup epic (drained before the feature closes), or the follow-ups ledger (work only a user/another feature can do).
+6. **Correct Course:** After each story, evaluates for plan deviations and handles them autonomously.
+7. **Epic Retro + Doc Reconciliation:** After each epic, synthesizes learnings and dispositions follow-ups, then flushes recorded deltas back into the living planning docs so the next epic starts accurate.
+8. **Feature-completion gate:** Verifies every story/epic (including the cleanup epic) is `done`, then delivers `followups.md`.
+9. **Max review cycles:** After 3 failed review cycles, orchestrator makes a judgment call and continues.
+10. **Safety:** No agent may revert or delete files without explicit user authorization — a hard stop.
+11. **Escalates to human only for:** missing required artifact, an unresolvable git conflict, or a destructive operation needing authorization.
 
 ## Artifact Directory Structure
 
@@ -139,6 +142,7 @@ The `/as-pipeline` skill:
         sprint-status.yaml
         pipeline-report.md
         learning-log.md
+        followups.md          ← delivered at feature completion: open items only a user/another feature can do
         stories/
           {story-key}.md      ← includes Repo: field declaring which directory to work in
         checkpoints/
@@ -208,6 +212,8 @@ so that {benefit}.
 ### Completion Notes
 ### File List
 ### Plan Deviations
+### Destructive Operation Requests
+### Surfaced Follow-ups
 ```
 
 ## Credits

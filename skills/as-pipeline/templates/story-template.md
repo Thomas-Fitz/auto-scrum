@@ -37,6 +37,15 @@ so that {benefit}.
 **Edge cases:** [Specific edge cases to handle]
 **Integration points:** [What this story touches that affects other components]
 
+**Conditional Dev Notes subsections** — add a subsection ONLY when its trigger applies; populate with story-specific values (do NOT paste the guide's prose). Rule + trigger for each is in `{SKILLS_DIR}/as-pipeline/reference/story-authoring-guide.md` → "Conditional Dev Notes subsections":
+- *Test-helper extraction* — any test helper used across ≥2 test files goes in a shared module, never duplicated.
+- *Semantic-removal test sweep* — if this story DELETES/REPLACES a behavior/API/semantic: search the test dir for the symbol, its user-facing strings, and its unique state shape; cite hit counts.
+- *Test-filter pre-validation* — if any Subtask runs the test runner with a name/pattern filter: pre-validate with the runner's list/dry-run mode and cite the literal match count.
+- *Seam-name + namespace pre-validation* — if prescribing a test seam or test id/namespace prefix: verify both against the codebase; cite the search.
+- *`### Cross-Story Literal Contracts`* — if this story is producer/consumer of a literal-string contract with a sibling: add the subsection with the verbatim literal, producer/consumer sites, uniqueness count.
+- *Regression-coupling hypothesis verification* — if any Task claims "feature regressed test X" / "X caused by Y": search to verify before recording; DAR cites the search.
+- *Pure-deletion Plan Deviations skeleton* — if the work is deletion/replacement with no behavior delta: pre-extract the skeleton into a Subtask for verbatim paste into the DAR.
+
 ### Previous Learnings
 {First story of each epic (N>1): paste SMART action items from previous epic retro.
 All other stories: paste relevant entries from learning-log.md, or "No relevant prior learnings."}
@@ -52,3 +61,16 @@ All other stories: paste relevant entries from learning-log.md, or "No relevant 
 ### Completion Notes
 ### File List
 ### Plan Deviations
+{What diverged from the story file, why, and the resolution. For pure-deletion stories, the entry MUST explicitly state `no replacement {function/test/helper}` and identify where the equivalent behavior now lives (or that it is intentionally gone) — this preempts a reviewer defensive-search on deletions. If a `Plan Deviations skeleton (pre-extracted)` Subtask exists, paste it here verbatim and amend each line with actuals.}
+### Destructive Operation Requests
+{List any moment during implementation where a revert/deletion/reset seemed necessary. For each: the files involved, the exact command considered, why it seemed necessary, and the resolution (USER-authorized / denied / fixed forward instead). MUST be "None." if no such moments occurred. Agents MUST NEVER revert or delete without explicit USER authorization in the current conversation.}
+### Surfaced Follow-ups
+{Out-of-scope work this story surfaced but did NOT do. Boundary: you FIX what is inside this story's tasks; you SURFACE what is outside them. Do NOT sprawl into adjacent files to "while I'm here" fix things — surface them here instead. The orchestrator (Step 5c-vi) reads this block and routes each item; an item left only as prose elsewhere in the DAR will be missed, so put it HERE.
+
+For each surfaced item, one entry:
+- **Item:** <one line — what's wrong / what's needed>  `<file>:<line>`
+  - **Out-of-scope because:** <why it isn't part of this story's tasks>
+  - **Proposed disposition:** `interleave` (feature-scoped, sub-agent-doable, related to THIS epic, do it now) | `cleanup-epic` (feature-scoped, sub-agent-doable, but cross-cutting / off-subject) | `ledger:<key>` (needs a user/external action, another feature, or a human design call — key ∈ blocked_user_actions / deferred_test_debt / cross_feature_handoffs / deferred_design_decisions)
+  - **Rationale:** <one line>
+
+Recurring classes worth scanning for before you write "None.": stale/incorrect planning-doc reference, dead/orphaned code from a superseding path, a test helper now duplicated across files, a behavior gap you deferred mid-story, a producer-only contract literal lacking a consumer test, an external dependency awaiting provisioning. The orchestrator makes the final routing call — your disposition is a proposal. MUST be "None." if there are genuinely no surfaced follow-ups.}

@@ -30,12 +30,6 @@ pipeline:
   # makes a judgment call and moves on.
   max_review_cycles: 3
 
-  # When the expensive FULL-suite regression sweep runs. The cheap per-story
-  # targeted sweep runs regardless.
-  #   epic    — full sweep before each epic's retro (early detection; default)
-  #   feature — one full sweep at feature completion (cheaper; later detection)
-  sweep_cadence: epic
-
 auto_scrum:
   platform: copilot             # 'copilot' | 'claude' | 'opencode'
   skills_dir: ~/.copilot/skills # Path where auto-scrum skills are installed
