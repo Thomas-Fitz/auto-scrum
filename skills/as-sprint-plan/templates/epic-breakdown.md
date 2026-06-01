@@ -15,8 +15,12 @@
 **PRD FRs covered:** FR-X, FR-Y
 
 ### Stories
-| Story Key | Title | PRD FRs | AC IDs | Design Refs | Test Cases (Type) | Complexity |
-|-----------|-------|---------|--------|-------------|-------------------|------------|
-| 1-1-{kebab-title} | ... | FR-X | AC-1, AC-2 | §{Section} | Scenario Name (unit), Scenario Name (integration) | S/M/L |
+<!-- Include the `UX Refs` column ONLY for features with a ux-design.md (UX_DOC=true). Omit the column entirely otherwise.
+     UX Refs = WHAT the user must experience (surface layout, focus/navigation order, visual/feedback states) — the
+     acceptance reference, cited only where the Design Refs architecture section does not already restate it. Blank for
+     stories with no user-facing surface. -->
+| Story Key | Title | PRD FRs | AC IDs | Design Refs | UX Refs | Test Cases (Type) | Complexity |
+|-----------|-------|---------|--------|-------------|---------|-------------------|------------|
+| 1-1-{kebab-title} | ... | FR-X | AC-1, AC-2 | §{Section} | ux§{Section} | Scenario Name (unit), Scenario Name (integration) | S/M/L |
 
 [repeat for each epic]

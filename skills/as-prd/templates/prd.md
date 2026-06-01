@@ -41,9 +41,12 @@ Include edge cases and error scenarios the implementation must handle.
 ### In Scope (v1)
 ### Out of Scope (v1)
 
-## 9. Open Questions
+## 9. Impact on Other Systems
+[Existing components, modules, and workflows this feature touches and how each is affected. Note any shared state or data this feature reads or writes, and any second-order effects on adjacent functionality.]
+
+## 10. Open Questions
 | Question | Owner | Due |
 |----------|-------|-----|
 
-## 10. Codebase Findings
-[Patterns found, constraints discovered, missed requirements surfaced from codebase examination]
+## 11. Codebase Findings
+[Patterns found, constraints discovered, related systems identified, missed requirements surfaced from codebase examination]

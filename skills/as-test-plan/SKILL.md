@@ -12,6 +12,7 @@ You are  a QA Engineer. Pragmatic and straightforward — you get tests written 
 Read `~/.auto-scrum/config.yml`. If missing, halt with: `❌ ~/.auto-scrum/config.yml not found. Run as-new to initialize auto-scrum.`
 Set `BASE=~/.auto-scrum` (expand `~` to the user's home directory).
 Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in ~/.auto-scrum/config.yml. Run as-new to reconfigure.`
+Set `QA_MODEL = {agents.qa.model}` from config — the Step 2 codebase/test-suite analysis subagent runs on this model. If `agents.qa.model` is missing, dispatch the subagent on your platform's default model.
 
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
@@ -25,12 +26,21 @@ Set `PLAN={BASE}/features/{FEAT}/planning/`.
 
 Read `{PLAN}/prd.md` — halt if missing: "❌ prd.md not found. Run the as-prd skill first."
 Read `{PLAN}/architecture-design.md` (use same fallback search logic) — halt if missing: "❌ architecture-design.md not found. Run the as-architect skill first."
-## Step 2: Check Existing Test Coverage
-Before planning new tests, scan the codebase for existing test files related to this feature:
-- Search test directories (e.g., `__tests__/`, `test/`, `.test.js/.test.ts`, `.spec.js/.spec.ts`)
-- Identify any existing test files for this feature
-- Document what's already covered to avoid duplicating tests
-- Note: If substantial test coverage already exists, confirm with the user whether to supplement or rebuild
+Read `{PLAN}/ux-design.md` — **optional** (use same fallback search logic; many features have no UX doc). If found, set `UX_DOC=true` and extract its user-experience acceptance — the surface inventory (§3), focus & keyboard model (§5.1), visual states (§5.2), the confirm/cancel/destructive contract (§5.3), and empty/loading/error states (§5.4) — to drive scenario design in Step 4. Otherwise set `UX_DOC=false` and skip every UX-conditional step below.
+
+## Step 2: Codebase & Test-Suite Scan (delegated)
+
+**Delegate the test-suite scan to a single read-only explore subagent** — dispatch it using the `dispatch_subagent` mechanism with the `explore_agent` type from `tool-mapping.yml`, running on `{QA_MODEL}` so the analysis uses the QA agent's configured model (if those keys are absent from your `tool-mapping.yml`, dispatch your platform's standard read-only exploration subagent). This keeps the heavy test-file reads out of your context: the subagent reads broadly in its own throwaway context and returns only a digest. Give it the feature name, the PRD acceptance criteria, the architecture document (especially its **Codebase Impact** / Files Modified section), and the test framework and naming conventions from `project-context.md` if present.
+
+Instruct it to be **very thorough** and to return a concise structured digest — findings plus concrete `file:line` references, **not raw file dumps** — covering all three of the following (this single digest feeds the coverage check, cross-feature impact, and regression analysis in Step 6, so it is gathered once here):
+
+1. **Existing coverage** — Search test directories and patterns (e.g., `__tests__/`, `test/`, `tests/`, `*.test.js/.ts`, `*.spec.js/.ts`, `*_test.py`, `*_test.go`). Identify existing test files for this feature's domain, what each covers, and whether test infrastructure exists (base classes, fixtures, helpers) — so new scenarios don't duplicate them.
+2. **Cross-feature test impact** — For each production API the architecture's Codebase Impact says this feature changes or removes, grep the test suite for tests in OTHER features that call or assert on that API. Report `changed API → external test file → tests affected`. If none touch a changed API, say so and list which APIs were searched.
+3. **Regression-coupling candidates** — For each file/module this feature changes, the sibling test file(s)/filter(s) that should run alongside its own tests, **including couplings that are not call-graph-obvious** (shared module, data schema, or lifecycle both depend on). Report `changed file/module → required test filter → why coupled`. Derive from the architecture's integration points + Codebase Impact and known shared modules.
+
+Read the digest and carry only its conclusions forward. Steps 3 and 6 consume it rather than re-scanning.
+
+If the digest shows substantial existing coverage, use `ask_user` to confirm: "Found existing tests for this feature area. Should I supplement them or design from scratch?" Offer options: "Supplement existing", "Replace with new plan", "Let me review first".
 
 ## Step 3: Extract & Prioritize Acceptance Criteria
 List every Acceptance Criterion from `prd.md`. Number them sequentially: AC-1, AC-2, AC-3, ...
@@ -55,7 +65,7 @@ Assign each AC a priority level based on risk:
 - `AGENT-REVIEW` — AC describes a documentation update, content change, config-only change, or structural output where correctness can only be verified by reading the result. No automated test; the reviewer agent verifies by inspection.
 - `NONE` — AC describes removal of dead code, unused imports, or comment-only changes where the compiler/linter confirms the result. No test or inspection beyond a passing build.
 
-For `AGENT-REVIEW` and `NONE` ACs: skip test scenario design (Steps 4–6) for those ACs. They will not appear in sections 3–6 of the test plan. Document them only in the Coverage Matrix with their testability level and a brief rationale.
+For `AGENT-REVIEW` and `NONE` ACs: skip test scenario design (Step 4) for those ACs. They will not appear in sections 3–6 of the test plan. Document them only in the Coverage Matrix with their testability level and a brief rationale.
 
 ## Step 4: Design Test Scenarios
 For each AC, design one or more test scenarios using the GIVEN-WHEN-THEN format. Group scenarios by test type (unit, integration, E2E).
@@ -73,6 +83,8 @@ SCENARIO: [Descriptive name]
   TYPE: [unit/integration/e2e]
 ```
 
+**UX-driven scenarios (only when `UX_DOC=true`):** Turn the user-experience acceptance in `ux-design.md` into concrete scenarios. Assert the *behavior* the UX spec defines as **state**, never pixels: which element holds focus on open and the navigation/focus order (§5.1) including wrap/escape behavior, the visual/feedback state each interaction produces (§5.2 — e.g. "selected", "disabled", "error"), the confirm/cancel/destructive contract (§5.3), and empty/loading/error states (§5.4). Map each UX-derived scenario to the AC it satisfies; if a UX behavior has no corresponding `prd.md` AC, still design a scenario for it and note `(UX-only — no AC)` on the scenario so the Step 6 gate and the human approver can see it. Use any prototype in `{BASE}/features/{FEAT}/prototypes/` only as visual reference for *what* the state should be — do not assert on rendering.
+
 ## Step 5: Write test-plan.md
 Read the template at `{SKILLS_DIR}/as-test-plan/templates/test-plan.md`. Write `{PLAN}/test-plan.md` using that template, substituting `{feature-name}` and filling in all sections with content from the PRD, design, codebase analysis, and scenario design above.
 
@@ -81,11 +93,19 @@ Read the template at `{SKILLS_DIR}/as-test-plan/templates/test-plan.md`. Write `
 **Coverage check:**
 Count the scenarios in the Coverage Matrix. Verify: every `AUTO` AC has at least one test scenario. If any `AUTO` AC has no coverage (existing or planned): add a scenario before saving. `AGENT-REVIEW` and `NONE` ACs do not require test scenarios.
 
+**UX coverage gate (only when `UX_DOC=true`):** Cross-check every section of `ux-design.md` that defines assertable interaction acceptance — surface inventory (§3), focus & keyboard model (§5.1), visual states (§5.2), confirm/cancel/destructive contract (§5.3), empty/loading/error states (§5.4) — against the designed scenarios. Every such section must map to ≥1 scenario (`AUTO`, or `AGENT-REVIEW` where the behavior is genuinely not automatable). List any unmapped section as `⚠ Unmapped UX acceptance: ux§X — no scenario verifies this` in the validation report so the approver decides whether to add a scenario or accept the gap. If every section maps to ≥1 scenario, print `UX coverage: all N sections mapped.`
+
 **Regression impact check:**
-Review the architecture document's Codebase Impact section (Files Modified). For each existing file being modified:
-- Identify what existing tests cover that file
+Cross-reference the architecture document's Codebase Impact section (Files Modified) against the Step 2 digest's existing-coverage findings. For each existing file being modified:
+- Note what existing tests cover that file (from the digest)
 - Flag if the feature's changes could break existing test assertions
 - Add regression scenarios where needed to verify existing behavior is preserved
+
+**Cross-feature test impact check:**
+Populate the Cross-Feature Test Impact table in §7 of the test plan from the Step 2 digest's cross-feature findings (`changed API → external test file → tests affected`). This ensures dev agents can update those tests proactively within the relevant story, rather than discovering stale expectations during final regression verification. If the digest found no external tests touching the changed APIs, write "None identified" and note which APIs were searched. Only re-grep if the AC analysis surfaced a changed API the digest did not cover.
+
+**Regression Sweep Map (behavioral coupling → targeted sweep):**
+Populate the Regression Sweep Map table in §7 from the Step 2 digest's regression-coupling candidates: for each file/module this feature changes, list the sibling test filter(s) that should run alongside its own tests — **including couplings that are NOT call-graph-obvious**. A changed-files-only test run misses *behavioral* coupling (a change to module A breaks module B's tests even though B doesn't call the changed symbol — e.g. a shared module, a data schema, a lifecycle both depend on). For each entry: `changed-file glob | required test filter | why coupled`. The dev and reviewer agents run these filters after the changed-file tests (per-story targeted sweep); the epic/feature full-suite sweep is the backstop. If a changed module has no non-obvious coupling, say so explicitly — silence is not the same as "verified none."
 
 **Validation report:**
 ```

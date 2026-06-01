@@ -5,9 +5,23 @@
 
 copilot:
   ask_user: ask_user
+  # Subagent dispatch. Copilot CLI routes to subagents via model-driven
+  # delegation — reference the agent by name in your instruction (e.g.
+  # "Use the Explore agent to ...") or select it with the /agent command.
+  dispatch_subagent: "reference the agent by name in your instruction (model-driven), or use /agent"
+  # Built-in read-only agent for codebase exploration.
+  explore_agent: Explore
 
 claude:
   ask_user: AskUserQuestion
+  # Subagent dispatch. Call the Task tool with the chosen subagent_type.
+  dispatch_subagent: "Task tool (set subagent_type)"
+  # Built-in read-only agent for codebase exploration.
+  explore_agent: Explore
 
 opencode:
   ask_user: question
+  # Subagent dispatch. Call the Task tool with the chosen subagent_type.
+  dispatch_subagent: "Task tool (set subagent_type)"
+  # Built-in read-only agent for codebase exploration.
+  explore_agent: explore

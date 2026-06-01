@@ -14,4 +14,59 @@ development_status:
 
 # Story statuses: backlog | ready-for-dev | in-progress | review | done
 # Epic statuses:  backlog | in-progress | done
-# Retro statuses: optional | done
+# Retro statuses: optional | done | skipped
+
+# CLEANUP EPIC (created by as-pipeline only when needed):
+#   The pipeline appends a reserved `epic-cleanup:` epic — with its own
+#   `cleanup-{n}-{title}` stories — ONLY when a follow-up item is routed to it
+#   (a feature-scoped, sub-agent-completable item that a retro surfaced across
+#   stories, or one too large/off-subject to interleave into its originating epic).
+#   It is always processed LAST and has no required retrospective
+#   (`epic-cleanup-retrospective: optional`). A clean feature never grows one.
+#   Its stories block feature-completion exactly like planned stories.
+
+# Optional top-level FOLLOW-UP LEDGER keys (added/populated by as-pipeline during
+# execution and the epic retros). At feature completion these are rendered into the
+# delivered {IMPL}/followups.md. They hold ONLY work the pipeline could not do
+# autonomously in-feature — anything sub-agent-completable and feature-scoped is done
+# in-feature (interleaved or via the cleanup epic), never parked here.
+#
+# blocked_user_actions:
+#   Steps ONLY the USER can complete (external account/credential provisioning,
+#   a manual settings change in a third-party console, a hardware/device action).
+#   One entry per action.
+#   Schema:
+#     - action: "Create the production Stripe webhook secret and add it to the deploy env"
+#       source_story: "3-2-wire-payment-webhooks"
+#       since: "2026-05-02"
+#       impact: "FR-4/FR-7 cannot be verified end-to-end until this secret exists"
+#       bound_code_ref: "src/payments/webhook.ts:41-58"   # optional: shipped seam awaiting the action
+#
+# deferred_test_debt:
+#   Test cleanup a DIFFERENT feature should sponsor (scope ownership, not capability).
+#   Schema:
+#     - debt: "Delete 5 sibling tests asserting the old sync-export semantic in export/__tests__/"
+#       source_story: "4-4-fix-export-regressions"
+#       sponsor_feature: "async-export-pipeline"
+#       since: "2026-05-18"
+#       impact: "Tests vacuously pass under the new semantic; reviewer noise"
+#       baseline_reds: "25 in export.integration.*"   # optional: known-red regression contract
+#
+# cross_feature_handoffs:
+#   Reusable PRODUCTION infrastructure a DIFFERENT feature should own (parallel to
+#   deferred_test_debt, but for production code).
+#   Schema:
+#     - handoff: "Extract a shared RetryPolicy helper from the two ad-hoc retry loops"
+#       source_story: "6-1-webhook-retry"
+#       sponsor_feature: "shared-resilience-infrastructure"
+#       since: "2026-05-26"
+#       impact: "AC-14.3 retry-budget cap cannot complete until the helper exists"
+#
+# deferred_design_decisions:
+#   Product/UX judgment deferred pending a human call. NEVER invent autonomously.
+#   Schema:
+#     - question: "Quota overflow: reject the request vs. accept-and-throttle?"
+#       source_story: "5-2-enforce-quota"
+#       since: "2026-05-24"
+#       options: "reject (shipped) | accept-and-throttle (alternative)"
+#       rationale: "Needs product owner input before committing"

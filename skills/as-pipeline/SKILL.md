@@ -30,6 +30,23 @@ These are never skipped, merged, or combined across stories.
 **Rule 4 — Sub-agents are dispatched via the Task tool.**
 Use `agent_type: general-purpose` for both dev and reviewer sub-agents. Never attempt to perform their responsibilities inline. On fix cycles (review cycle 2+), **resume** existing sub-agents using their stored agent IDs instead of spawning fresh ones — this preserves their prior context and avoids re-reading the entire codebase. If your platform does not support agent resumption, dispatch a fresh agent instead.
 
+**Rule 5 — NEVER revert or delete files without explicit USER permission. HARD STOP.**
+The orchestrator and every sub-agent the pipeline dispatches — dev, reviewer, retro, and doc-reconciliation — are ALL prohibited from reverting or deleting any file in the repository unless the USER has just explicitly authorized that specific operation in the current conversation. This is a non-negotiable safety rule: a revert/reset can destroy work spanning multiple epics.
+
+Prohibited without explicit USER authorization (this list is non-exhaustive — the spirit of the rule is "no destructive file operations"):
+- `git reset --hard`, `git checkout -- `, `git restore`, `git clean -fd`, `git stash drop`, deleting/force-overwriting a branch
+- `rm`, `rm -rf`, `Remove-Item`, `del`, `unlink`, `shutil.rmtree`, or any shell/scripting equivalent
+- The `Write` tool used to overwrite a file with empty contents or with an earlier/stale version (a disguised delete/revert)
+
+**Orchestrator behavior when a revert/deletion appears necessary:**
+1. STOP the pipeline immediately. Do NOT dispatch the next sub-agent. Do NOT perform the operation yourself.
+2. Use `ask_user` (or plain text if unavailable) to describe: EXACTLY which files would be affected (list each path), the EXACT command(s) that would run, WHY the operation seems necessary, and what alternatives exist (fixing forward, narrowing scope, a different approach).
+3. Wait for the user's explicit "yes, do it" (or equivalent). Silence, ambiguity, or a sub-agent reporting "I already reverted" is NOT permission.
+4. If the user denies permission, document the decision in `{IMPL}/pipeline-report.md` and resume the pipeline without reverting.
+5. If a sub-agent reports that it reverted or deleted files without prior USER permission: treat that as a CRITICAL incident. Halt the pipeline, do NOT dispatch further sub-agents, and surface the incident to the user with the full list of affected files so recovery can begin.
+
+**Enforcement:** every sub-agent prompt already carries a near-identical rule. If a sub-agent's prompt does not contain the no-revert/no-delete rule, the orchestrator MUST prepend it before dispatching. Authorization granted for one operation does NOT extend to later operations — each revert/deletion needs its own explicit approval.
+
 ---
 
 ## Step 1: Setup
@@ -82,6 +99,8 @@ Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's
 ## Step 5: Per-Epic Loop
 For each epic in `sprint-status.yaml` order where epic status != `done`:
 
+> **Cleanup epic ordering.** The reserved `epic-cleanup:` epic (created lazily by Step 5c-vi / 5d Route B, only when a follow-up routes to it) is ALWAYS processed LAST — after every numbered epic. Re-read `sprint-status.yaml` at the top of each epic iteration so a cleanup epic appended mid-run is picked up. The cleanup epic runs the full per-story loop (5c) like any epic, but its retrospective (5d) is optional (skip it unless a cleanup story itself surfaces cross-story follow-ups).
+
 ### 5a: Context Compaction
 Before the first story of each epic:
 
@@ -109,7 +128,7 @@ For each story in this epic (in sprint-status.yaml order, status in [`backlog`, 
    - From `{PLAN}/test-plan.md`: copy the full GIVEN-WHEN-THEN scenario for each test case, including its type and testability level (AUTO / AGENT-REVIEW / NONE). For AGENT-REVIEW ACs, note what the reviewer agent should inspect. For NONE ACs, note what build/lint check confirms completion.
    - From `{PLAN}/prd.md`: copy the exact acceptance criterion text for each AC ID
    This extracted content is what you will embed directly in the story file — do not leave vague pointers like "see architecture-design.md §3"; paste the substance inline.
-4. Read the story template at `{SKILLS_DIR}/as-pipeline/templates/story-template.md`. Write `{IMPL}/stories/{story-key}.md` using that template, populating all fields with the content extracted in steps 1–3 above. Set the `Repo:` field to the absolute path of the current working directory (expand `~` to the user's home directory).
+4. Read the story template at `{SKILLS_DIR}/as-pipeline/templates/story-template.md` AND the authoring guide at `{SKILLS_DIR}/as-pipeline/reference/story-authoring-guide.md` (the conditional Dev Notes subsections the template points to). Write `{IMPL}/stories/{story-key}.md` using the template, populating all fields with the content extracted in steps 1–3 above and adding any conditional Dev Notes subsection whose trigger this story trips. Set the `Repo:` field to the absolute path of the current working directory (expand `~` to the user's home directory).
 
 5. Run story quality checklist — if ANY fail, rewrite the story before continuing:
    - [ ] Every AC has ≥1 task
@@ -145,7 +164,7 @@ Based on `git.commit_frequency`:
   3. Read the "Completion Notes" from the Dev Agent Record section of `{IMPL}/stories/{story-key}.md`.
   4. Compose a concise commit message (≤72 chars) summarizing what was implemented. Use plain language based on the Completion Notes. No prefixes, no story keys, no boilerplate. Do NOT add any `Co-authored-by` or other trailer lines — the commit author must be exclusively the human git user.
   5. Run `git commit -m "{message}"`.
-- `epic`: Skip (will commit after all stories in the epic are done — see Step 5d)
+- `epic`: Skip (will commit after all stories in the epic are done — see Step 5f)
 - `never`: Skip entirely
 
 #### Step 5c-iv: Adversarial Review
@@ -203,7 +222,44 @@ Initialize `review_cycles = 0`.
 #### Step 5c-v: Learning Log Update
 After story is `done`: append to `{IMPL}/learning-log.md` (create if missing) using the "Learning Log Entry" format from `{SKILLS_DIR}/as-pipeline/templates/pipeline-report-entries.md`.
 
-#### Step 5c-vi: Correct Course Evaluation
+#### Step 5c-vi: Follow-up Triage & Surfacing
+Read the completed story's **`### Surfaced Follow-ups` block** — the dev agent and reviewer record out-of-scope items there, each with a *proposed* disposition. This block is the primary input. As a backstop, also skim the DAR Plan Deviations / Completion Notes and the latest `## Review Cycle {N} Findings` for any follow-up that should have been surfaced but was only mentioned in prose; pull it into the triage too (and treat the omission from the block as a process miss).
+
+**Core principle: feature-specific, sub-agent-completable work is DONE inside the feature, not documented for later.** "Documenting feature-local work as a follow-up" is the anti-pattern this triage exists to kill. The agent's proposed disposition is a PROPOSAL — you make the final call. For EVERY discrete follow-up item, route it to EXACTLY ONE of the three destinations below. **A follow-up that lives only as prose, or as a "we'll get to it later" note, is a pipeline defect — it MUST land in one of the three.**
+
+**Routing rule** (ask, in order):
+
+1. Is it **sub-agent-completable** (no external action, no human design decision) **AND scoped to THIS feature**?
+   - **NO** → **Route C (follow-ups ledger)**, below.
+   - **YES** → is it small, related to the *current epic's subject*, and surfaced *now* while the epic is still open and context is fresh?
+     - **YES** → **Route A (interleave now)**.
+     - **NO** (cross-story — only visible by comparing multiple stories — or large/off-subject enough that injecting it would thrash the current epic; this is the common case for items a *retro* surfaces) → **Route B (cleanup epic)**.
+
+**Route A — Interleave now (a story in the current epic).**
+Materialize the item as a new story in the CURRENT epic: pick the next free story number in this epic, write `{epic-num}-{n}-{kebab-title}` into `{IMPL}/sprint-status.yaml` with status `backlog`. The per-story loop (this epic, statuses `backlog`/`ready-for-dev`) will pick it up before this epic's retro — so it is dev'd + reviewed like any story and is `done` before the epic closes. Note it in `{IMPL}/pipeline-report.md` as an interleaved follow-up with its source.
+
+**Route B — Cleanup epic (drained before feature-completion).**
+Append the item as a story under the reserved `epic-cleanup:` epic. If `epic-cleanup:` does not yet exist in `development_status`, create it at the END of `development_status` together with `epic-cleanup-retrospective: optional`, status `backlog`. Story key: `cleanup-{n}-{kebab-title}: backlog` (next free `{n}`). The cleanup epic is processed LAST by the per-epic loop (Step 5) and its stories block feature-completion exactly like planned stories. Create the cleanup epic ONLY when an item routes here — a clean feature never grows one.
+
+> **Story creation for follow-up stories (Route A and Route B).** A follow-up story has NO row in `epic-breakdown.md`, so Step 5c-i's traceability extraction does not apply. Instead, write the story file from the follow-up's source — the DAR Plan Deviation / Completion Note or review finding that surfaced it — using the story template: state the concrete change, cite the exact files/lines, set the Testability of each task, and reference the originating story key. Run the Step 5c-i story quality checklist before dispatching the dev sub-agent. Do NOT route a follow-up through correct-course (Step 5c-vii) — it is new in-feature work, not a plan deviation against the architecture.
+
+**Route C — Follow-ups ledger (cannot be done autonomously in-feature).**
+Append to the matching top-level key in `{IMPL}/sprint-status.yaml` (create the key if missing). These are rendered into the delivered `{IMPL}/followups.md` at feature completion (Step 6). Pick the key by ownership:
+
+- `blocked_user_actions:` — steps ONLY the USER can complete (external account/credential provisioning, a manual settings change in a third-party console, a hardware/device action). A transient/mocked test stand-in does NOT exempt the action. Optional `bound_code_ref:` records the already-shipped seam awaiting it.
+- `deferred_test_debt:` — test cleanup a DIFFERENT feature should sponsor (sibling tests depending on a semantic another feature removed). Sub-agent-completable once the sponsor picks it up; the deferral is about scope ownership, not capability. Optional `baseline_reds:` pins a known-red regression contract.
+- `cross_feature_handoffs:` — reusable PRODUCTION infrastructure (a shared helper, base-class hoist, generic utility) a DIFFERENT feature should own. Like `deferred_test_debt:` but for production code; record the `sponsor_feature` and what in THIS feature is blocked until it lands.
+- `deferred_design_decisions:` — a design/UX judgment deferred pending data or a human product call. NEVER invent the decision autonomously; record the question, the options considered, and why it is deferred.
+
+Use the exact schemas in `{SKILLS_DIR}/as-sprint-plan/templates/sprint-status.yaml`. Do NOT repurpose one key for another's semantics.
+
+**Doc-correction follow-ups are DONE, not deferred.** A stale or incorrect planning-doc reference (architecture-design.md naming a symbol that doesn't exist, a wrong field name, an infeasible test-plan predicate) is sub-agent-completable and feature-scoped → route it to **interleave** or **cleanup-epic**, never to a ledger key. The fixing story edits the planning doc in place using the correct-course additive convention (`> Updated by Correct Course on {date}: …`) to preserve the audit trail.
+
+**Dedup + reconciliation (keep the ledger and cleanup backlog honest):**
+- **Dedup:** before appending, check whether the same item is already present (an existing ledger entry, an open cleanup-epic story, or an interleaved story). If so, do NOT add a duplicate — append the new `source_story` to the existing entry instead. (The same missing helper blocking three stories is ONE handoff with three sources, not three handoffs.)
+- **Reconciliation:** when a story (interleaved, cleanup, or a later planned story) RESOLVES a previously-recorded follow-up, remove the corresponding ledger entry / mark the cleanup story `done` so `{IMPL}/followups.md` never ships an item that is already fixed.
+
+#### Step 5c-vii: Correct Course Evaluation
 Read the Dev Agent Record: Plan Deviations section from the completed story file.
 Evaluate: is there a plan deviation? A deviation is: a wrong assumption in architecture-design.md, a required architectural change, or a scope shift affecting future stories.
 
@@ -216,14 +272,7 @@ Evaluate: is there a plan deviation? A deviation is: a wrong assumption in archi
 
 End of per-story loop.
 
-### 5d: Epic Git Commit
-If `git.commit_frequency` == `epic`:
-1. Run `git add -A` to stage all implementation changes from this epic.
-2. Run `git diff --cached --quiet` to check if anything is staged. If nothing is staged, skip the commit.
-3. Compose a concise commit message summarizing what the epic delivered — based on the epic goal from `epic-breakdown.md` and the completed stories. No prefixes, no epic keys, no boilerplate. Do NOT add any `Co-authored-by` or other trailer lines — the commit author must be exclusively the human git user.
-4. Run `git commit -m "{message}"`.
-
-### 5e: Epic Retrospective
+### 5d: Epic Retrospective
 Update sprint-status.yaml: `epic-{N}: in-progress`
 
 Dispatch retrospective sub-agent using the **Task tool**:
@@ -235,21 +284,63 @@ Task tool:
     substituting {N}, {IMPL}, {PLAN}, and the story list with their current values.]
 ```
 
-After retro Task completes:
-Update sprint-status.yaml: `epic-{N}: done`, `epic-{N}-retrospective: done`
+**After retro Task completes — apply the retro's dispositions (the retro is a work-generator, not just a report):**
+
+1. **Verify the retro artifact exists.** Confirm `{IMPL}/retros/epic-{N}-retro-*.md` was written. The retro may NOT be silently skipped: if a retro is intentionally not run, an `{IMPL}/retros/epic-{N}-retro-SKIPPED.md` stub with a 2–3 sentence rationale is required instead, and the retro status is set to `skipped`. A bare "skipped" with no artifact is a defect — re-dispatch the retro.
+
+2. **Materialize the retro's `## Follow-up Dispositions`.** Apply the Step 5c-vi routing to each item:
+   - items dispositioned **cleanup-epic** → append as `cleanup-{n}-{title}: backlog` stories under `epic-cleanup:` (Route B; create the cleanup epic + `epic-cleanup-retrospective: optional` at the end of `development_status` if absent).
+   - items dispositioned **ledger** → append to the matching `blocked_user_actions` / `deferred_test_debt` / `cross_feature_handoffs` / `deferred_design_decisions` key (Route C).
+   - The retro routes cross-story items to cleanup-epic or ledger, NOT to interleave (its epic is closing). Leave `## Cross-Feature Conventions` in the retro file as-is — Step 6 harvests it into `followups.md`.
+
+3. Update sprint-status.yaml: `epic-{N}: done`, `epic-{N}-retrospective: done` (or `skipped` per step 1).
+
+> **`## SMART Action Items for Next Epic`** in the retro is forward *guidance* read by Step 5b when writing the next epic's first story. It is NOT a place to park deferred work — every actual work item must be dispositioned in step 2 above. A SMART item that is really deferred work, not guidance, is a routing miss.
+
+### 5e: End-of-Epic Doc Reconciliation
+Planning docs freeze at approval and rot as the implementation diverges (stale symbol names, wrong fields, resolved-but-unrecorded design questions). Rule 1 forbids you editing planning docs yourself, so dispatch a doc-reconciliation sub-agent using the **Task tool**:
+```
+Task tool:
+  agent_type: general-purpose
+  prompt: |
+    [Read `{SKILLS_DIR}/as-pipeline/prompts/doc-reconciliation-agent.md` and use its full contents as this prompt,
+    substituting {N}, {IMPL}, {PLAN}, and {date} with their current values.]
+```
+This is a flush of the epic's ALREADY-RECORDED deltas (story Plan Deviations + retro Architectural Learnings) into the living docs — NOT a fresh audit, so it is cheap — and the agent prompt carries the full procedure. Running it per-epic means the NEXT epic's stories (authored in 5b/5c-i from these docs) start accurate. A correction a story already made via 5c-vi triage needs no re-doing — 5e touches only still-stale text.
+
+### 5f: Epic Git Commit
+If `git.commit_frequency` == `epic`:
+1. Run `git add -A` to stage all implementation changes from this epic (including any doc reconciliation edits from 5e).
+2. Run `git diff --cached --quiet` to check if anything is staged. If nothing is staged, skip the commit.
+3. Compose a concise commit message summarizing what the epic delivered — based on the epic goal from `epic-breakdown.md` and the completed stories. No prefixes, no epic keys, no boilerplate. Do NOT add any `Co-authored-by` or other trailer lines — the commit author must be exclusively the human git user.
+4. Run `git commit -m "{message}"`.
 
 End of per-epic loop.
 
 ## Step 6: Pipeline Complete
-Print final summary:
+
+### 6a: Feature-completion gate (HARD)
+Before declaring the feature complete, re-read `{IMPL}/sprint-status.yaml` and verify that EVERY story — planned, interleaved (Route A), AND cleanup-epic (Route B) — has status `done`, and every epic including `epic-cleanup` (if present) has status `done`. If ANY is not `done`, the feature is NOT complete: return to Step 5 and finish it. **Sub-agent-completable, feature-scoped work is never left for the user** — only the follow-ups ledger (Route C) may carry open items past this gate.
+
+### 6b: Generate the delivered follow-ups doc
+Read the four follow-up ledger keys from `{IMPL}/sprint-status.yaml` (`blocked_user_actions:`, `deferred_test_debt:`, `cross_feature_handoffs:`, `deferred_design_decisions:`; any may be empty/absent) AND the `## Cross-Feature Conventions` section of every `{IMPL}/retros/epic-*-retro-*.md`.
+
+Read the template at `{SKILLS_DIR}/as-pipeline/templates/followups-doc.md` and write `{IMPL}/followups.md`, rendering each ledger key into its section and each retro convention (with its suggested home) into the Cross-Feature Conventions section. Omit any section whose source is empty. Set the doc's **Status** line to "All clear — no open follow-ups" if all five sources are empty, else "Shipped with {C} open follow-up(s)". This doc is a pipeline DELIVERY — it should contain only Route-C work; if it lists anything a sub-agent could have done in-feature, that was a triage miss.
+
+### 6c: Final summary
+Print:
 ```
 🎉 Pipeline complete for feature: {FEAT}
-   Epics completed: {N}
-   Stories completed: {M}
+   Epics completed: {N}   (incl. cleanup epic: {yes/no})
+   Stories completed: {M}   (planned {P} + interleaved {I} + cleanup {CU})
    Plan deviations handled: {K}
    Review cycles total: {R}
-   See {IMPL}/pipeline-report.md for full details.
+   See {IMPL}/pipeline-report.md for full details, {IMPL}/followups.md for open follow-ups.
 ```
+
+If `blocked_user_actions:` is non-empty, ALSO print each as a blocked user action requiring USER completion before the feature can be fully verified, with its `since` and `source_story`. Do NOT mark the feature fully shippable while `blocked_user_actions` is non-empty.
+
+If `deferred_test_debt:` or `cross_feature_handoffs:` is non-empty, print each with its `sponsor_feature` — the current feature CAN ship with these open (they are another feature's to resolve). If `deferred_design_decisions:` is non-empty, print each as an open product/UX question awaiting a human call. If all five sources are empty, print: `✅ No open follow-ups — feature fully closed.`
 
 **Use `ask_user` for next workflow step:**
 Ask: "Pipeline execution is complete! Would you like to create documentation for this feature using as-tech-writer, or are you finished?"
