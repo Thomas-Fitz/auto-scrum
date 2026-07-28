@@ -13,7 +13,7 @@ so that {why from REQUIREMENTS_SUMMARY}.
 
 ## Tasks / Subtasks
 {For each file in "Files to modify" / "Files to create" from DESIGN_SUMMARY, create a task.
- AC numbers, story keys, and requirement IDs exist ONLY in this file — they must never appear in source code or code comments.
+ AC numbers, story keys, and requirement IDs exist ONLY in this file — they must never appear in source code, comments, test names, or assertion messages.
  Assign each task's testability from the AC testability in TEST_SUMMARY (not re-derived):
  - AUTO → use TDD subtasks: write the failing test for the matching scenario, implement, refactor
  - AGENT-REVIEW → implement and verify build (doc/config/copy changes)
