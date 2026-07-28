@@ -14,7 +14,8 @@ so that {benefit}.
 2. ...
 
 ## Tasks / Subtasks
-{For each task, check the Testability of its AC from the "Test cases to satisfy" section below and use the matching subtask pattern:}
+{For each task, check the Testability of its AC from the "Test cases to satisfy" section below and use the matching subtask pattern.
+AC numbers, story keys, and requirement IDs exist ONLY in this file — they must never appear in source code or code comments.}
 
 - [ ] Task 1 (AC: #1, Testability: AUTO)
   - [ ] Subtask 1.1: Write failing test for [specific behavior]
