@@ -106,6 +106,7 @@ These decisions affect all code written for this feature and must be consistent 
 - **Logging/debug:** What logging approach does this feature use? Log levels, format, destination. Provide a concrete code example.
 - **Event/signal conventions:** How do this feature's components communicate? Signal naming conventions, event payload structure, sync vs async. Provide concrete code examples showing the naming pattern.
 - **Configuration/tuning values:** How are this feature's tunable values stored (hardcoded constants, config files, environment variables, data-driven definitions)? Where do they live?
+- **Naming & readability:** Define the feature's domain vocabulary — the nouns and verbs its class/method/variable names are built from — so every agent uses the same terms. Names must be intention-revealing and readable by a junior engineer with no codebase context: full words over abbreviations, each name saying what the thing does or is. This feeds the §7 Naming Conventions section, which every story's Dev Notes inherits.
 
 **Novel pattern design (when applicable):**
 

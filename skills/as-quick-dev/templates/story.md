@@ -13,6 +13,7 @@ so that {why from REQUIREMENTS_SUMMARY}.
 
 ## Tasks / Subtasks
 {For each file in "Files to modify" / "Files to create" from DESIGN_SUMMARY, create a task.
+ AC numbers, story keys, and requirement IDs exist ONLY in this file — they must never appear in source code or code comments.
  Assign each task's testability from the AC testability in TEST_SUMMARY (not re-derived):
  - AUTO → use TDD subtasks: write the failing test for the matching scenario, implement, refactor
  - AGENT-REVIEW → implement and verify build (doc/config/copy changes)
@@ -20,6 +21,7 @@ so that {why from REQUIREMENTS_SUMMARY}.
 
 ## Dev Notes
 **Architecture:** {Implementation approach from DESIGN_SUMMARY}
+**Naming:** {Naming from DESIGN_SUMMARY — the identifiers this change introduces}
 **Anti-patterns to avoid:** {Pattern deviations from DESIGN_SUMMARY, framed as what to avoid — or "None"}
 **Files to modify:** {from DESIGN_SUMMARY}
 **Files to create:** {from DESIGN_SUMMARY, or "None"}

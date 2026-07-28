@@ -15,6 +15,11 @@ Design decisions:
   - [decision and brief justification]
   - [decision and brief justification]
 
+Naming:
+  [Names for the new/renamed classes, methods, and key variables this change introduces.
+   Intention-revealing and junior-readable: full words over abbreviations, each name
+   saying what the thing does or is. Or "None — no new identifiers."]
+
 Pattern deviations:
   ⚠️ [deviation and justification, or "None"]
 

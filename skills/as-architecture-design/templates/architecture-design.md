@@ -81,7 +81,7 @@ Cover every binding ux-design section (add rows for transitions §5.5 and any ot
 [Consistency rules that all agents must follow when implementing this feature. Every pattern must include a concrete code example.]
 
 ### Naming Conventions
-[File naming, class naming, function naming, variable naming for this feature's domain]
+[File naming, class naming, function naming, variable naming for this feature's domain. Beyond matching codebase casing/prefix conventions, names must be intention-revealing: full words over abbreviations, and a name that tells a junior engineer with no codebase context what the thing does or is. Name this feature's domain vocabulary here (the nouns/verbs its identifiers should be built from) so all agents use the same terms.]
 
 ### Code Organization
 [Where new files go, how they relate to existing structure, test file locations]
