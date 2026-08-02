@@ -117,7 +117,7 @@ Find `{IMPL}/retros/epic-{N-1}-retro-*.md`. If found, extract the SMART action i
 For each story in this epic (in sprint-status.yaml order, status in [`backlog`, `ready-for-dev`]):
 
 #### Step 5c-i: Story Creation (Orchestrator writes directly — no sub-agent)
-1. Read `{IMPL}/learning-log.md` (all entries, or note "no entries yet" if absent).
+1. Read `{IMPL}/learning-log.md` (all entries, or note "no entries yet" if absent). Collect every `Requirements for future stories` line targeting THIS story key — each collected requirement MUST be reflected in the story's tasks or Dev Notes (verified by the checklist in step 5). If this is the LAST story of its epic, also check for requirements targeting a story key that no longer exists in `sprint-status.yaml` (descoped or renamed): re-triage each through Step 5c-vi instead of letting it expire unread.
 2. If not the first story of the entire pipeline: read the previous story's file, specifically its Dev Agent Record section.
 3. Read the traceability columns for this story from `{IMPL}/epic-breakdown.md`:
    - **Design Refs** — the specific sections/groups listed for this story
@@ -137,6 +137,7 @@ For each story in this epic (in sprint-status.yaml order, status in [`backlog`, 
    - [ ] Every AUTO task is small enough for one TDD cycle; AGENT-REVIEW and NONE tasks have appropriate non-TDD subtasks
    - [ ] A developer could implement without asking questions
    - [ ] Every task has its Testability level (AUTO / AGENT-REVIEW / NONE) annotated from test-plan.md
+   - [ ] Every learning-log requirement targeting this story key is reflected in its tasks or Dev Notes
 
 6. Update sprint-status.yaml: `{story-key}: ready-for-dev`
 
@@ -229,6 +230,8 @@ Read the completed story's **`### Surfaced Follow-ups` block** — the dev agent
 
 **Routing rule** (ask, in order):
 
+0. Is it a discrete piece of **work**, or a **constraint/requirement on how a future story must be authored** (a fixture property its tests must have, an assertion shape it must use, a symbol it must justify against)? If the latter → it is NOT triaged through the tree below: append it to `{IMPL}/learning-log.md` under `Requirements for future stories` (format in `{SKILLS_DIR}/as-pipeline/templates/pipeline-report-entries.md`), naming the exact target story key. Step 5c-i reads the learning log at every story authoring — that read is the ONLY delivery mechanism; do NOT park authoring guidance in `sprint-status.yaml`, the pipeline report, or checkpoint files, where nothing reads it back. The A/B/C tree below is for work only.
+
 1. Is it **sub-agent-completable** (no external action, no human design decision) **AND scoped to THIS feature**?
    - **NO** → **Route C (follow-ups ledger)**, below.
    - **YES** → is it small, related to the *current epic's subject*, and surfaced *now* while the epic is still open and context is fresh?
@@ -291,6 +294,7 @@ Task tool:
 2. **Materialize the retro's `## Follow-up Dispositions`.** Apply the Step 5c-vi routing to each item:
    - items dispositioned **cleanup-epic** → append as `cleanup-{n}-{title}: backlog` stories under `epic-cleanup:` (Route B; create the cleanup epic + `epic-cleanup-retrospective: optional` at the end of `development_status` if absent).
    - items dispositioned **ledger** → append to the matching `blocked_user_actions` / `deferred_test_debt` / `cross_feature_handoffs` / `deferred_design_decisions` key (Route C).
+   - items that are **authoring constraints on a specific future story** (routing question 0) → append to `{IMPL}/learning-log.md` under `Requirements for future stories`, naming the target story key.
    - The retro routes cross-story items to cleanup-epic or ledger, NOT to interleave (its epic is closing). Leave `## Cross-Feature Conventions` in the retro file as-is — Step 6 harvests it into `followups.md`.
 
 3. Update sprint-status.yaml: `epic-{N}: done`, `epic-{N}-retrospective: done` (or `skipped` per step 1).

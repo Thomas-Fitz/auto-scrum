@@ -71,7 +71,7 @@ All other stories: paste relevant entries from learning-log.md, or "No relevant 
 For each surfaced item, one entry:
 - **Item:** <one line — what's wrong / what's needed>  `<file>:<line>`
   - **Out-of-scope because:** <why it isn't part of this story's tasks>
-  - **Proposed disposition:** `interleave` (feature-scoped, sub-agent-doable, related to THIS epic, do it now) | `cleanup-epic` (feature-scoped, sub-agent-doable, but cross-cutting / off-subject) | `ledger:<key>` (needs a user/external action, another feature, or a human design call — key ∈ blocked_user_actions / deferred_test_debt / cross_feature_handoffs / deferred_design_decisions)
+  - **Proposed disposition:** `interleave` (feature-scoped, sub-agent-doable, related to THIS epic, do it now) | `cleanup-epic` (feature-scoped, sub-agent-doable, but cross-cutting / off-subject) | `ledger:<key>` (needs a user/external action, another feature, or a human design call — key ∈ blocked_user_actions / deferred_test_debt / cross_feature_handoffs / deferred_design_decisions) | `authoring-requirement:<target-story-key>` (not work at all — a constraint on how a specific FUTURE story must be written: a fixture property its tests need, an assertion shape, a symbol to justify)
   - **Rationale:** <one line>
 
 Recurring classes worth scanning for before you write "None.": stale/incorrect planning-doc reference, dead/orphaned code from a superseding path, a test helper now duplicated across files, a behavior gap you deferred mid-story, a producer-only contract literal lacking a consumer test, an external dependency awaiting provisioning. The orchestrator makes the final routing call — your disposition is a proposal. MUST be "None." if there are genuinely no surfaced follow-ups.}

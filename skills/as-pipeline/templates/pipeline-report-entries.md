@@ -25,4 +25,11 @@ Substitute all `{placeholder}` values with current runtime values before writing
 **Discoveries:** {from Dev Agent Record: Plan Deviations section}
 **Architectural Insights:** {key decisions made during implementation}
 **Deviations from Plan:** {what changed vs. original architecture-design.md}
+**Requirements for future stories:** {omit this line if none}
+- `{target-story-key}`: {the constraint that story's authoring must satisfy — a fixture property, an assertion shape, a symbol to justify — stated concretely enough to act on without re-reading this story} (source: {story-key})
 ```
+
+The `Requirements for future stories` list is directive, not descriptive: each item is addressed to
+the named target story and is consumed when Step 5c-i authors it (the story quality checklist
+verifies incorporation). Route follow-up items here — via Step 5c-vi routing question 0 — whenever
+they constrain HOW a future story must be written rather than adding schedulable work.
