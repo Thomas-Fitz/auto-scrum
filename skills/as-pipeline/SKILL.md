@@ -40,12 +40,12 @@ Prohibited without explicit USER authorization (this list is non-exhaustive — 
 
 **Orchestrator behavior when a revert/deletion appears necessary:**
 1. STOP the pipeline immediately. Do NOT dispatch the next sub-agent. Do NOT perform the operation yourself.
-2. Use `ask_user` (or plain text if unavailable) to describe: EXACTLY which files would be affected (list each path), the EXACT command(s) that would run, WHY the operation seems necessary, and what alternatives exist (fixing forward, narrowing scope, a different approach).
+2. Use `ask_user` to describe: EXACTLY which files would be affected (list each path), the EXACT command(s) that would run, WHY the operation seems necessary, and what alternatives exist (fixing forward, narrowing scope, a different approach).
 3. Wait for the user's explicit "yes, do it" (or equivalent). Silence, ambiguity, or a sub-agent reporting "I already reverted" is NOT permission.
 4. If the user denies permission, document the decision in `{IMPL}/pipeline-report.md` and resume the pipeline without reverting.
-5. If a sub-agent reports that it reverted or deleted files without prior USER permission: treat that as a CRITICAL incident. Halt the pipeline, do NOT dispatch further sub-agents, and surface the incident to the user with the full list of affected files so recovery can begin.
+5. If a sub-agent reports that it reverted or deleted files without prior USER permission: treat that as a CRITICAL incident. Halt the pipeline, do NOT dispatch further sub-agents, and surface the incident to the user.
 
-**Enforcement:** every sub-agent prompt already carries a near-identical rule. If a sub-agent's prompt does not contain the no-revert/no-delete rule, the orchestrator MUST prepend it before dispatching. Authorization granted for one operation does NOT extend to later operations — each revert/deletion needs its own explicit approval.
+Authorization granted for one operation does NOT extend to later operations — each revert/deletion needs its own explicit approval.
 
 ---
 
@@ -330,7 +330,7 @@ The learning log is delivered by being READ at story authoring (Step 5c-i). Once
 
 Re-read `{IMPL}/learning-log.md` and collect every `Requirements for future stories` line carrying NEITHER a `(consumed by …)` NOR a `(re-triaged …)` annotation. For each, decide:
 - **It is work** (something a sub-agent could still do in this feature) → route it through Step 5c-vi now. In practice that means Route B: append a `cleanup-{n}-…` story. The feature is NOT complete — the 6a gate below will send you back to Step 5.
-- **It is an authoring constraint on a story this feature will never write** (target story is `done`, descoped, or belongs to a future feature) → it carries out of the feature: record it for the `## Carry into the next feature` section of `followups.md` (Step 6c), stating the constraint concretely enough for an author with no pipeline context to act on.
+- **It is an authoring constraint on a story this feature will never write** (target story is `done`, descoped, or belongs to a future feature) → it carries out of the feature: it carries out to the `## Carry into the next feature` section of `followups.md`. Hold it verbatim — you hand these to the Step 6c sub-agent in its dispatch, since they exist nowhere else it can read. State each concretely enough for an author with no pipeline context to act on.
 
 Annotate each swept line with `(swept {date} → {disposition})` so a resumed pipeline does not re-route it. If the log has no un-annotated lines, print `✅ Learning log fully consumed.`
 
@@ -338,21 +338,22 @@ Annotate each swept line with `(swept {date} → {disposition})` so a resumed pi
 Before declaring the feature complete, re-read `{IMPL}/sprint-status.yaml` and verify that EVERY story — planned, interleaved (Route A), AND cleanup-epic (Route B) — has status `done`, and every epic including `epic-cleanup` (if present) has status `done`. If ANY is not `done`, the feature is NOT complete: return to Step 5 and finish it. **Sub-agent-completable, feature-scoped work is never left for the user** — only the follow-ups ledger (Route C) may carry open items past this gate.
 
 ### 6c: Generate the delivered follow-ups doc
-`followups.md` is the ONLY artifact that leaves the feature. Anything true at feature close and not rendered here is lost, so the sources below are exhaustive by construction — not a fixed list of four keys.
+`followups.md` is the ONLY artifact that leaves the feature, and its readers work it across LATER sessions with no context from this run — so it is a multi-session work queue, not a report. Rendering it means holding every ledger item, every retro's conventions section, and the 163-line template at once, at the point in the run where your context is most degraded. Dispatch a follow-ups sub-agent using the **Task tool** instead:
+```
+Task tool:
+  agent_type: general-purpose
+  prompt: |
+    [Read `{SKILLS_DIR}/as-pipeline/prompts/followups-agent.md` and use its full contents as this prompt,
+    substituting {IMPL}, {SKILLS_DIR}, and {FEAT} with their current values.
+    Carry-out items from the Step 6a learning-log sweep: {the swept carry-out items verbatim, or "none"}.]
+```
+The agent prompt carries the full procedure — the exhaustive source list, ID assignment, item-kind classification, count reconciliation. Do NOT write `followups.md` yourself from memory of this section; the rendering rules live in that prompt.
 
-**Collect the sources:**
-1. **Every top-level ledger key** in `{IMPL}/sprint-status.yaml` — not just the four schema keys. Walk the top-level mapping and treat as a ledger key anything that is not `development_status` or file metadata (`generated`, `project`, `feature`, `artifacts_dir`). The four schema keys (`blocked_user_actions:`, `deferred_test_debt:`, `cross_feature_handoffs:`, `deferred_design_decisions:`) render into their named sections; **any other key renders into `## Other ledger entries`, one entry per item, with the key name shown.** A key the pipeline grew ad hoc is still delivery-bearing content — silently skipping it because the template has no section for it is the failure mode this rule exists to prevent. Note each unrecognized key in `{IMPL}/pipeline-report.md` so its schema is either adopted or the key retired.
-2. The `## Cross-Feature Conventions` section of every `{IMPL}/retros/epic-*-retro-*.md`.
-3. **The LAST retro's `## SMART Action Items for Next Epic`** — the retro of the final numbered epic, or of the cleanup epic if it ran one. Every earlier retro's SMART items were consumed by Step 5b; the last one's have no reader and belong in `## Carry into the next feature`. Drop only an item already stated verbatim in Cross-Feature Conventions; when in doubt, keep both.
-4. The items the Step 6a sweep dispositioned as carry-out — they join the same `## Carry into the next feature` section.
-
-**Render — one entry per item, no collapsing:**
-Read the template at `{SKILLS_DIR}/as-pipeline/templates/followups-doc.md` and write `{IMPL}/followups.md`. Every ledger item gets its OWN entry. Do NOT summarize a group of items as a count or a table row, and do NOT fold one item into another's bullet because they look similar — two items that share a subject but differ in who can act on them, what unblocks them, or what they cost are different items, and merging them destroys exactly the distinction the reader needs. If a key holds many entries the doc gets long; that is the correct outcome. A group may carry a shared preamble, but each member still gets its own line beneath it.
-
-**Reconcile counts (do this before writing the Status line):**
-For each source, count the items in the source and count the entries you rendered. They must be equal. If they differ, fix the doc — never the count. State each per-key count in the section preamble so the number is checkable against the YAML by anyone reading the delivered doc.
-
-Omit any section whose source is empty. Set the doc's **Status** line to "All clear — no open follow-ups" if every source is empty, else "Shipped with {C} open follow-up(s)" where `{C}` is the summed rendered-entry count. This doc is a pipeline DELIVERY — its work items should be Route-C only; if it lists anything a sub-agent could have done in-feature, that was a triage miss. (Carry-forward guidance and conventions are not work items and do not count as misses.)
+**After the Task completes:**
+1. **Verify the artifact exists.** Confirm `{IMPL}/followups.md` was written. If not, re-dispatch once.
+2. **Record the counts** the agent returned (`{C}` total + per-key) — Step 6d prints them.
+3. **Note every non-schema ledger key** the agent reported in `{IMPL}/pipeline-report.md`, so each is either adopted into the sprint-status schema or retired.
+4. **Treat any triage miss the agent flags as a pipeline defect** — this doc's work items should be Route-C only. Record it in `{IMPL}/pipeline-report.md`. (Carry-forward guidance and conventions are not work items and are not misses.)
 
 ### 6d: Final summary
 Print:
@@ -362,17 +363,12 @@ Print:
    Stories completed: {M}   (planned {P} + interleaved {I} + cleanup {CU})
    Plan deviations handled: {K}
    Review cycles total: {R}
-   Follow-ups delivered: {C} total — {per-key counts, e.g. blocked_user_actions 3, deferred_design_decisions 15, <other-key> 39}
-   See {IMPL}/pipeline-report.md for full details, {IMPL}/followups.md for open follow-ups.
+   Follow-ups surfaced at feature close: {C} total — {per-key counts, e.g. blocked_user_actions 3, deferred_design_decisions 15, <other-key> 39}
+   See {IMPL}/pipeline-report.md for full details, {IMPL}/followups.md to work the follow-ups.
 ```
 
-The per-key counts printed here MUST match both the YAML and the entries rendered in `followups.md` (Step 6c reconciliation). Printing a count you did not verify against the rendered doc is worse than printing none.
+The per-key counts printed here MUST match both the YAML and the entries rendered in `followups.md` (Step 6c reconciliation). Printing a count you did not verify against the rendered doc is worse than printing none. Like the doc's own counts, these are point-in-time facts about what the pipeline delivered — not a claim about what is still open once people start working the file.
 
 If `blocked_user_actions:` is non-empty, ALSO print each as a blocked user action requiring USER completion before the feature can be fully verified, with its `since` and `source_story`. Do NOT mark the feature fully shippable while `blocked_user_actions` is non-empty.
 
-If `deferred_test_debt:` or `cross_feature_handoffs:` is non-empty, print each with its `sponsor_feature` — the current feature CAN ship with these open (they are another feature's to resolve). If `deferred_design_decisions:` is non-empty, print each as an open product/UX question awaiting a human call. If every Step 6c source is empty, print: `✅ No open follow-ups — feature fully closed.`
-
-**Use `ask_user` for next workflow step:**
-Ask: "Pipeline execution is complete! Would you like to create documentation for this feature using as-tech-writer, or are you finished?"
-Offer options: "Start as-tech-writer now", "Finished - all done", "Continue later"
-If user selects "Start as-tech-writer now": execute `/as-tech-writer {FEAT}`
+If `deferred_test_debt:` or `cross_feature_handoffs:` is non-empty, print each with its `sponsor_feature` — the current feature CAN ship with these unresolved (they are another feature's to resolve). If `deferred_design_decisions:` is non-empty, print each as a product/UX question awaiting a human ruling. If every Step 6c source is empty, print: `✅ No follow-ups surfaced — feature fully closed.`
