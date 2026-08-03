@@ -118,7 +118,7 @@ The `/as-pipeline` skill:
 5. **Follow-up triage:** After each story, out-of-scope items the dev/reviewer surfaced are routed to exactly one of: interleave now, a cleanup epic (drained before the feature closes), or the follow-ups ledger (work only a user/another feature can do).
 6. **Correct Course:** After each story, evaluates for plan deviations and handles them autonomously.
 7. **Epic Retro + Doc Reconciliation:** After each epic, synthesizes learnings and dispositions follow-ups, then flushes recorded deltas back into the living planning docs so the next epic starts accurate.
-8. **Feature-completion gate:** Verifies every story/epic (including the cleanup epic) is `done`, then delivers `followups.md`.
+8. **Feature-completion gate:** Sweeps the learning log for guidance nothing consumed, verifies every story/epic (including the cleanup epic) is `done`, then delivers `followups.md` — every ledger item listed individually with verified counts, plus conventions and carry-forward guidance from the last retro.
 9. **Max review cycles:** After 3 failed review cycles, orchestrator makes a judgment call and continues.
 10. **Safety:** No agent may revert or delete files without explicit user authorization — a hard stop.
 11. **Escalates to human only for:** missing required artifact, an unresolvable git conflict, or a destructive operation needing authorization.

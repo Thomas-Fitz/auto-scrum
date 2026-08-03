@@ -24,11 +24,12 @@ Write {IMPL}/retros/epic-{N}-retro-{YYYY-MM-DD}.md with EXACTLY these sections:
 [The retro is a WORK-GENERATOR, not just a report. Every cross-story follow-up you surface (a helper duplicated across N stories, a coverage gap only visible across the epic, a behavior gap deferred during a story, a stale/wrong planning-doc reference) MUST be dispositioned here so the orchestrator can act on it. Do NOT leave deferred work as prose in the analysis sections above. For each item, one row:
 
 - **Item:** <one line>
-  - **Disposition:** `cleanup-epic` OR `ledger:<key>` where key ∈ {blocked_user_actions, deferred_test_debt, cross_feature_handoffs, deferred_design_decisions}
+  - **Disposition:** `cleanup-epic` OR `ledger:<key>` where key ∈ {blocked_user_actions, deferred_test_debt, cross_feature_handoffs, deferred_design_decisions} OR `authoring-requirement:<target-story-key>`
   - **If cleanup-epic:** proposed story title + 1-line scope (sub-agent-completable, feature-scoped work the pipeline will do before the feature closes).
   - **If ledger:** the schema fields for that key (see `{SKILLS_DIR}/as-sprint-plan/templates/sprint-status.yaml`) — i.e. work that needs a user/external action, another feature, or a human design call.
+  - **If authoring-requirement:** the constraint the target story's authoring must satisfy (a fixture property, an assertion shape, a symbol to justify), stated concretely enough to act on. The orchestrator appends it to the learning log, which story authoring reads.
 
-Decision: is it sub-agent-completable AND scoped to THIS feature? YES → `cleanup-epic`. NO → `ledger:<key>`. (You never disposition to "interleave" — your epic is closing; interleave is for items surfaced mid-story.) If you have no follow-ups, write "None."]
+Decision: is it work at all, or a constraint on how a SPECIFIC future story must be written? Constraint → `authoring-requirement:<target-story-key>`. Work: is it sub-agent-completable AND scoped to THIS feature? YES → `cleanup-epic`. NO → `ledger:<key>`. (You never disposition to "interleave" — your epic is closing; interleave is for items surfaced mid-story. General next-epic guidance with no single target story belongs in `## SMART Action Items`, not here.) If you have no follow-ups, write "None."]
 
 ## Cross-Feature Conventions
 [Durable conventions / anti-patterns this epic taught that likely apply BEYOND this feature. These do NOT get auto-applied — they are harvested into the delivered followups.md for a human to route. For each:
@@ -40,4 +41,6 @@ Decision: is it sub-agent-completable AND scoped to THIS feature? YES → `clean
 If none, write "None."]
 
 ## SMART Action Items for Next Epic
-[Forward GUIDANCE ONLY — specific, measurable advice for how Epic {N+1}'s stories should be written (e.g. "apply the validation pattern from Story {N}-3 to all request handlers"). This section is read by the pipeline when authoring the next epic. It is NOT a place to park deferred work — every actual work item belongs in `## Follow-up Dispositions` above. If an action item is really deferred work rather than guidance, move it.]
+[Forward GUIDANCE ONLY — specific, measurable advice for how Epic {N+1}'s stories should be written (e.g. "apply the validation pattern from Story {N}-3 to all request handlers"). This section is read by the pipeline when authoring the next epic. It is NOT a place to park deferred work — every actual work item belongs in `## Follow-up Dispositions` above. If an action item is really deferred work rather than guidance, move it.
+
+**If no epic follows this one** — check `sprint-status.yaml`: you are the last retro when no epic after yours is un-`done`, and the cleanup epic (if any) is the true last. Your items then go to a HUMAN via `followups.md`, not to the next story-authoring pass. Write them accordingly: name the concrete failure each one prevents and the evidence that motivated it, and avoid referring to story keys, epic numbers, or pipeline steps as though the reader knows them. Do not shorten or omit the section because the epic list is exhausted — this is the only path these learnings have out of the feature.]
