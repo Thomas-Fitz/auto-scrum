@@ -7,10 +7,19 @@ copilot:
   ask_user: ask_user
   # Subagent dispatch. Copilot CLI routes to subagents via model-driven
   # delegation — reference the agent by name in your instruction (e.g.
-  # "Use the Explore agent to ...") or select it with the /agent command.
+  # "Use the as-dev agent to ...") or select it with the /agent command.
   dispatch_subagent: "reference the agent by name in your instruction (model-driven), or use /agent"
   # Built-in read-only agent for codebase exploration.
   explore_agent: Explore
+  # Where as-setup installs the auto-scrum agent profiles.
+  agents_dir: ~/.copilot/agents
+  agent_file_ext: .agent.md
+  # Copilot CLI downgrades a subagent's model to the session model under its
+  # cost guard, and has no per-agent reasoning-effort field. Set both for the
+  # whole session: copilot --model <name> --reasoning-effort high
+  supports_per_agent_model: false
+  supports_per_agent_effort: false
+  supports_typed_dispatch: false
 
 claude:
   ask_user: AskUserQuestion
@@ -18,6 +27,11 @@ claude:
   dispatch_subagent: "Task tool (set subagent_type)"
   # Built-in read-only agent for codebase exploration.
   explore_agent: Explore
+  agents_dir: ~/.claude/agents
+  agent_file_ext: .md
+  supports_per_agent_model: true
+  supports_per_agent_effort: true
+  supports_typed_dispatch: true
 
 opencode:
   ask_user: question
@@ -25,3 +39,12 @@ opencode:
   dispatch_subagent: "Task tool (set subagent_type)"
   # Built-in read-only agent for codebase exploration.
   explore_agent: explore
+  # Some OpenCode versions name this directory `agent` (singular) — as-setup
+  # honours whichever already exists and prints the path it used.
+  agents_dir: ~/.config/opencode/agents
+  agent_file_ext: .md
+  # Profile `model:` must be provider-qualified (e.g. anthropic/claude-opus-4-5).
+  # Reasoning effort is documented only in opencode.json, not agent markdown.
+  supports_per_agent_model: true
+  supports_per_agent_effort: false
+  supports_typed_dispatch: true
