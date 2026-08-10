@@ -15,6 +15,7 @@ set -uo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 REAL_SETUP="$REPO_ROOT/skills/as-setup/setup.sh"
 REAL_COMMANDS_DIR="$REPO_ROOT/skills/as-setup/opencode-commands"
+REAL_AGENTS_DIR="$REPO_ROOT/skills/as-setup/agents"
 REAL_CONFIG_TEMPLATE="$REPO_ROOT/skills/as-new/templates/config-template.yml"
 REAL_TOOL_MAPPING_TEMPLATE="$REPO_ROOT/skills/as-new/templates/tool-mapping-template.yml"
 
@@ -42,21 +43,25 @@ NC='\033[0m'
 # Helpers — mock builders
 # ---------------------------------------------------------------------------
 
-# Creates a copilot-style mock:
-#   $TMPDIR/.copilot/skills/  ← SKILLS_DIR
-#     as-setup/setup.sh       ← symlink
+# Builds a mock install tree under a fresh temp HOME:
+#   $HOME/<skills-subpath>/
+#     as-setup/setup.sh           ← symlink
 #     as-setup/opencode-commands/ ← symlink
-#     as-new/templates/       ← symlinks to real templates
-setup_copilot_mock() {
+#     as-setup/agents/            ← symlink
+#     as-new/templates/           ← symlinks to real templates
+setup_mock() {
+  local skills_subpath="$1"
+
   TMPDIR_BASE="$(mktemp -d)"
   export HOME="$TMPDIR_BASE"
 
-  local skills="$TMPDIR_BASE/.copilot/skills"
+  local skills="$TMPDIR_BASE/$skills_subpath"
   mkdir -p "$skills/as-setup"
   mkdir -p "$skills/as-new/templates"
 
   ln -s "$REAL_SETUP"                  "$skills/as-setup/setup.sh"
   ln -s "$REAL_COMMANDS_DIR"           "$skills/as-setup/opencode-commands"
+  ln -s "$REAL_AGENTS_DIR"             "$skills/as-setup/agents"
   ln -s "$REAL_CONFIG_TEMPLATE"        "$skills/as-new/templates/config-template.yml"
   ln -s "$REAL_TOOL_MAPPING_TEMPLATE"  "$skills/as-new/templates/tool-mapping-template.yml"
 
@@ -64,25 +69,9 @@ setup_copilot_mock() {
   MOCK_SKILLS_DIR="$skills"
 }
 
-# Creates an opencode-style mock:
-#   $TMPDIR/.config/opencode/skills/  ← SKILLS_DIR
-#     (same internal layout as copilot mock)
-setup_opencode_mock() {
-  TMPDIR_BASE="$(mktemp -d)"
-  export HOME="$TMPDIR_BASE"
-
-  local skills="$TMPDIR_BASE/.config/opencode/skills"
-  mkdir -p "$skills/as-setup"
-  mkdir -p "$skills/as-new/templates"
-
-  ln -s "$REAL_SETUP"                  "$skills/as-setup/setup.sh"
-  ln -s "$REAL_COMMANDS_DIR"           "$skills/as-setup/opencode-commands"
-  ln -s "$REAL_CONFIG_TEMPLATE"        "$skills/as-new/templates/config-template.yml"
-  ln -s "$REAL_TOOL_MAPPING_TEMPLATE"  "$skills/as-new/templates/tool-mapping-template.yml"
-
-  MOCK_SETUP="$skills/as-setup/setup.sh"
-  MOCK_SKILLS_DIR="$skills"
-}
+setup_copilot_mock()  { setup_mock ".copilot/skills"; }
+setup_opencode_mock() { setup_mock ".config/opencode/skills"; }
+setup_claude_mock()   { setup_mock ".claude/skills"; }
 
 teardown() {
   export HOME="$ORIG_HOME"
@@ -293,18 +282,102 @@ test_opencode_sets_platform() {
   assert_file_not_contains "$HOME/.auto-scrum/config.yml" "platform: copilot" || return 1
 }
 
+AGENT_ROLES=(as-dev as-reviewer as-generic as-architect as-qa)
+
+assert_all_profiles_exist() {
+  local dir="$1"
+  local ext="$2"
+  local role
+  for role in "${AGENT_ROLES[@]}"; do
+    assert_file_exists "$dir/$role$ext" || return 1
+  done
+}
+
+test_claude_installs_profiles() {
+  setup_claude_mock
+  bash "$MOCK_SETUP" >/dev/null 2>&1
+  assert_all_profiles_exist "$HOME/.claude/agents" ".md" || return 1
+  # Claude Code honours per-role model and reasoning effort.
+  assert_file_contains "$HOME/.claude/agents/as-dev.md" "^model:"  || return 1
+  assert_file_contains "$HOME/.claude/agents/as-dev.md" "^effort:" || return 1
+  # The role body must be concatenated onto the frontmatter.
+  assert_file_contains "$HOME/.claude/agents/as-dev.md" "NEVER revert or delete" || return 1
+}
+
+test_copilot_installs_profiles() {
+  setup_copilot_mock
+  bash "$MOCK_SETUP" >/dev/null 2>&1
+  assert_all_profiles_exist "$HOME/.copilot/agents" ".agent.md" || return 1
+  # Copilot downgrades subagent models and has no per-agent effort field, so
+  # shipping either key would emit a setting that silently does nothing.
+  local role
+  for role in "${AGENT_ROLES[@]}"; do
+    assert_file_not_contains "$HOME/.copilot/agents/$role.agent.md" "^model:"  || return 1
+    assert_file_not_contains "$HOME/.copilot/agents/$role.agent.md" "^effort:" || return 1
+  done
+  assert_file_contains "$HOME/.copilot/agents/as-dev.agent.md" "NEVER revert or delete" || return 1
+}
+
+test_opencode_installs_profiles() {
+  setup_opencode_mock
+  bash "$MOCK_SETUP" >/dev/null 2>&1
+  assert_all_profiles_exist "$HOME/.config/opencode/agents" ".md" || return 1
+  assert_file_contains "$HOME/.config/opencode/agents/as-dev.md" "^mode: subagent" || return 1
+  assert_file_contains "$HOME/.config/opencode/agents/as-dev.md" "NEVER revert or delete" || return 1
+}
+
+test_opencode_honours_singular_agent_dir() {
+  setup_opencode_mock
+  mkdir -p "$HOME/.config/opencode/agent"
+  bash "$MOCK_SETUP" >/dev/null 2>&1
+  assert_all_profiles_exist "$HOME/.config/opencode/agent" ".md" || return 1
+  assert_dir_not_exists "$HOME/.config/opencode/agents"          || return 1
+}
+
+test_no_overwrite_profiles() {
+  setup_claude_mock
+  mkdir -p "$HOME/.claude/agents"
+  echo "SENTINEL_PROFILE_VALUE" > "$HOME/.claude/agents/as-dev.md"
+  bash "$MOCK_SETUP" >/dev/null 2>&1
+  assert_file_contains "$HOME/.claude/agents/as-dev.md" "SENTINEL_PROFILE_VALUE" || return 1
+  # The untouched roles still install.
+  assert_file_contains "$HOME/.claude/agents/as-reviewer.md" "^model:" || return 1
+}
+
+test_sync_agents_requires_force() {
+  setup_claude_mock
+  bash "$MOCK_SETUP" >/dev/null 2>&1
+  echo "SENTINEL_PROFILE_VALUE" >> "$HOME/.claude/agents/as-dev.md"
+  assert_exit_code 1 bash "$MOCK_SETUP" --sync-agents || return 1
+  assert_file_contains "$HOME/.claude/agents/as-dev.md" "SENTINEL_PROFILE_VALUE" || return 1
+}
+
+test_sync_agents_force_rerenders() {
+  setup_claude_mock
+  bash "$MOCK_SETUP" >/dev/null 2>&1
+  echo "SENTINEL_PROFILE_VALUE" >> "$HOME/.claude/agents/as-dev.md"
+  bash "$MOCK_SETUP" --sync-agents --force >/dev/null 2>&1 || { fail "sync run exited non-zero"; return 1; }
+  assert_file_not_contains "$HOME/.claude/agents/as-dev.md" "SENTINEL_PROFILE_VALUE" || return 1
+  assert_file_contains "$HOME/.claude/agents/as-dev.md" "^model:" || return 1
+}
+
+test_rejects_unknown_option() {
+  setup_claude_mock
+  assert_exit_code 1 bash "$MOCK_SETUP" --nope || return 1
+}
+
 test_full_idempotency() {
   setup_copilot_mock
   bash "$MOCK_SETUP" >/dev/null 2>&1 || { fail "first run exited non-zero"; return 1; }
 
   # Snapshot the filesystem state after the first run
   local snapshot_1
-  snapshot_1="$(find "$HOME/.auto-scrum" -type f | sort | xargs md5sum 2>/dev/null || find "$HOME/.auto-scrum" -type f | sort | xargs md5 2>/dev/null)"
+  snapshot_1="$(find "$HOME/.auto-scrum" "$HOME/.copilot/agents" -type f | sort | xargs md5sum 2>/dev/null || find "$HOME/.auto-scrum" "$HOME/.copilot/agents" -type f | sort | xargs md5 2>/dev/null)"
 
   bash "$MOCK_SETUP" >/dev/null 2>&1 || { fail "second run exited non-zero"; return 1; }
 
   local snapshot_2
-  snapshot_2="$(find "$HOME/.auto-scrum" -type f | sort | xargs md5sum 2>/dev/null || find "$HOME/.auto-scrum" -type f | sort | xargs md5 2>/dev/null)"
+  snapshot_2="$(find "$HOME/.auto-scrum" "$HOME/.copilot/agents" -type f | sort | xargs md5sum 2>/dev/null || find "$HOME/.auto-scrum" "$HOME/.copilot/agents" -type f | sort | xargs md5 2>/dev/null)"
 
   if [[ "$snapshot_1" != "$snapshot_2" ]]; then
     fail "filesystem state changed between first and second run"
@@ -332,6 +405,14 @@ run_test test_opencode_copies_commands
 run_test test_copilot_no_commands
 run_test test_opencode_no_overwrite_commands
 run_test test_opencode_sets_platform
+run_test test_claude_installs_profiles
+run_test test_copilot_installs_profiles
+run_test test_opencode_installs_profiles
+run_test test_opencode_honours_singular_agent_dir
+run_test test_no_overwrite_profiles
+run_test test_sync_agents_requires_force
+run_test test_sync_agents_force_rerenders
+run_test test_rejects_unknown_option
 run_test test_full_idempotency
 
 echo ""
