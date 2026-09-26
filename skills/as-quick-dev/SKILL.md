@@ -40,11 +40,7 @@ Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's
 
 Capture the current working directory as `REPO` (expand `~` to the user's home directory). This is the repository the dev and reviewer agents will work in.
 
-Then, read the following from `~/.auto-scrum/config.yml` (these are specific to as-quick-dev):
-- `agents.developer.model` → `DEV_MODEL`
-- `agents.reviewer.model` → `REVIEWER_MODEL`
-- `agents.developer.type` → `DEV_AGENT_TYPE`
-- `agents.reviewer.type` → `REVIEWER_AGENT_TYPE` 
+Dev and reviewer sub-agents are dispatched by agent type (`as-dev`, `as-reviewer`), and their model, reasoning effort, persona, and safety rules live in the installed agent profiles — not in `config.yml`. **Never pass a `model:` parameter on a dispatch**, and never re-paste profile content into a dispatch prompt. If a dispatch fails because the `as-*` type does not exist, the profiles are not installed — run `bash {SKILLS_DIR}/as-setup/setup.sh` and retry; if your platform cannot load agent profiles at all, dispatch its general-purpose agent with the contents of `{SKILLS_DIR}/as-setup/agents/roles/{role}.md` inlined ahead of the prompt.
 
 Create the quick-dev story directory if it doesn't exist: `{BASE}/quick-dev/stories/`
 
@@ -83,7 +79,7 @@ Otherwise, proceed to Step 2.
 
 ## Step 2 — Context Gathering (delegated)
 
-**Delegate the codebase scan to a single read-only explore subagent** — dispatch it using the `dispatch_subagent` mechanism with the `explore_agent` type from `tool-mapping.yml`, running on `{DEV_MODEL}` (if those keys are absent from your `tool-mapping.yml`, dispatch your platform's standard read-only exploration subagent). This keeps the heavy file reads out of your context: the subagent reads broadly in its own throwaway context and returns only a findings digest. This single scan replaces the per-step codebase scans the borrowed as-prd / as-architecture steps would otherwise each run — **do not let Steps 3 and 4 scan again.**
+**Delegate the codebase scan to a single read-only explore subagent** — dispatch it with `subagent_type: as-architect` (if that profile is not installed, fall back to the `explore_agent` type from `tool-mapping.yml`, or your platform's standard read-only exploration subagent). This keeps the heavy file reads out of your context: the subagent reads broadly in its own throwaway context and returns only a findings digest. This single scan replaces the per-step codebase scans the borrowed as-prd / as-architecture steps would otherwise each run — **do not let Steps 3 and 4 scan again.**
 
 Give it `TASK` for orientation and instruct it to be **very thorough** — keep expanding until it understands all code related to this change, not just the obvious matches — and to return a concise structured digest (findings plus concrete `file:line` references, **not raw file dumps**) covering:
 
@@ -182,8 +178,7 @@ Read the dev agent prompt at `{SKILLS_DIR}/as-pipeline/prompts/dev-agent.md`.
 Dispatch the dev sub-agent using the Task tool:
 ```
 Task tool:
-  agent_type: {DEV_AGENT_TYPE}
-  model: {DEV_MODEL}
+  subagent_type: as-dev
   prompt: |
     [Use the full contents of {SKILLS_DIR}/as-pipeline/prompts/dev-agent.md as this prompt,
     substituting:
@@ -214,8 +209,7 @@ Set `review_cycles = 1`.
 Dispatch reviewer sub-agent using the Task tool:
 ```
 Task tool:
-  agent_type: {REVIEWER_AGENT_TYPE}
-  model: {REVIEWER_MODEL}
+  subagent_type: as-reviewer
   prompt: |
     [Use the full contents of {SKILLS_DIR}/as-pipeline/prompts/reviewer-agent.md as this prompt,
     substituting:

@@ -9,17 +9,16 @@ artifacts:
   #   .auto-scrum   — project-relative, versioned alongside the repo
   base_dir: ~/.auto-scrum
 
-agents:
-  orchestrator:
-    model: claude-opus-4.6  # Model ID for the pipeline orchestrator
-  architect:
-    model: claude-opus-4.6  # Model ID for the architect agent
-  qa:
-    model: claude-opus-4.6  # Model ID for the test-plan codebase-analysis agent
-  developer:
-    model: claude-opus-4.6  # Model ID for the developer agent
-  reviewer:
-    model: claude-opus-4.6  # Model ID for the adversarial code reviewer
+# Subagent models & reasoning effort are NOT configured here. Each auto-scrum
+# subagent role has an agent profile installed by as-setup (as-dev, as-reviewer,
+# as-generic, as-architect, as-qa) whose frontmatter pins its model and effort —
+# edit those files to change them. Run `bash <skills_dir>/as-setup/setup.sh` to
+# see the resolved profile directory for your platform.
+#
+# Skills dispatch by subagent_type and never pass a model: parameter (a
+# per-dispatch model would silently override the profile).
+#
+# The orchestrator runs on the session model, chosen in your harness (/model).
 
 git:
   # task | story | epic | never (default: never)

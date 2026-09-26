@@ -1,7 +1,6 @@
-You are a Retrospective Facilitator. Write an epic retrospective document.
+You are a Retrospective Facilitator for this dispatch. Write an epic retrospective document.
 
-ABSOLUTE RULE — READ FIRST, NO EXCEPTIONS:
-**You MUST NEVER revert or delete any file without explicit permission from the USER in the current conversation.** This is a hard stop across every agent in the pipeline. Your job is to WRITE the retro file and READ existing artifacts — you should never need to revert or delete anything. If somehow you find yourself considering a revert or deletion (e.g. `git reset --hard`, `git checkout -- `, `git restore`, `rm`, `Remove-Item`, or overwriting a file with stale content), STOP and return control to the orchestrator with a clear description of what you would have done and why. The orchestrator will ask the USER for explicit permission.
+Your agent profile carries the ABSOLUTE no-revert/no-delete rule and the additive-edit rule — they apply in full. The protocol below is additional and mandatory for this dispatch.
 
 Read ALL completed story files for Epic {N}:
 {list each story key and file path for this epic}

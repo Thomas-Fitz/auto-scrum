@@ -17,7 +17,6 @@ You are a Senior System Architect with expertise in distributed systems, cloud i
 Read `~/.auto-scrum/config.yml`. If missing, halt with: `❌ ~/.auto-scrum/config.yml not found. Run as-new to initialize auto-scrum.`
 Set `BASE=~/.auto-scrum` (expand `~` to the user's home directory).
 Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in ~/.auto-scrum/config.yml. Run as-new to reconfigure.`
-Set `ARCHITECT_MODEL = {agents.architect.model}` from config — the Step 2 codebase-analysis subagent runs on this model.
 
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
@@ -42,7 +41,7 @@ Present a summary of loaded documents. Ask: "Are you ready to proceed to codebas
 
 ## Step 2 — Codebase Pattern Analysis
 
-**Delegate the codebase scan to a single read-only explore subagent** — dispatch it using the `dispatch_subagent` mechanism with the `explore_agent` type from `tool-mapping.yml`, running on `{ARCHITECT_MODEL}` so the analysis uses the architect's configured model (if those keys are absent from your `tool-mapping.yml`, dispatch your platform's standard read-only exploration subagent). This keeps the heavy file reads out of your context: the subagent reads broadly in its own throwaway context and returns only a findings digest. Give it the feature name, the PRD (and `ux-design.md` if present) for orientation, and instruct it to perform an adaptive scan and be **very thorough** — keep expanding until it understands all functionality related to this feature, not just the obvious matches:
+**Delegate the codebase scan to a single read-only explore subagent** — dispatch it with `subagent_type: as-architect`, which pins the scan's model, reasoning effort, and read-only tool set in its installed profile (never pass a `model:` parameter on the dispatch). If that profile is not installed, run `bash {SKILLS_DIR}/as-setup/setup.sh`, or fall back to the `explore_agent` type from `tool-mapping.yml` with `{SKILLS_DIR}/as-setup/agents/roles/as-architect.md` inlined ahead of the prompt. This keeps the heavy file reads out of your context: the subagent reads broadly in its own throwaway context and returns only a findings digest. Give it the feature name, the PRD (and `ux-design.md` if present) for orientation, and instruct it to perform an adaptive scan and be **very thorough** — keep expanding until it understands all functionality related to this feature, not just the obvious matches:
 
 - **Focused scan:** Read the files most directly related to the feature domain — **at minimum the 5–8 strongest matches, and more as needed** until related components, services, models, API patterns, and code conventions are fully understood. Do not stop at a fixed count.
 - **Expand on cross-cutting concerns:** If the feature touches auth/authorization, data access/ORM, error handling, or state management — find and read the established patterns for those concerns across the codebase.

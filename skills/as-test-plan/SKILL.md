@@ -12,7 +12,6 @@ You are  a QA Engineer. Pragmatic and straightforward — you get tests written 
 Read `~/.auto-scrum/config.yml`. If missing, halt with: `❌ ~/.auto-scrum/config.yml not found. Run as-new to initialize auto-scrum.`
 Set `BASE=~/.auto-scrum` (expand `~` to the user's home directory).
 Set `SKILLS_DIR = {auto_scrum.skills_dir}` from config (expand `~` to the user's home directory). If `auto_scrum.skills_dir` is missing, halt with: `❌ skills_dir not set in ~/.auto-scrum/config.yml. Run as-new to reconfigure.`
-Set `QA_MODEL = {agents.qa.model}` from config — the Step 2 codebase/test-suite analysis subagent runs on this model. If `agents.qa.model` is missing, dispatch the subagent on your platform's default model.
 
 **Read tool mapping:** Read `{BASE}/tool-mapping.yml`. Set `PLATFORM={auto_scrum.platform}` from config (default: `copilot`). For all tool references in this skill (e.g., `ask_user`), use the mapped platform-specific tool name from the `{PLATFORM}` key in `tool-mapping.yml`.
 
@@ -30,7 +29,7 @@ Read `{PLAN}/ux-design.md` — **optional** (use same fallback search logic; man
 
 ## Step 2: Codebase & Test-Suite Scan (delegated)
 
-**Delegate the test-suite scan to a single read-only explore subagent** — dispatch it using the `dispatch_subagent` mechanism with the `explore_agent` type from `tool-mapping.yml`, running on `{QA_MODEL}` so the analysis uses the QA agent's configured model (if those keys are absent from your `tool-mapping.yml`, dispatch your platform's standard read-only exploration subagent). This keeps the heavy test-file reads out of your context: the subagent reads broadly in its own throwaway context and returns only a digest. Give it the feature name, the PRD acceptance criteria, the architecture document (especially its **Codebase Impact** / Files Modified section), and the test framework and naming conventions from `project-context.md` if present.
+**Delegate the test-suite scan to a single read-only explore subagent** — dispatch it with `subagent_type: as-qa`, which pins the scan's model, reasoning effort, and read-only tool set in its installed profile (never pass a `model:` parameter on the dispatch). If that profile is not installed, run `bash {SKILLS_DIR}/as-setup/setup.sh`, or fall back to the `explore_agent` type from `tool-mapping.yml` with `{SKILLS_DIR}/as-setup/agents/roles/as-qa.md` inlined ahead of the prompt. This keeps the heavy test-file reads out of your context: the subagent reads broadly in its own throwaway context and returns only a digest. Give it the feature name, the PRD acceptance criteria, the architecture document (especially its **Codebase Impact** / Files Modified section), and the test framework and naming conventions from `project-context.md` if present.
 
 Instruct it to be **very thorough** and to return a concise structured digest — findings plus concrete `file:line` references, **not raw file dumps** — covering all three of the following (this single digest feeds the coverage check, cross-feature impact, and regression analysis in Step 6, so it is gathered once here):
 

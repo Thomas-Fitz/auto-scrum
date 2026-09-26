@@ -27,11 +27,15 @@ Each story requires exactly:
 - One (or more, if rejected) **reviewer sub-agent** Task tool calls for adversarial review.
 These are never skipped, merged, or combined across stories.
 
-**Rule 4 — Sub-agents are dispatched via the Task tool.**
-Use `agent_type: general-purpose` for both dev and reviewer sub-agents. Never attempt to perform their responsibilities inline. On fix cycles (review cycle 2+), **resume** existing sub-agents using their stored agent IDs instead of spawning fresh ones — this preserves their prior context and avoids re-reading the entire codebase. If your platform does not support agent resumption, dispatch a fresh agent instead.
+**Rule 4 — Sub-agents are dispatched via the Task tool using the auto-scrum agent types.**
+Use `subagent_type: as-dev` for dev sub-agents, `subagent_type: as-reviewer` for reviewer sub-agents, and `subagent_type: as-generic` for retro, doc-reconciliation, and follow-ups sub-agents. Each type's model and reasoning effort are pinned in its installed profile's frontmatter — **NEVER pass a `model:` parameter on a dispatch**, because a per-dispatch model silently overrides the profile. Each profile's body also carries that role's persona, safety rules, and standards, so dispatch prompts carry only the flow-specific protocol and per-story values — do NOT re-paste profile content into a dispatch. Never attempt to perform sub-agent responsibilities inline. On fix cycles (review cycle 2+), **resume** existing sub-agents using their stored agent IDs instead of spawning fresh ones — this preserves their prior context and avoids re-reading the entire codebase (a resumed agent keeps its original agent type, model, and effort). If your platform does not support agent resumption, dispatch a fresh agent instead.
+
+If a dispatch fails because the `as-*` agent type does not exist, the profiles are not installed — run `bash {SKILLS_DIR}/as-setup/setup.sh` and retry. If your platform cannot load agent profiles at all, fall back to dispatching your platform's general-purpose agent with the contents of `{SKILLS_DIR}/as-setup/agents/roles/{role}.md` inlined ahead of the prompt below. Never drop the role body: it carries Rule 5.
 
 **Rule 5 — NEVER revert or delete files without explicit USER permission. HARD STOP.**
 The orchestrator and every sub-agent the pipeline dispatches — dev, reviewer, retro, and doc-reconciliation — are ALL prohibited from reverting or deleting any file in the repository unless the USER has just explicitly authorized that specific operation in the current conversation. This is a non-negotiable safety rule: a revert/reset can destroy work spanning multiple epics.
+
+**Enforcement:** the rule is baked into every auto-scrum sub-agent profile (`as-dev`, `as-reviewer`, `as-generic`), so any dispatch via an `as-*` subagent_type carries it structurally — NEVER dispatch pipeline work to a non-`as-*` agent type. Authorization granted for one operation does NOT extend to later operations; each revert or deletion needs its own explicit approval.
 
 Prohibited without explicit USER authorization (this list is non-exhaustive — the spirit of the rule is "no destructive file operations"):
 - `git reset --hard`, `git checkout -- `, `git restore`, `git clean -fd`, `git stash drop`, deleting/force-overwriting a branch
@@ -149,7 +153,7 @@ Update sprint-status.yaml: `{story-key}: in-progress`
 Dispatch a dev sub-agent using the **Task tool**:
 ```
 Task tool:
-  agent_type: general-purpose
+  subagent_type: as-dev
   prompt: |
     [Read `{SKILLS_DIR}/as-pipeline/prompts/dev-agent.md` and use its full contents as this prompt,
     substituting {IMPL}, {BASE}, {PLAN}, and {story-key} with their current values.]
@@ -182,7 +186,7 @@ Initialize `review_cycles = 0`.
   - **Cycle 1 (first review):** dispatch a fresh reviewer sub-agent:
     ```
     Task tool:
-      agent_type: general-purpose
+      subagent_type: as-reviewer
       prompt: |
         [Read `{SKILLS_DIR}/as-pipeline/prompts/reviewer-agent.md` and use its full contents as this prompt,
         substituting {IMPL}, {story-key}, {review_cycles}, and {PLAN} with their current values.]
@@ -281,7 +285,7 @@ Update sprint-status.yaml: `epic-{N}: in-progress`
 Dispatch retrospective sub-agent using the **Task tool**:
 ```
 Task tool:
-  agent_type: general-purpose
+  subagent_type: as-generic
   prompt: |
     [Read `{SKILLS_DIR}/as-pipeline/prompts/retro-agent.md` and use its full contents as this prompt,
     substituting {N}, {IMPL}, {PLAN}, and the story list with their current values.]
@@ -307,7 +311,7 @@ Task tool:
 Planning docs freeze at approval and rot as the implementation diverges (stale symbol names, wrong fields, resolved-but-unrecorded design questions). Rule 1 forbids you editing planning docs yourself, so dispatch a doc-reconciliation sub-agent using the **Task tool**:
 ```
 Task tool:
-  agent_type: general-purpose
+  subagent_type: as-generic
   prompt: |
     [Read `{SKILLS_DIR}/as-pipeline/prompts/doc-reconciliation-agent.md` and use its full contents as this prompt,
     substituting {N}, {IMPL}, {PLAN}, and {date} with their current values.]
@@ -341,7 +345,7 @@ Before declaring the feature complete, re-read `{IMPL}/sprint-status.yaml` and v
 `followups.md` is the ONLY artifact that leaves the feature, and its readers work it across LATER sessions with no context from this run — so it is a multi-session work queue, not a report. Rendering it means holding every ledger item, every retro's conventions section, and the 163-line template at once, at the point in the run where your context is most degraded. Dispatch a follow-ups sub-agent using the **Task tool** instead:
 ```
 Task tool:
-  agent_type: general-purpose
+  subagent_type: as-generic
   prompt: |
     [Read `{SKILLS_DIR}/as-pipeline/prompts/followups-agent.md` and use its full contents as this prompt,
     substituting {IMPL}, {SKILLS_DIR}, and {FEAT} with their current values.

@@ -5,11 +5,31 @@
 #
 # Usage:
 #   bash setup.sh
+#   bash setup.sh --sync-agents --force   # re-render agent profiles, overwriting local edits
 #
 # Called automatically by as-new and as-quick-dev when scaffolding is missing.
 # Can also be run directly from the terminal.
 
 set -euo pipefail
+
+SYNC_AGENTS=false
+FORCE=false
+
+for arg in "$@"; do
+  case "$arg" in
+    --sync-agents) SYNC_AGENTS=true ;;
+    --force) FORCE=true ;;
+    -h|--help)
+      echo "Usage: bash setup.sh [--sync-agents] [--force]"
+      exit 0
+      ;;
+    *)
+      echo "❌ Unknown option: $arg"
+      echo "   Usage: bash setup.sh [--sync-agents] [--force]"
+      exit 1
+      ;;
+  esac
+done
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 SKILLS_DIR=$(dirname "$SCRIPT_DIR")
@@ -110,6 +130,109 @@ if [[ "$SKILLS_DIR" == "$HOME/.config/opencode/"* ]]; then
     else
       echo "⚠️  OpenCode commands already exist — skipped."
     fi
+  fi
+fi
+
+# --- Install agent profiles ---
+#
+# Each profile is a per-platform frontmatter fragment concatenated with the shared
+# role body, so a role's persona and rules exist in exactly one place.
+
+AGENTS_SRC="$SCRIPT_DIR/agents"
+ROLES=(as-dev as-reviewer as-generic as-architect as-qa)
+
+if [[ "$SKILLS_DIR" == "$HOME/.config/opencode/"* ]]; then
+  AGENT_PLATFORM="opencode"
+elif [[ "$SKILLS_DIR" == "$HOME/.copilot/"* ]]; then
+  AGENT_PLATFORM="copilot"
+elif [[ "$SKILLS_DIR" == "$HOME/.claude/"* ]]; then
+  AGENT_PLATFORM="claude"
+elif [[ -d "$HOME/.claude" ]]; then
+  AGENT_PLATFORM="claude"
+else
+  AGENT_PLATFORM="copilot"
+fi
+
+case "$AGENT_PLATFORM" in
+  opencode)
+    # Docs name this directory `agents`, while the JSON config key is singular.
+    # Honour whichever already exists rather than hardcoding one.
+    if [[ -d "$HOME/.config/opencode/agent" && ! -d "$HOME/.config/opencode/agents" ]]; then
+      AGENTS_DIR="$HOME/.config/opencode/agent"
+    else
+      AGENTS_DIR="$HOME/.config/opencode/agents"
+    fi
+    AGENT_EXT=".md"
+    ;;
+  copilot)
+    AGENTS_DIR="$HOME/.copilot/agents"
+    AGENT_EXT=".agent.md"
+    ;;
+  claude)
+    AGENTS_DIR="$HOME/.claude/agents"
+    AGENT_EXT=".md"
+    ;;
+esac
+
+if [[ ! -d "$AGENTS_SRC" ]]; then
+  echo "⚠️  Agent profile sources not found at $AGENTS_SRC — skipped profile install."
+else
+  mkdir -p "$AGENTS_DIR"
+
+  if [[ "$SYNC_AGENTS" == true && "$FORCE" != true ]]; then
+    echo "❌ --sync-agents re-renders every profile from the repo and DISCARDS local edits."
+    echo "   Re-run with --force if that is what you want:"
+    echo "   bash setup.sh --sync-agents --force"
+    exit 1
+  fi
+
+  installed=0
+  synced=0
+  skipped=0
+
+  for role in "${ROLES[@]}"; do
+    frontmatter="$AGENTS_SRC/frontmatter/$AGENT_PLATFORM/$role.md"
+    body="$AGENTS_SRC/roles/$role.md"
+    dest="$AGENTS_DIR/$role$AGENT_EXT"
+
+    if [[ ! -f "$frontmatter" || ! -f "$body" ]]; then
+      echo "⚠️  Missing source for $role — skipped."
+      continue
+    fi
+
+    if [[ -f "$dest" && "$SYNC_AGENTS" != true ]]; then
+      skipped=$((skipped + 1))
+      continue
+    fi
+
+    existed=false
+    if [[ -f "$dest" ]]; then
+      existed=true
+    fi
+
+    cat "$frontmatter" "$body" > "$dest"
+
+    if [[ "$existed" == true ]]; then
+      synced=$((synced + 1))
+    else
+      installed=$((installed + 1))
+    fi
+  done
+
+  echo "✅ Agent profiles ($AGENT_PLATFORM): $AGENTS_DIR"
+  if [[ $installed -gt 0 ]]; then
+    echo "   Installed $installed profile(s)."
+  fi
+  if [[ $synced -gt 0 ]]; then
+    echo "   Re-rendered $synced existing profile(s) (local edits discarded)."
+  fi
+  if [[ $skipped -gt 0 ]]; then
+    echo "   Skipped $skipped existing profile(s) — run with --sync-agents --force to re-render."
+  fi
+
+  if [[ "$AGENT_PLATFORM" == "copilot" ]]; then
+    echo "   Copilot CLI has no per-agent model or reasoning-effort setting — set them for"
+    echo "   the whole session instead: copilot --model <name> --reasoning-effort high"
   fi
 fi
 

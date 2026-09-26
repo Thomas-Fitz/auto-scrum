@@ -31,7 +31,7 @@ cp -r skills/as-* ~/.claude/skills/
 cp -r skills/as-* ~/.config/opencode/skills/
 ```
 
-The `~/.auto-scrum/` directory and config files are created automatically the first time you run `/as-new` or `/as-quick-dev`. You can also run the setup script directly at any time:
+The `~/.auto-scrum/` directory, the config files, and the [agent profiles](#agent-profiles) are created automatically the first time you run `/as-new` or `/as-quick-dev`. You can also run the setup script directly at any time:
 
 ```bash
 # copilot
@@ -43,6 +43,10 @@ bash ~/.claude/skills/as-setup/setup.sh
 # opencode (also installs /as-* slash commands)
 bash ~/.config/opencode/skills/as-setup/setup.sh
 ```
+
+Setup prints the directory it installed the agent profiles into. Existing profiles are never overwritten — after upgrading auto-scrum, re-render them with `bash <skills_dir>/as-setup/setup.sh --sync-agents --force`.
+
+> **Upgrading from a version before agent profiles?** Sub-agents are now dispatched by type (`as-dev`, `as-reviewer`, …) instead of being configured in `config.yml`. Run the setup script once to install the profiles, and delete the now-unused `agents:` block from `~/.auto-scrum/config.yml`.
 
 Invoke skills via `/as-new` in Copilot CLI, Claude Code, or OpenCode. You can also say *"use the as-new skill"* and the agent will load it automatically. You may need to restart your terminal for skills to show up.
 
@@ -72,18 +76,6 @@ project:
   name: my-project          # Display name for reports and artifacts
   user: developer           # Developer or team name
 
-agents:
-  orchestrator:
-    model: claude-sonnet-4-6  # Model for pipeline orchestrator
-  architect:
-    model: claude-sonnet-4-6  # Model for architect agent
-  qa:
-    model: claude-sonnet-4-6  # Model for test-plan codebase-analysis agent
-  developer:
-    model: claude-sonnet-4-6  # Model for developer agent
-  reviewer:
-    model: claude-sonnet-4-6  # Model for adversarial code reviewer
-
 git:
   commit_frequency: never   # task | story | epic | never
 
@@ -91,6 +83,34 @@ auto_scrum:
   platform: copilot             # 'copilot' | 'claude' | 'opencode'
   skills_dir: ~/.copilot/skills # Set automatically by setup; update if you move your skills
 ```
+
+Sub-agent models and reasoning effort are **not** set here — they live in the agent profiles below. The orchestrator runs on your session model, chosen in your harness (`/model`).
+
+## Agent Profiles
+
+Every sub-agent role has a profile installed by `as-setup`. The profile body carries that role's persona, the no-revert/no-delete safety rule, and its standards; the frontmatter pins its model and reasoning effort where the harness supports it. Skills dispatch by `subagent_type` and never pass a `model:` parameter — a per-dispatch model would silently override the profile.
+
+| Profile | Role | Dispatched by |
+| --- | --- | --- |
+| `as-dev` | Implements one story or quick-dev change | `/as-pipeline`, `/as-quick-dev` |
+| `as-reviewer` | Adversarial code review, fixes what it finds | `/as-pipeline`, `/as-quick-dev` |
+| `as-generic` | Retro, doc reconciliation, follow-ups rendering | `/as-pipeline` |
+| `as-architect` | Read-only codebase scan for planning docs | `/as-prd`, `/as-ux-design`, `/as-architecture-design`, `/as-quick-dev` |
+| `as-qa` | Read-only test-landscape scan | `/as-test-plan` |
+
+To retune a role, edit its installed profile — not `config.yml`. Source lives in `skills/as-setup/agents/`: one shared body per role in `roles/`, plus a per-platform frontmatter fragment in `frontmatter/<platform>/`, which setup concatenates.
+
+Harness capabilities differ, so the frontmatter does too:
+
+| | Claude Code | OpenCode | Copilot CLI |
+| --- | --- | --- | --- |
+| profile directory | `~/.claude/agents/` | `~/.config/opencode/agents/` | `~/.copilot/agents/` |
+| file extension | `.md` | `.md` | `.agent.md` |
+| per-role model | ✅ `model:` | ✅ `model:` (provider-qualified) | ❌ downgraded to the session model |
+| per-role effort | ✅ `effort:` | ❌ markdown has no field | ❌ session-global only |
+| typed dispatch | ✅ `subagent_type` | ✅ `subagent_type` / `@name` | by name / inference |
+
+On Copilot CLI, set the compute for the whole run instead: `copilot --model <name> --reasoning-effort high`. OpenCode profiles ship without a `model:` line so they inherit your session model — uncomment and set a provider-qualified id (e.g. `anthropic/claude-opus-4-5`) to pin one.
 
 ## Skills
 
